@@ -1,0 +1,14 @@
+.idea
+target
+.classpath
+.project
+.settings
+build.properties
+bin
+.metadata
+transaction.log
+nbactions*.xml
+nb-configuration.xml
+*.iml
+*.sublime-project
+*.sublime-workspace
