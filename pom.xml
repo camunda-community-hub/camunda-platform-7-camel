@@ -3,17 +3,10 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <name>Activiti - Camel</name>
-  <artifactId>activiti-camel</artifactId>
-  <packaging>bundle</packaging>
-
-  <parent>
-    <groupId>org.activiti</groupId>
-    <artifactId>activiti-root</artifactId>
-    <relativePath>../..</relativePath>
-    <version>5.14-SNAPSHOT</version>
-  </parent>
-
+  <name>camunda BPM - Camel Integration</name>
+  <groupId>org.camunda.bpm.incubation</groupId>
+  <artifactId>camunda-bpm-camel-integration</artifactId>
+  <version>0.1-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
