@@ -16,16 +16,16 @@ package org.activiti.camel;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.activiti.engine.ActivitiException;
-import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.delegate.Expression;
-import org.activiti.engine.impl.bpmn.behavior.BpmnActivityBehavior;
-import org.activiti.engine.impl.context.Context;
-import org.activiti.engine.impl.pvm.PvmProcessDefinition;
-import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
-import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
-import org.activiti.spring.SpringProcessEngineConfiguration;
+import org.camunda.bpm.engine.ProcessEngineException;
+import org.camunda.bpm.engine.ProcessEngineConfiguration;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.Expression;
+import org.camunda.bpm.engine.impl.bpmn.behavior.BpmnActivityBehavior;
+import org.camunda.bpm.engine.impl.context.Context;
+import org.camunda.bpm.engine.impl.pvm.PvmProcessDefinition;
+import org.camunda.bpm.engine.impl.pvm.delegate.ActivityBehavior;
+import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
+import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
@@ -107,7 +107,7 @@ public abstract class CamelBehavior extends BpmnActivityBehavior implements Acti
     Exception camelException = exchange.getException();
     boolean notHandledByCamel = exchange.isFailed() && camelException != null;
     if (notHandledByCamel) {
-      throw new ActivitiException("Unhandled exception on camel route", camelException);
+      throw new ProcessEngineException("Unhandled exception on camel route", camelException);
     }
   }
   
@@ -130,43 +130,52 @@ public abstract class CamelBehavior extends BpmnActivityBehavior implements Acti
 
   protected String getProcessDefinitionKey(ActivityExecution execution) {
     PvmProcessDefinition processDefinition = execution.getActivity().getProcessDefinition();
-    return processDefinition.getKey();
+    /*
+     * FIXME: Since camunda BPM was forked at Activiti 5.11 and getKey() was added later
+     * we need a workaround for the time being.
+     *
+     * See https://jira.codehaus.org/browse/ACT-1672
+     */
+      //return processDefinition.getKey();
+      String id = execution.getActivity().getProcessDefinition().getId();
+      return id.substring(0, id.indexOf(":"));
   }
   
   protected void setAppropriateCamelContext(ActivityExecution execution) {
-    //Check to see if the springConfiguration has been set. If not, set it.
-    if (springConfiguration == null) {
-      //Get the ProcessEngineConfiguration object.
-      ProcessEngineConfiguration engineConfiguration = Context.getProcessEngineConfiguration();
-          
-      //Convert it to a SpringProcessEngineConfiguration. If this doesn't work, throw a RuntimeException.
-      // (ActivitiException extends RuntimeException.)
-      try {
-        springConfiguration = (SpringProcessEngineConfiguration) engineConfiguration;
-      } catch (Exception e) {
-        throw new ActivitiException("Expecting a SpringProcessEngineConfiguration for the Activiti Camel module.", e);
-      }
-    }
-          
-    //Get the appropriate String representation of the CamelContext object from ActivityExecution (if available).
-    String camelContextValue = getStringFromField(camelContext, execution);
-          
-    //If the String representation of the CamelContext object from ActivityExecution is empty, use the default.
-    if (StringUtils.isEmpty(camelContextValue) && camelContextObj != null) {
-      //No processing required. No custom CamelContext & the default is already set.
-    }
-    else {
-      if (StringUtils.isEmpty(camelContextValue) && camelContextObj == null) {
-        camelContextValue = springConfiguration.getDefaultCamelContext();
-      }
-      
-      //Get the CamelContext object and set the super's member variable.
-      Object ctx = springConfiguration.getApplicationContext().getBean(camelContextValue);
-      if (ctx == null || ctx instanceof CamelContext == false) {
-        throw new ActivitiException("Could not find CamelContext named " + camelContextValue + ".");
-      }
-      camelContextObj = (CamelContext)ctx;
-    }
+      String foo;
+//    //Check to see if the springConfiguration has been set. If not, set it.
+//    if (springConfiguration == null) {
+//      //Get the ProcessEngineConfiguration object.
+//      ProcessEngineConfiguration engineConfiguration = Context.getProcessEngineConfiguration();
+//
+//      //Convert it to a SpringProcessEngineConfiguration. If this doesn't work, throw a RuntimeException.
+//      // (ActivitiException extends RuntimeException.)
+//      try {
+//        springConfiguration = (SpringProcessEngineConfiguration) engineConfiguration;
+//      } catch (Exception e) {
+//        throw new ProcessEngineException("Expecting a SpringProcessEngineConfiguration for the Activiti Camel module.", e);
+//      }
+//    }
+//
+//    //Get the appropriate String representation of the CamelContext object from ActivityExecution (if available).
+//    String camelContextValue = getStringFromField(camelContext, execution);
+//
+//    //If the String representation of the CamelContext object from ActivityExecution is empty, use the default.
+//    if (StringUtils.isEmpty(camelContextValue) && camelContextObj != null) {
+//      //No processing required. No custom CamelContext & the default is already set.
+//    }
+//    else {
+//      if (StringUtils.isEmpty(camelContextValue) && camelContextObj == null) {
+//        camelContextValue = springConfiguration.getDefaultCamelContext();
+//      }
+//
+//      //Get the CamelContext object and set the super's member variable.
+//      Object ctx = springConfiguration.getApplicationContext().getBean(camelContextValue);
+//      if (ctx == null || ctx instanceof CamelContext == false) {
+//        throw new ActivitiException("Could not find CamelContext named " + camelContextValue + ".");
+//      }
+//      camelContextObj = (CamelContext)ctx;
+//    }
   }
   
   protected String getStringFromField(Expression expression, DelegateExecution execution) {

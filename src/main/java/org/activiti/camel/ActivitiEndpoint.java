@@ -13,7 +13,7 @@
 
 package org.activiti.camel;
 
-import org.activiti.engine.RuntimeService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.apache.camel.*;
 import org.apache.camel.impl.DefaultEndpoint;
 

@@ -12,9 +12,9 @@
  */
 package org.activiti.camel;
 
-import org.activiti.engine.RuntimeService;
-import org.activiti.engine.runtime.Execution;
-import org.activiti.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.runtime.Execution;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 

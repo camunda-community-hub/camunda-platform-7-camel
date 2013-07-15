@@ -14,7 +14,7 @@ package org.activiti.camel;
 
 import java.util.Map;
 
-import org.activiti.engine.RuntimeService;
+import org.camunda.bpm.engine.RuntimeService;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;

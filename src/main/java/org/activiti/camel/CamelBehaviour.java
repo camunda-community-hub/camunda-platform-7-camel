@@ -17,10 +17,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.activiti.engine.impl.bpmn.behavior.BpmnActivityBehavior;
-import org.activiti.engine.impl.pvm.PvmProcessDefinition;
-import org.activiti.engine.impl.pvm.delegate.ActivityBehavior;
-import org.activiti.engine.impl.pvm.delegate.ActivityExecution;
+import org.camunda.bpm.engine.impl.bpmn.behavior.BpmnActivityBehavior;
+import org.camunda.bpm.engine.impl.pvm.PvmProcessDefinition;
+import org.camunda.bpm.engine.impl.pvm.delegate.ActivityBehavior;
+import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
@@ -88,7 +88,16 @@ public class CamelBehaviour extends BpmnActivityBehavior implements ActivityBeha
 
   private String getProcessName(ActivityExecution execution) {
     PvmProcessDefinition processDefinition = execution.getActivity().getProcessDefinition();
-    return processDefinition.getKey();
+    /*
+     * FIXME: Since camunda BPM was forked at Activiti 5.11 and getKey() was added later
+     * we need a workaround for the time being.
+     *
+     * See https://jira.codehaus.org/browse/ACT-1672
+     *
+     */
+    //return processDefinition.getKey();
+    String id = execution.getActivity().getProcessDefinition().getId();
+    return id.substring(0, id.indexOf(":"));
   }
 
 }
