@@ -26,7 +26,7 @@ public class ProcessSmokeTest {
 
   @Autowired
   @Rule
-  public ProcessEngineRule activitiSpringRule;
+  public ProcessEngineRule processEngineRule;
 
   @Test
   @Deployment(resources = {"process/SmokeTest.bpmn20.xml"} )
