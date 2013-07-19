@@ -30,7 +30,7 @@ public class ProcessSmokeTest {
 
   @Test
   @Deployment(resources = {"process/SmokeTest.bpmn20.xml"} )
-  public void simpleTest() throws Exception {
+  public void smokeTest() throws Exception {
     runtimeService.startProcessInstanceByKey("smokeTestProcess");
     Task task = taskService.createTaskQuery().singleResult();
     assertThat("My Task").isEqualTo(task.getName());
