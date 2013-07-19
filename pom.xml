@@ -12,6 +12,7 @@
     <camunda-bpm.version>7.0.0-alpha7</camunda-bpm.version>
     <apache-camel.version>2.11.0</apache-camel.version>
     <spring.framework.version>3.1.2.RELEASE</spring.framework.version>
+    <fest.assert.version>2.0M10</fest.assert.version>
     <sl4j.version>1.6.1</sl4j.version>
     <junit.version>4.11</junit.version>
 
@@ -79,7 +80,12 @@
       <version>3.1.3</version>
       <scope>test</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.easytesting</groupId>
+      <artifactId>fest-assert-core</artifactId>
+      <version>${fest.assert.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
     <repositories>
