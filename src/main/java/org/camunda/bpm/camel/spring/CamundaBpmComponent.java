@@ -10,102 +10,87 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.camunda.bpm.camel.spring;
 
+import java.util.Map;
+
 import org.camunda.bpm.engine.RuntimeService;
-import org.apache.camel.*;
-import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.CamelContext;
+import org.apache.camel.Endpoint;
+import org.apache.camel.impl.DefaultComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class has been modified to be consistent with the changes to CamelBehavior and its implementations. The set of changes
  * significantly increases the flexibility of our Camel integration, as you can either choose one of three "out-of-the-box" modes,
  * or you can choose to create your own. Please reference the comments for the "CamelBehavior" class for more information on the 
- * out-of-the-box implementation class options.  
+ * out-of-the-box implementation class options. 
  * 
  * @author Ryan Johnston (@rjfsu), Tijs Rademakers
  */
-public class ActivitiEndpoint extends DefaultEndpoint {
+public class CamundaBpmComponent extends DefaultComponent {
 
+  final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  @Autowired(required = true)
   private RuntimeService runtimeService;
-
-  private ActivitiConsumer activitiConsumer;
-
+  
   private boolean copyVariablesToProperties;
 
   private boolean copyVariablesToBodyAsMap;
 
   private boolean copyCamelBodyToBody;
+
+  public CamundaBpmComponent() {}
   
-  private boolean copyVariablesFromProperties;
-
-  public ActivitiEndpoint(String uri, CamelContext camelContext, RuntimeService runtimeService) {
-    super();
-    setCamelContext(camelContext);
-    setEndpointUri(uri);
-    this.runtimeService = runtimeService;
+  @Override
+  public void setCamelContext(CamelContext context) {
+    super.setCamelContext(context);
+    runtimeService = getByType(context, RuntimeService.class);
   }
 
-  void addConsumer(ActivitiConsumer consumer) {
-    if (activitiConsumer != null) {
-      throw new RuntimeException("Activit consumer already defined for " + getEndpointUri() + "!");
+  private <T> T getByType(CamelContext ctx, Class<T> kls) {
+    Map<String, T> looked = ctx.getRegistry().lookupByType(kls);
+    if (looked.isEmpty()) {
+      return null;
     }
-    activitiConsumer = consumer;
-  }
+    return looked.values().iterator().next();
 
-  public void process(Exchange ex) throws Exception {
-    if (activitiConsumer == null) {
-      throw new RuntimeException("Activiti consumer not defined for " + getEndpointUri());
-    }
-    activitiConsumer.getProcessor().process(ex);
-  }
-
-  public Producer createProducer() throws Exception {
-    return new ActivitiProducer(this, runtimeService);
-  }
-
-  public Consumer createConsumer(Processor processor) throws Exception {
-    return new ActivitiConsumer(this, processor);
-  }
-
-  public boolean isSingleton() {
-    return true;
-  }
-
-  public boolean isCopyVariablesToProperties() {
-    return copyVariablesToProperties;
-  }
-
-  public void setCopyVariablesToProperties(boolean copyVariablesToProperties) {
-    this.copyVariablesToProperties = copyVariablesToProperties;
-  }
-
-  public boolean isCopyCamelBodyToBody() {
-    return copyCamelBodyToBody;
-  }
-
-  public void setCopyCamelBodyToBody(boolean copyCamelBodyToBody) {
-    this.copyCamelBodyToBody = copyCamelBodyToBody;
-  }
-
-  public boolean isCopyVariablesToBodyAsMap() {
-    return copyVariablesToBodyAsMap;
-  }
-
-  public void setCopyVariablesToBodyAsMap(boolean copyVariablesToBodyAsMap) {
-    this.copyVariablesToBodyAsMap = copyVariablesToBodyAsMap;
-  }
-  
-  public boolean isCopyVariablesFromProperties() {
-    return copyVariablesFromProperties;
-  }
-
-  public void setCopyVariablesFromProperties(boolean copyVariablesFromProperties) {
-    this.copyVariablesFromProperties = copyVariablesFromProperties;
   }
 
   @Override
-  public boolean isLenientProperties() {
-    return true;
+  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
+    log.debug("Creating endpoint: {}", uri);
+    CamundaBpmEndpoint ae = new CamundaBpmEndpoint(uri, getCamelContext(), runtimeService);
+    ae.setCopyVariablesToProperties(this.copyVariablesToProperties);
+    ae.setCopyVariablesToBodyAsMap(this.copyVariablesToBodyAsMap);
+    ae.setCopyCamelBodyToBody(this.copyCamelBodyToBody);
+    return ae;
+  }
+  
+  public boolean isCopyVariablesToProperties() {
+    return copyVariablesToProperties;
+  }
+  
+  public void setCopyVariablesToProperties(boolean copyVariablesToProperties) {
+    this.copyVariablesToProperties = copyVariablesToProperties;
+  }
+  
+  public boolean isCopyCamelBodyToBody() {
+    return copyCamelBodyToBody;
+  }
+  
+  public void setCopyCamelBodyToBody(boolean copyCamelBodyToBody) {
+    this.copyCamelBodyToBody = copyCamelBodyToBody;
+  }
+  
+  public boolean isCopyVariablesToBodyAsMap() {
+    return copyVariablesToBodyAsMap;
+  }
+  
+  public void setCopyVariablesToBodyAsMap(boolean copyVariablesToBodyAsMap) {
+    this.copyVariablesToBodyAsMap = copyVariablesToBodyAsMap;
   }
 }

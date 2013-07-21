@@ -15,15 +15,15 @@ package org.camunda.bpm.camel.spring;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
 
-public class ActivitiConsumer extends DefaultConsumer {
+public class CamundaBpmConsumer extends DefaultConsumer {
 
-  public ActivitiConsumer(ActivitiEndpoint endpoint, Processor processor) {
+  public CamundaBpmConsumer(CamundaBpmEndpoint endpoint, Processor processor) {
     super(endpoint, processor);
   }
 
   @Override
   protected void doStart() throws Exception {
     super.doStart();
-    ((ActivitiEndpoint) getEndpoint()).addConsumer(this);
+    ((CamundaBpmEndpoint) getEndpoint()).addConsumer(this);
   }
 }

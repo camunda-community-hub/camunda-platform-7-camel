@@ -60,17 +60,17 @@ public abstract class CamelBehavior extends BpmnActivityBehavior implements Acti
   protected CamelContext camelContextObj;
   protected SpringProcessEngineConfiguration springConfiguration;
   
-  protected abstract void modifyActivitiComponent(ActivitiComponent component);
+  protected abstract void modifyActivitiComponent(CamundaBpmComponent component);
   
-  protected abstract void copyVariables(Map<String, Object> variables, Exchange exchange, ActivitiEndpoint endpoint);
+  protected abstract void copyVariables(Map<String, Object> variables, Exchange exchange, CamundaBpmEndpoint endpoint);
 
   public void execute(ActivityExecution execution) throws Exception {
     setAppropriateCamelContext(execution);
-    //Retrieve the ActivitiComponent object.
-    ActivitiComponent component = camelContextObj.getComponent("activiti", ActivitiComponent.class);
+    //Retrieve the CamundaBpmComponent object.
+    CamundaBpmComponent component = camelContextObj.getComponent("activiti", CamundaBpmComponent.class);
     modifyActivitiComponent(component);
     
-    ActivitiEndpoint endpoint = createEndpoint(execution);
+    CamundaBpmEndpoint endpoint = createEndpoint(execution);
     Exchange exchange = createExchange(execution, endpoint);
     endpoint.process(exchange);
     handleCamelException(exchange);
@@ -78,23 +78,23 @@ public abstract class CamelBehavior extends BpmnActivityBehavior implements Acti
     performDefaultOutgoingBehavior(execution);
   }
 
-  protected ActivitiEndpoint createEndpoint(ActivityExecution execution) {
+  protected CamundaBpmEndpoint createEndpoint(ActivityExecution execution) {
     String uri = "activiti://" + getProcessDefinitionKey(execution) + ":" + execution.getActivity().getId();
     return getEndpoint(uri);
   }
 
-  protected ActivitiEndpoint getEndpoint(String key) {
+  protected CamundaBpmEndpoint getEndpoint(String key) {
     for (Endpoint e : camelContextObj.getEndpoints()) {
-      if (e.getEndpointKey().equals(key) && (e instanceof ActivitiEndpoint)) {
-        return (ActivitiEndpoint) e;
+      if (e.getEndpointKey().equals(key) && (e instanceof CamundaBpmEndpoint)) {
+        return (CamundaBpmEndpoint) e;
       }
     }
     throw new RuntimeException("Activiti endpoint not defined for " + key);    
   }
 
-  protected Exchange createExchange(ActivityExecution activityExecution, ActivitiEndpoint endpoint) {
+  protected Exchange createExchange(ActivityExecution activityExecution, CamundaBpmEndpoint endpoint) {
     Exchange ex = new DefaultExchange(camelContextObj);
-    ex.setProperty(ActivitiProducer.PROCESS_ID_PROPERTY, activityExecution.getProcessInstanceId());
+    ex.setProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY, activityExecution.getProcessInstanceId());
     Map<String, Object> variables = activityExecution.getVariables();
     copyVariables(variables, ex, endpoint);
     return ex;

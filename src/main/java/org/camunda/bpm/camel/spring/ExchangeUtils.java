@@ -32,12 +32,12 @@ public class ExchangeUtils {
    * If the copyVariablesFromProperties parameter is set on the endpoint, the properties are copied instead
    * 
    * @param exchange The Camel Exchange object
-   * @param activitiEndpoint The ActivitiEndpoint implementation
+   * @param camundaBpmEndpoint The CamundaBpmEndpoint implementation
    * @return A Map<String,Object> containing all of the variables to be used in Activiti
    */
   
-  public static Map<String, Object> prepareVariables(Exchange exchange, ActivitiEndpoint activitiEndpoint) {
-    boolean shouldReadFromProperties = activitiEndpoint.isCopyVariablesFromProperties();
+  public static Map<String, Object> prepareVariables(Exchange exchange, CamundaBpmEndpoint camundaBpmEndpoint) {
+    boolean shouldReadFromProperties = camundaBpmEndpoint.isCopyVariablesFromProperties();
     Map<String, Object> camelVarMap = null;
     
     if (shouldReadFromProperties) {

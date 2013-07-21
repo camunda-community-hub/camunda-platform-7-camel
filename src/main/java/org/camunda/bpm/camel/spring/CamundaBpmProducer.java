@@ -18,7 +18,7 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 
-public class ActivitiProducer extends DefaultProducer {
+public class CamundaBpmProducer extends DefaultProducer {
 
   private RuntimeService runtimeService;
 
@@ -30,7 +30,7 @@ public class ActivitiProducer extends DefaultProducer {
 
   private String activity = null;
 
-  public ActivitiProducer(ActivitiEndpoint endpoint, RuntimeService runtimeService) {
+  public CamundaBpmProducer(CamundaBpmEndpoint endpoint, RuntimeService runtimeService) {
     super(endpoint);
     this.runtimeService = runtimeService;
     String[] path = endpoint.getEndpointKey().split(":");
@@ -95,7 +95,7 @@ public class ActivitiProducer extends DefaultProducer {
 
   }
 
-  protected ActivitiEndpoint getActivitiEndpoint() {
-    return (ActivitiEndpoint) getEndpoint();
+  protected CamundaBpmEndpoint getActivitiEndpoint() {
+    return (CamundaBpmEndpoint) getEndpoint();
   }
 }

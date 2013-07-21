@@ -16,7 +16,6 @@ package org.camunda.bpm.camel.spring;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.camunda.bpm.camel.spring.ActivitiProducer;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.test.Deployment;
@@ -72,6 +71,6 @@ public class StartProcessFromRouteTest {
     assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(0);
 
     // TODO: Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(ActivitiProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstanceId);
+    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstanceId);
   }
 }

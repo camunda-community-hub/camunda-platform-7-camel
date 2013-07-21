@@ -13,7 +13,6 @@
 
 package org.camunda.bpm.camel.spring;
 
-import org.camunda.bpm.camel.spring.ActivitiProducer;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineTestCase;
 import org.apache.camel.CamelContext;
@@ -54,7 +53,7 @@ public class CustomContextTest extends ProcessEngineTestCase {
     String instanceId = (String) tpl.requestBody("direct:start", Collections.singletonMap("var1", "ala"));
 
 
-    tpl.sendBodyAndProperty("direct:receive", null, ActivitiProducer.PROCESS_ID_PROPERTY, instanceId);
+    tpl.sendBodyAndProperty("direct:receive", null, CamundaBpmProducer.PROCESS_ID_PROPERTY, instanceId);
 
     assertProcessEnded(instanceId);
 

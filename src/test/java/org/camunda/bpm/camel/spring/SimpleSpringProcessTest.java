@@ -78,7 +78,7 @@ public class SimpleSpringProcessTest {
 
     //String instanceId = (String) tpl.requestBody("direct:start", Collections.singletonMap("var1", "ala"));
 
-    //tpl.sendBodyAndProperty("direct:receive", null, ActivitiProducer.PROCESS_ID_PROPERTY, instanceId);
+    //tpl.sendBodyAndProperty("direct:receive", null, CamundaBpmProducer.PROCESS_ID_PROPERTY, instanceId);
 
     //assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(0);
 
@@ -97,11 +97,11 @@ public class SimpleSpringProcessTest {
 //    me.expectedBodiesReceived("ala");
 //
 //
-//    tpl.sendBodyAndProperty("direct:start", Collections.singletonMap("var1", "ala"), ActivitiProducer.PROCESS_KEY_PROPERTY, "key1");
+//    tpl.sendBodyAndProperty("direct:start", Collections.singletonMap("var1", "ala"), CamundaBpmProducer.PROCESS_KEY_PROPERTY, "key1");
 //
 //    String instanceId = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey("key1")
 //        .singleResult().getProcessInstanceId();
-//    tpl.sendBodyAndProperty("direct:receive", null, ActivitiProducer.PROCESS_KEY_PROPERTY, "key1");
+//    tpl.sendBodyAndProperty("direct:receive", null, CamundaBpmProducer.PROCESS_KEY_PROPERTY, "key1");
 //
 //    //assertProcessEnded(instanceId);
 //    assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(0);

@@ -13,7 +13,6 @@
 
 package org.camunda.bpm.camel.spring;
 
-import org.camunda.bpm.camel.spring.ActivitiProducer;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineTestCase;
 import org.apache.camel.CamelContext;
@@ -52,7 +51,7 @@ public class SimpleProcessTest extends ProcessEngineTestCase {
 
     String instanceId = (String) tpl.requestBody("direct:start", Collections.singletonMap("var1", "ala"));
 
-    tpl.sendBodyAndProperty("direct:receive", null, ActivitiProducer.PROCESS_ID_PROPERTY, instanceId);
+    tpl.sendBodyAndProperty("direct:receive", null, CamundaBpmProducer.PROCESS_ID_PROPERTY, instanceId);
 
     assertProcessEnded(instanceId);
 
@@ -71,11 +70,11 @@ public class SimpleProcessTest extends ProcessEngineTestCase {
     MockEndpoint me = (MockEndpoint) ctx.getEndpoint("mock:service1");
     me.expectedBodiesReceived("ala");
 
-    tpl.sendBodyAndProperty("direct:start", Collections.singletonMap("var1", "ala"), ActivitiProducer.PROCESS_KEY_PROPERTY, "key1");
+    tpl.sendBodyAndProperty("direct:start", Collections.singletonMap("var1", "ala"), CamundaBpmProducer.PROCESS_KEY_PROPERTY, "key1");
 
     String instanceId = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey("key1")
         .singleResult().getProcessInstanceId();
-    tpl.sendBodyAndProperty("direct:receive", null, ActivitiProducer.PROCESS_KEY_PROPERTY, "key1");
+    tpl.sendBodyAndProperty("direct:receive", null, CamundaBpmProducer.PROCESS_KEY_PROPERTY, "key1");
 
     assertProcessEnded(instanceId);
 

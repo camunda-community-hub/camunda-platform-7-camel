@@ -15,8 +15,8 @@ package org.camunda.bpm.camel.spring.impl;
 
 import java.util.Map;
 
-import org.camunda.bpm.camel.spring.ActivitiComponent;
-import org.camunda.bpm.camel.spring.ActivitiEndpoint;
+import org.camunda.bpm.camel.spring.CamundaBpmComponent;
+import org.camunda.bpm.camel.spring.CamundaBpmEndpoint;
 import org.camunda.bpm.camel.spring.CamelBehavior;
 import org.apache.camel.Exchange;
 
@@ -31,7 +31,7 @@ public class CamelBehaviorDefaultImpl extends CamelBehavior {
 	private static final long serialVersionUID = 003L;
 	
 	@Override
-	protected void modifyActivitiComponent(ActivitiComponent component) {
+	protected void modifyActivitiComponent(CamundaBpmComponent component) {
 		//Set the copy method for new endpoints created using this component.
 		component.setCopyVariablesToProperties(true);
 		component.setCopyVariablesToBodyAsMap(false);
@@ -39,7 +39,7 @@ public class CamelBehaviorDefaultImpl extends CamelBehavior {
 	}
 	
 	@Override
-  protected void copyVariables(Map<String, Object> variables, Exchange exchange, ActivitiEndpoint endpoint) {
+  protected void copyVariables(Map<String, Object> variables, Exchange exchange, CamundaBpmEndpoint endpoint) {
 	  if (endpoint.isCopyVariablesToBodyAsMap()) {
 	    copyVariablesToBodyAsMap(variables, exchange);
 	  } else if (endpoint.isCopyCamelBodyToBody()) {
