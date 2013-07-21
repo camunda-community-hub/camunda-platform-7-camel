@@ -24,7 +24,7 @@ public class CamundaBpmProducer extends DefaultProducer {
 
   public static final String PROCESS_KEY_PROPERTY = "PROCESS_KEY_PROPERTY";
 
-  public static final String PROCESS_ID_PROPERTY = "PROCESS_ID_PROPERTY";
+  public static final String PROCESS_ID_PROPERTY = "CamundaBpmProcessInstanceId";
 
   private String processKey = null;
 
