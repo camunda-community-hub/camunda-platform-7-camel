@@ -18,6 +18,9 @@ import org.camunda.bpm.engine.RuntimeService;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This class has been modified to be consistent with the changes to CamelBehavior and its implementations. The set of changes
@@ -29,6 +32,9 @@ import org.apache.camel.impl.DefaultComponent;
  */
 public class ActivitiComponent extends DefaultComponent {
 
+  final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  @Autowired(required = true)
   private RuntimeService runtimeService;
   
   private boolean copyVariablesToProperties;
@@ -55,8 +61,9 @@ public class ActivitiComponent extends DefaultComponent {
   }
 
   @Override
-  protected Endpoint createEndpoint(String s, String s1, Map<String, Object> stringObjectMap) throws Exception {
-    ActivitiEndpoint ae = new ActivitiEndpoint(s, getCamelContext(), runtimeService);
+  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
+    log.debug("Creating endpoint: {}", uri);
+    ActivitiEndpoint ae = new ActivitiEndpoint(uri, getCamelContext(), runtimeService);
     ae.setCopyVariablesToProperties(this.copyVariablesToProperties);
     ae.setCopyVariablesToBodyAsMap(this.copyVariablesToBodyAsMap);
     ae.setCopyCamelBodyToBody(this.copyCamelBodyToBody);
