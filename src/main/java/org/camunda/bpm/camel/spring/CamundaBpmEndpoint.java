@@ -48,14 +48,14 @@ public class CamundaBpmEndpoint extends DefaultEndpoint {
 
   void addConsumer(CamundaBpmConsumer consumer) {
     if (camundaBpmConsumer != null) {
-      throw new RuntimeException("Activit consumer already defined for " + getEndpointUri() + "!");
+      throw new RuntimeException("camunda BPM consumer already defined for " + getEndpointUri() + "!");
     }
     camundaBpmConsumer = consumer;
   }
 
   public void process(Exchange ex) throws Exception {
     if (camundaBpmConsumer == null) {
-      throw new RuntimeException("Activiti consumer not defined for " + getEndpointUri());
+      throw new RuntimeException("camunda BPM consumer not defined for " + getEndpointUri());
     }
     camundaBpmConsumer.getProcessor().process(ex);
   }
