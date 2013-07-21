@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -36,6 +35,8 @@ import static org.fest.assertions.api.Assertions.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:start-process-from-route-config.xml")
 public class StartProcessFromRouteTest {
+
+  MockEndpoint mockEndpoint;
 
   @Autowired(required = true)
   CamelContext camelContext;
@@ -50,6 +51,12 @@ public class StartProcessFromRouteTest {
   @Rule
   public ProcessEngineRule processEngineRule;
 
+  @Before
+  public void setUp() {
+    mockEndpoint = (MockEndpoint) camelContext.getEndpoint("mock:endpoint");
+    mockEndpoint.reset();
+  }
+
   @Test
   @Deployment(resources = {"process/StartProcessFromRoute.bpmn20.xml"})
   public void doTest() throws Exception {
@@ -59,10 +66,11 @@ public class StartProcessFromRouteTest {
     assertThat(processInstanceId).isNotNull();
     System.out.println("Process instance ID: " + processInstanceId);
 
-    /*
-     * Verify that a process instance was executed and there are no instances executing now
-     */
+    // Verify that a process instance was executed and there are no instances executing now
     assertThat(historyService.createHistoricProcessInstanceQuery().processDefinitionKey("startProcessFromRoute").count()).isEqualTo(1);
     assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(0);
+
+    // TODO: Assert that the camunda BPM process instance ID has been added as a property to the message
+    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(ActivitiProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstanceId);
   }
 }
