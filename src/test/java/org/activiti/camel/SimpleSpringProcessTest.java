@@ -13,25 +13,35 @@
 
 package org.activiti.camel;
 
-import org.activiti.engine.test.Deployment;
-import org.activiti.spring.impl.test.SpringActivitiTestCase;
+import org.camunda.bpm.engine.test.Deployment;
+import org.camunda.bpm.engine.test.ProcessEngineTestCase;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collections;
 import java.util.Map;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring-camel-activiti-context.xml")
-public class SimpleSpringProcessTest extends SpringActivitiTestCase {
+public class SimpleSpringProcessTest extends ProcessEngineTestCase {
 
   MockEndpoint service1;
 
   MockEndpoint service2;
 
+    @Autowired(required = true)
+    CamelContext ctx;
+
+  @Before
   public void setUp() {
-    CamelContext ctx = applicationContext.getBean(CamelContext.class);
+    //CamelContext ctx = applicationContext.getBean(CamelContext.class);
     service1 = (MockEndpoint) ctx.getEndpoint("mock:service1");
     service1.reset();
     service2 = (MockEndpoint) ctx.getEndpoint("mock:service2");
@@ -39,9 +49,10 @@ public class SimpleSpringProcessTest extends SpringActivitiTestCase {
 
   }
 
+  @Test
   @Deployment(resources = {"process/example.bpmn20.xml"})
   public void testRunProcess() throws Exception {
-    CamelContext ctx = applicationContext.getBean(CamelContext.class);
+    //CamelContext ctx = applicationContext.getBean(CamelContext.class);
     ProducerTemplate tpl = ctx.createProducerTemplate();
     service1.expectedBodiesReceived("ala");
 
@@ -60,9 +71,10 @@ public class SimpleSpringProcessTest extends SpringActivitiTestCase {
   }
 
 
+  @Test
   @Deployment(resources = {"process/example.bpmn20.xml"})
   public void testRunProcessByKey() throws Exception {
-    CamelContext ctx = applicationContext.getBean(CamelContext.class);
+    //CamelContext ctx = applicationContext.getBean(CamelContext.class);
     ProducerTemplate tpl = ctx.createProducerTemplate();
     MockEndpoint me = (MockEndpoint) ctx.getEndpoint("mock:service1");
     me.expectedBodiesReceived("ala");

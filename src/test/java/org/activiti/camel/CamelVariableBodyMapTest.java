@@ -3,21 +3,25 @@ package org.activiti.camel;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.Task;
-import org.activiti.engine.test.Deployment;
-import org.activiti.spring.impl.test.SpringActivitiTestCase;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.task.Task;
+import org.camunda.bpm.engine.test.Deployment;
+import org.camunda.bpm.engine.test.ProcessEngineTestCase;
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 @ContextConfiguration("classpath:camel-activiti-context.xml")
-public class CamelVariableBodyMapTest extends SpringActivitiTestCase {
+public class CamelVariableBodyMapTest extends ProcessEngineTestCase {
 	
 	MockEndpoint service1;
+
+    @Autowired
+    CamelContext ctx;
 	
   public void setUp() {
-    CamelContext ctx = applicationContext.getBean(CamelContext.class);
+    //CamelContext ctx = applicationContext.getBean(CamelContext.class);
     service1 = (MockEndpoint) ctx.getEndpoint("mock:serviceBehavior");
     service1.reset();
   }

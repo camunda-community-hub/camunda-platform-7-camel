@@ -1,8 +1,8 @@
 package org.activiti.camel.util;
 
 import org.activiti.camel.ActivitiProducer;
-import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.delegate.JavaDelegate;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.JavaDelegate;
 
 public class InitDelegate implements JavaDelegate {
 

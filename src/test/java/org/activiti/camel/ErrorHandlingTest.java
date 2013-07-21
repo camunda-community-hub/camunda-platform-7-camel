@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.activiti.camel.util.Routing;
-import org.activiti.engine.runtime.Job;
-import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.test.Deployment;
-import org.activiti.spring.impl.test.SpringActivitiTestCase;
+import org.camunda.bpm.engine.runtime.Job;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.test.Deployment;
+import org.camunda.bpm.engine.test.ProcessEngineTestCase;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
@@ -30,7 +30,7 @@ import org.springframework.test.context.ContextConfiguration;
  *
  */
 @ContextConfiguration("classpath:error-camel-activiti-context.xml")
-public class ErrorHandlingTest extends SpringActivitiTestCase {
+public class ErrorHandlingTest extends ProcessEngineTestCase {
 
   private static final int WAIT = 3000;
   

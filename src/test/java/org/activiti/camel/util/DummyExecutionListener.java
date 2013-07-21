@@ -1,7 +1,7 @@
 package org.activiti.camel.util;
 
-import org.activiti.engine.delegate.DelegateExecution;
-import org.activiti.engine.delegate.ExecutionListener;
+import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.delegate.ExecutionListener;
 
 /**
  * Attach to the ReceiveTask (end event).
