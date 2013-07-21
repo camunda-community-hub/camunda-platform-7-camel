@@ -1,17 +1,6 @@
 # Introduction
 
-# Configuration
-
-In your Spring configuration you need to configure the Camel service like this:
-```xml
-...
-  <bean id="camel" class="org.camunda.bpm.camel.spring.impl.CamelServiceImpl">
-    <property name="processEngine" ref="processEngine"/>
-    <property name="camelContext" ref="camelContext"/>
-  </bean>
-...
-```
-The Spring bean id `camel` will be then available to expressions used in ServiceTasks to send data to Camel.
+TODO
 
 # Supported Use Cases
 Our aim has been to make the mapping between camunda BPM engine and Apache Camel as explicit and transparet as possible.
@@ -25,7 +14,7 @@ There are two supported ways to start a process instance
 
 In both cases above the property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the route. 
 
-Check the test [StartProcessFromRouteTest](StartProcessFromRouteTest.java) and it's Spring configuration in [start-process-from-route-config.xml](start-process-from-route-config.xml).
+Check the test [StartProcessFromRouteTest](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/java/org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java) and it's Spring configuration in [start-process-from-route-config.xml](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/resources/start-process-from-route-config.xml).
 
 ## Send data to a Camel endpoint
 
@@ -33,15 +22,28 @@ Create a ServiceTask with the following expression `${camel.sendToEndpoint(execu
 
 TODO: copy all the other process variables as message properties.
 
-Check the test [SendToCamelTest](SendToCamelTest) and it's Spring configuration in [send-to-camel-config.xml](send-to-camel-config.xml).
+Check the test [SendToCamelTest](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/java/org/camunda/bpm/camel/spring/SendToCamelTest.java) and it's Spring configuration in [send-to-camel-config.xml](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/resources/send-to-camel-config.xml).
 
-## Correlate a message to a process instance that is waiting at a receive task
+## Correlate a message to a process instance waiting at a receive task
 
 TODO
 
 ## Exception handling
 
 TODO
+
+# Configuration
+
+In your Spring configuration you need to configure the Camel service like this:
+```xml
+...
+  <bean id="camel" class="org.camunda.bpm.camel.spring.impl.CamelServiceImpl">
+    <property name="processEngine" ref="processEngine"/>
+    <property name="camelContext" ref="camelContext"/>
+  </bean>
+...
+```
+The Spring bean id `camel` will be then available to expressions used in ServiceTasks to send data to Camel.
 
 # Credits
 
