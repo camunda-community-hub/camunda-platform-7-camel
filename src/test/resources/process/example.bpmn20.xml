@@ -1,30 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<definitions id="definitions"
-             xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
-             xmlns:activiti="http://activiti.org/bpmn"
-             targetNamespace="Examples" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="
-             http://www.omg.org/spec/BPMN/20100524/MODEL http://www.omg.org/spec/BPMN/2.0/20100501/BPMN20.xsd">
-
-
-    <process id="camelProcess">
-
-        <startEvent id="start"/>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="serviceTask1"/>
-
-        <serviceTask id="serviceTask1" activiti:type="camel"/>
-        <sequenceFlow id="flow2" sourceRef="serviceTask1" targetRef="receive"/>
-
-        <receiveTask id="receive" name="Wait State" />
-
-        <sequenceFlow id="flow3" sourceRef="receive" targetRef="serviceTask2"/>
-
-        <serviceTask id="serviceTask2" activiti:type="camel"/>
-
-        <sequenceFlow id="flow4" sourceRef="serviceTask2" targetRef="end"/>
-        <endEvent id="end"/>
-
-    </process>
-
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd" targetNamespace="Examples">
+  <process id="camelProcess" isExecutable="true">
+    <startEvent id="start">
+      <outgoing>flow1</outgoing>
+    </startEvent>
+    <sequenceFlow id="flow1" sourceRef="start" targetRef="serviceTask1"/>
+    <serviceTask id="serviceTask1" activiti:expression="${camel.sendToEndpoint(execution, 'seda:serviceTask1', 'var1')}" activiti:resultVariableName="message" name="Send to Camel (1)">
+      <incoming>flow1</incoming>
+      <outgoing>flow2</outgoing>
+    </serviceTask>
+    <sequenceFlow id="flow2" sourceRef="serviceTask1" targetRef="logProcessVariableServiceTask"/>
+    <receiveTask id="receive" name="Wait State">
+      <incoming>SequenceFlow_1</incoming>
+      <outgoing>flow3</outgoing>
+    </receiveTask>
+    <sequenceFlow id="flow3" sourceRef="receive" targetRef="serviceTask2"/>
+    <serviceTask id="serviceTask2" activiti:expression="${camel.sendToEndpoint(execution, 'seda:serviceTask2')}" name="Send to Camel (2)">
+      <incoming>flow3</incoming>
+      <outgoing>flow4</outgoing>
+    </serviceTask>
+    <sequenceFlow id="flow4" sourceRef="serviceTask2" targetRef="end"/>
+    <endEvent id="end">
+      <incoming>flow4</incoming>
+    </endEvent>
+    <serviceTask id="logProcessVariableServiceTask" activiti:expression="${log.debug(message['var2'])}" name="Log process&#xA;variable">
+      <incoming>flow2</incoming>
+      <outgoing>SequenceFlow_1</outgoing>
+    </serviceTask>
+    <sequenceFlow id="SequenceFlow_1" name="" sourceRef="logProcessVariableServiceTask" targetRef="receive"/>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_camelProcess">
+    <bpmndi:BPMNPlane id="BPMNPlane_camelProcess" bpmnElement="camelProcess">
+      <bpmndi:BPMNShape id="BPMNShape_serviceTask2" bpmnElement="serviceTask2">
+        <omgdc:Bounds height="60.0" width="100.0" x="498.0" y="130.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_start" bpmnElement="start">
+        <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="143.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_serviceTask1" bpmnElement="serviceTask1">
+        <omgdc:Bounds height="60.0" width="100.0" x="140.0" y="130.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_receive" bpmnElement="receive">
+        <omgdc:Bounds height="60.0" width="100.0" x="320.0" y="130.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_end" bpmnElement="end">
+        <omgdc:Bounds height="35.0" width="35.0" x="650.0" y="143.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow3" bpmnElement="flow3">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="420.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="498.0" y="160.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow2" bpmnElement="flow2" targetElement="_BPMNShape_ServiceTask_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="240.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="283.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="283.0" y="330.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="323.0" y="330.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="280.0" y="160.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow4" bpmnElement="flow4">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="598.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="650.0" y="160.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow1" bpmnElement="flow1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="75.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="140.0" y="160.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_2" bpmnElement="logProcessVariableServiceTask">
+        <omgdc:Bounds height="60.0" width="100.0" x="323.0" y="300.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_ServiceTask_2" targetElement="BPMNShape_receive">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="373.0" y="300.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="373.0" y="242.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="370.0" y="242.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="370.0" y="190.0"/>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="6.0" width="6.0" x="370.0" y="245.0"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
 </definitions>
