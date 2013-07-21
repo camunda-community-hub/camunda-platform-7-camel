@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+  <import resource="classpath:/camunda-bpm-engine-config.xml"/>
+
+  <bean id="log" class="org.activiti.camel.util.LogServiceImpl"/>
+
+  <bean id="camel" class="org.activiti.camel.impl.CamelServiceImpl">
+    <property name="processEngine" ref="processEngine"/>
+    <property name="camelContext" ref="camelContext"/>
+  </bean>
+
+</beans>
