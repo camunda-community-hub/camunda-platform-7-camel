@@ -36,13 +36,13 @@
 
     <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService"/>
     
-    <bean id="outbound" class="org.activiti.camel.error.route.OutboundErrorRoute"/>
-    <bean id="inbound" class="org.activiti.camel.error.route.InboundErrorRoute"/>
+    <bean id="outbound" class="org.camunda.bpm.camel.spring.route.OutboundErrorRoute"/>
+    <bean id="inbound" class="org.camunda.bpm.camel.spring.route.InboundErrorRoute"/>
   
-    <bean id="brokenService" class="org.activiti.camel.util.BrokenService"/>
+    <bean id="brokenService" class="org.camunda.bpm.camel.spring.util.BrokenService"/>
     
-    <bean id="dummyDelegate" class="org.activiti.camel.util.DummyJavaDelegate"/>
-    <bean id="dummyListener" class="org.activiti.camel.util.DummyExecutionListener"/>
+    <bean id="dummyDelegate" class="org.camunda.bpm.camel.spring.util.DummyJavaDelegate"/>
+    <bean id="dummyListener" class="org.camunda.bpm.camel.spring.util.DummyExecutionListener"/>
 
     <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
         <routeBuilder ref="outbound"/>

@@ -38,10 +38,10 @@
 
     <camelContext id="customCamelContext" xmlns="http://camel.apache.org/schema/spring">
         <packageScan>
-            <package>org.activiti.camel.route</package>
+            <package>org.camunda.bpm.camel.spring.route</package>
         </packageScan>
     </camelContext>
 
-    <bean id="sleepBean" class="org.activiti.camel.util.SleepBean"/>
+    <bean id="sleepBean" class="org.camunda.bpm.camel.spring.util.SleepBean"/>
 
 </beans>

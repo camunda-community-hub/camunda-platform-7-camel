@@ -100,8 +100,8 @@
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <argLine>-Xmx256m</argLine>
           <includes>
-            <include>org/activiti/camel/SmokeTest.java</include>
-            <include>org/activiti/camel/StartProcessFromRouteTest.java</include>
+            <include>org/camunda/bpm/camel/spring/SmokeTest.java</include>
+            <include>org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java</include>
           </includes>
         </configuration>
       </plugin>

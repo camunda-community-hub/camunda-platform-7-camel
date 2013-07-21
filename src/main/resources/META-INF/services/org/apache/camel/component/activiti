@@ -1,1 +1,1 @@
-class=org.activiti.camel.ActivitiComponent
+class=org.camunda.bpm.camel.spring.ActivitiComponent
