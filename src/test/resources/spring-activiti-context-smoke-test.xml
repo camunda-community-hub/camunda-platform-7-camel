@@ -4,6 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-  <import resource="classpath:/camunda-bpm-engine-spring-config.xml"/>
+  <import resource="classpath:/camunda-bpm-engine-config.xml"/>
 
 </beans>

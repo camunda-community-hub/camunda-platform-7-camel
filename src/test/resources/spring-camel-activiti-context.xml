@@ -6,7 +6,7 @@
                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
 
-  <import resource="classpath:/camunda-bpm-engine-spring-config.xml"/>
+  <import resource="classpath:/camunda-bpm-engine-config.xml"/>
 
   <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
     <route id="startRoute">
