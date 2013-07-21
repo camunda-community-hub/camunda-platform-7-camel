@@ -9,7 +9,7 @@
   <version>0.1-SNAPSHOT</version>
 
   <properties>
-    <camunda-bpm.version>7.0.0-alpha7</camunda-bpm.version>
+    <camunda-bpm.version>7.0.0-alpha8</camunda-bpm.version>
     <apache-camel.version>2.11.1</apache-camel.version>
     <spring.framework.version>3.1.2.RELEASE</spring.framework.version>
     <fest.assert.version>2.0M10</fest.assert.version>
