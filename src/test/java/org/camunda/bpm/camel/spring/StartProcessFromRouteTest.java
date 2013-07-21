@@ -70,7 +70,7 @@ public class StartProcessFromRouteTest {
     assertThat(historyService.createHistoricProcessInstanceQuery().processDefinitionKey("startProcessFromRoute").count()).isEqualTo(1);
     assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(0);
 
-    // TODO: Assert that the camunda BPM process instance ID has been added as a property to the message
+    // Assert that the camunda BPM process instance ID has been added as a property to the message
     assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstanceId);
   }
 }
