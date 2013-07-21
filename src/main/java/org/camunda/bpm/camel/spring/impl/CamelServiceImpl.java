@@ -1,14 +1,15 @@
 package org.camunda.bpm.camel.spring.impl;
 
+import org.apache.camel.*;
 import org.camunda.bpm.camel.spring.CamelService;
-import org.apache.camel.CamelContext;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.ProducerTemplate;
+import org.camunda.bpm.camel.spring.CamundaBpmProducer;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+
+import java.util.Map;
 
 /**
  *
@@ -25,12 +26,16 @@ public class CamelServiceImpl implements CamelService {
   public Object sendToEndpoint(ActivityExecution execution, String uri, String processVariableForMessageBody) {
     log.debug("Process execution:" + execution.toString());
 
-    Object messageBody = execution.getVariable(processVariableForMessageBody);
-
-    log.debug("Sending process variable '{}' to Camel endpoint '{}'", processVariableForMessageBody, uri);
+    log.debug("Sending process variable '{}' as body of message to Camel endpoint '{}'", processVariableForMessageBody, uri);
 
     ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
-    Object routeResult = producerTemplate.sendBody(uri, ExchangePattern.InOut, messageBody);
+
+    // FIXME: Map<String, Object> processVariables = execution.getVariables();
+
+    Object messageBody = execution.getVariable(processVariableForMessageBody);
+
+    Object routeResult = producerTemplate.sendBodyAndProperty(uri, ExchangePattern.InOut, messageBody,
+                                                              CamundaBpmProducer.PROCESS_ID_PROPERTY, execution.getProcessInstanceId());
 
     return routeResult;
   }
