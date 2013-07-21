@@ -22,7 +22,7 @@ public class CamundaBpmProducer extends DefaultProducer {
 
   private RuntimeService runtimeService;
 
-  public static final String PROCESS_KEY_PROPERTY = "PROCESS_KEY_PROPERTY";
+  public static final String PROCESS_KEY_PROPERTY = "CamundaBpmProcessDefinitionKey";
 
   public static final String PROCESS_ID_PROPERTY = "CamundaBpmProcessInstanceId";
 
@@ -83,7 +83,6 @@ public class CamundaBpmProducer extends DefaultProducer {
     }
     return processInstance.getId();
   }
-
 
   private ProcessInstance startProcess(Exchange exchange) {
     String key = exchange.getProperty(PROCESS_KEY_PROPERTY, String.class);
