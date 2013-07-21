@@ -15,8 +15,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:spring-activiti-context-smoke-test.xml")
-public class ProcessSmokeTest {
+@ContextConfiguration("classpath:smoke-test-config.xml")
+public class SmokeTest {
 
   @Autowired(required = true)
   RuntimeService runtimeService;
