@@ -23,7 +23,7 @@ public class CamelServiceImpl implements CamelService {
   CamelContext camelContext;
 
   @Override
-  public Object sendToEndpoint(ActivityExecution execution, String uri, String processVariableForMessageBody) {
+  public Object sendTo(ActivityExecution execution, String uri, String processVariableForMessageBody) {
     log.debug("Process execution:" + execution.toString());
 
     log.debug("Sending process variable '{}' as body of message to Camel endpoint '{}'", processVariableForMessageBody, uri);

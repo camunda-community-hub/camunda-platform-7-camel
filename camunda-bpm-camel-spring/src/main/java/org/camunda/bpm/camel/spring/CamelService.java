@@ -8,5 +8,5 @@ import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
  */
 public interface CamelService {
 
-  public Object sendToEndpoint(ActivityExecution execution, String uri, String processVariableForMessageBody);
+  public Object sendTo(ActivityExecution execution, String uri, String processVariableForMessageBody);
 }

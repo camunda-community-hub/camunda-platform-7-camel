@@ -15,7 +15,7 @@ TODO: start process by process definition key passed in message property.
 
 ## Send data to a Camel endpoint
 
-Create a ServiceTask with the following expression `${camel.sendToEndpoint(execution, <camel endpoint URI>, <process variable for body of message>)}`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the route.
+Create a ServiceTask with the following expression `${camel.sendTo(execution, <camel endpoint URI>, <process variable for body of message>)}`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the route.
 
 TODO: copy all the other process variables as message properties.
 
