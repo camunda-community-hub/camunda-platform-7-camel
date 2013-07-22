@@ -18,6 +18,7 @@
 
   <modules>
     <module>camunda-bpm-camel-common</module>
+    <module>camunda-bpm-camel-common-tests</module>
     <module>camunda-bpm-camel-spring</module>
   </modules>
 
