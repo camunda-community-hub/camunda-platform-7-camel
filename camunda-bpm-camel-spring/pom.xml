@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>camunda BPM - Apache Camel Integration (Spring)</name>
-  <artifactId>camunda-bpm-camel-integration</artifactId>
+  <artifactId>camunda-bpm-camel-spring</artifactId>
 
   <parent>
       <groupId>org.camunda.bpm.incubation</groupId>
