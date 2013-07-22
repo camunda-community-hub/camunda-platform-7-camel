@@ -7,12 +7,7 @@ Our aim has been to make the mapping between camunda BPM engine and Apache Camel
 
 ## Start a process instance from a Camel route
 
-There are two supported ways to start a process instance 
-
-* Send a message to the Camel endpoint `camunda-bpm:<process definition>`
-* Send a message to the Camel endpoint `camunda-bpm:<process definition>` containing a property called `CamundaBpmProcessDefinitionKey' with the process definition you would like to start an instance of 
-
-In both cases above the property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the route. 
+Send a message to the Camel endpoint `camunda-bpm:<process definition>`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the Camel route. 
 
 Check the test [StartProcessFromRouteTest](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/java/org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java) and it's Spring configuration in [start-process-from-route-config.xml](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/resources/start-process-from-route-config.xml).
 
