@@ -64,9 +64,6 @@ public class SendToCamelTest {
   @Test
   @Deployment(resources = {"process/SendToCamel.bpmn20.xml"})
   public void doTest() throws Exception {
-    ProducerTemplate tpl = camelContext.createProducerTemplate();
-    mockEndpoint.expectedBodiesReceived("ala");
-
     Map<String, Object> processVariables = new HashMap<String, Object>();
     processVariables.put("var1", "foo");
     processVariables.put("var2", "bar");
