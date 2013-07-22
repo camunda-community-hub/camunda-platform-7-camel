@@ -16,6 +16,8 @@ In both cases above the property `CamundaBpmProcessInstanceId` will be available
 
 Check the test [StartProcessFromRouteTest](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/java/org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java) and it's Spring configuration in [start-process-from-route-config.xml](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/resources/start-process-from-route-config.xml).
 
+TODO: start process by process definition key passed in message property.
+
 ## Send data to a Camel endpoint
 
 Create a ServiceTask with the following expression `${camel.sendToEndpoint(execution, <camel endpoint URI>, <process variable for body of message>)}`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the route.
@@ -24,11 +26,19 @@ TODO: copy all the other process variables as message properties.
 
 Check the test [SendToCamelTest](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/java/org/camunda/bpm/camel/spring/SendToCamelTest.java) and it's Spring configuration in [send-to-camel-config.xml](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/resources/send-to-camel-config.xml).
 
-## Correlate a message to a process instance waiting at a receive task
+## Signal a process instance waiting at a receive task
+
+Create a ReceiveTask in your BPMN model and send a message in Camel to the following ID `camunda-bpm:<receive task id>`. Note that the property `CamundaBpmProcessInstanceId` needs to be present in the message in order to be able to correlate the signal to the appropriate `ReceiveTask`.
+
+Check the test [ReceiveFromCamelTest](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/java/org/camunda/bpm/camel/spring/ReceiveFromCamelTest.java) and it's Spring configuration in [receive-from-camel-config.xml](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/resources/receive-from-camel-config.xml).
+
+TODO: what happens when we have more than one receive task active for a given process instance, i.e. several waiting process executions?
+
+## Exception handling
 
 TODO
 
-## Exception handling
+## Asynchronous use cases
 
 TODO
 
@@ -56,6 +66,7 @@ TODO
 * Support for CDI
 * Better Apache Camel exceptions to BPMNErrors mapping
 * Better data mapping (process variables <-> Camel) configuration
+* Deploy process definition from Camel message
 
 # Feedback
 
