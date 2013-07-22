@@ -28,6 +28,11 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.camunda.bpm.incubation</groupId>
+      <artifactId>camunda-bpm-camel-common</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.camunda.bpm</groupId>
       <artifactId>camunda-engine-spring</artifactId>
       <version>${camunda-bpm.version}</version>
