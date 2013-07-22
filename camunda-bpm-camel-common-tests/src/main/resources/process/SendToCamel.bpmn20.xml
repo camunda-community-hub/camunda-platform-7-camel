@@ -4,33 +4,38 @@
     <startEvent id="start">
       <outgoing>flow1</outgoing>
     </startEvent>
-    <sequenceFlow id="flow1" sourceRef="start" targetRef="sendToCamelServiceTask"/>
-    <serviceTask id="sendToCamelServiceTask" activiti:expression="${camel.sendTo(execution, 'direct:sendToCamelServiceTask', 'var1')}" activiti:resultVariableName="message" name="Send to Camel">
+    <sequenceFlow id="flow1" sourceRef="start" targetRef="sendToCamelOneVariableServiceTask"/>
+    <serviceTask id="sendToCamelOneVariableServiceTask" activiti:expression="${camel.sendTo(execution, 'direct:sendToCamelServiceTask', 'var1')}" activiti:resultVariableName="result1" name="Send to Camel one variable">
       <incoming>flow1</incoming>
       <outgoing>flow2</outgoing>
     </serviceTask>
-    <sequenceFlow id="flow2" sourceRef="sendToCamelServiceTask" targetRef="logProcessVariableServiceTask"/>
+    <sequenceFlow id="flow2" sourceRef="sendToCamelOneVariableServiceTask" targetRef="logProcessVariableServiceTask"/>
     <serviceTask id="logProcessVariableServiceTask" activiti:expression="${log.debug(var1)}" name="Log process&#xA;variable">
       <incoming>flow2</incoming>
-      <outgoing>SequenceFlow_2</outgoing>
+      <outgoing>SequenceFlow_4</outgoing>
     </serviceTask>
-    <sequenceFlow id="SequenceFlow_2" name="" sourceRef="logProcessVariableServiceTask" targetRef="end"/>
+    <serviceTask id="sendToCamelAllProcessVariableServiceTask" activiti:expression="${camel.sendTo(execution, 'direct:sendToCamelServiceTask', processVariables)}" activiti:resultVariable="result2" name="Send to Camel all process variables">
+      <incoming>SequenceFlow_4</incoming>
+      <outgoing>SequenceFlow_3</outgoing>
+    </serviceTask>
     <endEvent id="end">
-      <incoming>SequenceFlow_2</incoming>
+      <incoming>SequenceFlow_3</incoming>
     </endEvent>
+    <sequenceFlow id="SequenceFlow_3" name="" sourceRef="sendToCamelAllProcessVariableServiceTask" targetRef="end"/>
+    <sequenceFlow id="SequenceFlow_4" name="" sourceRef="logProcessVariableServiceTask" targetRef="sendToCamelAllProcessVariableServiceTask"/>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_camelProcess">
     <bpmndi:BPMNPlane id="BPMNPlane_camelProcess" bpmnElement="sendToCamelProcess">
       <bpmndi:BPMNShape id="BPMNShape_start" bpmnElement="start">
         <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="143.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_serviceTask1" bpmnElement="sendToCamelServiceTask">
+      <bpmndi:BPMNShape id="BPMNShape_serviceTask1" bpmnElement="sendToCamelOneVariableServiceTask">
         <omgdc:Bounds height="60.0" width="100.0" x="140.0" y="130.0"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_end" bpmnElement="end">
-        <omgdc:Bounds height="35.0" width="35.0" x="480.0" y="142.0"/>
+        <omgdc:Bounds height="35.0" width="35.0" x="660.0" y="142.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="0.0" width="0.0" x="497.0" y="182.0"/>
+          <omgdc:Bounds height="0.0" width="0.0" x="677.0" y="182.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="BPMNEdge_flow2" bpmnElement="flow2" targetElement="_BPMNShape_ServiceTask_2">
@@ -48,12 +53,18 @@
       <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_2" bpmnElement="logProcessVariableServiceTask">
         <omgdc:Bounds height="60.0" width="100.0" x="312.0" y="130.0"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_ServiceTask_2" targetElement="BPMNShape_end">
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_3" bpmnElement="sendToCamelAllProcessVariableServiceTask">
+        <omgdc:Bounds height="60.0" width="100.0" x="471.0" y="130.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ServiceTask_3" targetElement="BPMNShape_end">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="571.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="615.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="615.0" y="159.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="660.0" y="159.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_ServiceTask_2" targetElement="_BPMNShape_ServiceTask_3">
         <omgdi:waypoint xsi:type="omgdc:Point" x="412.0" y="160.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="480.0" y="159.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="6.0" width="6.0" x="443.0" y="160.0"/>
-        </bpmndi:BPMNLabel>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="471.0" y="160.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

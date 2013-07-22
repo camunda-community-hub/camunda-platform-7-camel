@@ -7,7 +7,7 @@ Our aim has been to make the mapping between camunda BPM engine and Apache Camel
 
 ## Start a process instance from a Camel route
 
-Send a message to the Camel endpoint `camunda-bpm:<process definition>`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the Camel route. 
+Send a message to the Camel endpoint `camunda-bpm:<process definition>`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processors in the Camel route.
 
 Check the test [StartProcessFromRouteTest](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/java/org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java) and it's Spring configuration in [start-process-from-route-config.xml](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/resources/start-process-from-route-config.xml).
 
@@ -15,7 +15,7 @@ TODO: start process by process definition key passed in message property.
 
 ## Send data to a Camel endpoint
 
-Create a ServiceTask with the following expression `${camel.sendTo(execution, <camel endpoint URI>, <process variable for body of message>)}`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the route.
+Create a ServiceTask with the following expression `${camel.sendTo(execution, <camel endpoint URI>, <process variable name for the body of message>)}`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the route. Please, note that if your pass processVariables` as parameter then all process variables will be passed as a map in the body of the Camel message. Example: `${camel.sendTo(execution, <camel endpoint URI>, processVariables)}` (without the quotes)
 
 TODO: copy all the other process variables as message properties.
 

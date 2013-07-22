@@ -25,7 +25,6 @@ public class CamelServiceImpl implements CamelService {
   @Override
   public Object sendTo(ActivityExecution execution, String uri, String processVariableForMessageBody) {
     log.debug("Process execution:" + execution.toString());
-
     log.debug("Sending process variable '{}' as body of message to Camel endpoint '{}'", processVariableForMessageBody, uri);
 
     ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
@@ -36,6 +35,21 @@ public class CamelServiceImpl implements CamelService {
 
     Object routeResult = producerTemplate.sendBodyAndProperty(uri, ExchangePattern.InOut, messageBody,
                                                               CamundaBpmProducer.PROCESS_ID_PROPERTY, execution.getProcessInstanceId());
+
+    return routeResult;
+  }
+
+  @Override
+  public Object sendTo(ActivityExecution execution, String uri, Map<String, Object> processVariables) {
+    log.debug("Process execution:" + execution.toString());
+    log.debug("Sending all process variables as body of message to Camel endpoint '{}'", uri);
+
+    ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
+
+    // FIXME: Map<String, Object> processVariables = execution.getVariables();
+
+    Object routeResult = producerTemplate.sendBodyAndProperty(uri, ExchangePattern.InOut, processVariables,
+        CamundaBpmProducer.PROCESS_ID_PROPERTY, execution.getProcessInstanceId());
 
     return routeResult;
   }
