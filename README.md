@@ -28,7 +28,7 @@ Check the test [SendToCamelTest](https://github.com/rafacm/camunda-bpm-camel-int
 
 ## Signal a process instance waiting at a receive task
 
-Create a ReceiveTask in your BPMN model and send a message in Camel to the following ID `camunda-bpm:<receive task id>`. Note that the property `CamundaBpmProcessInstanceId` needs to be present in the message in order to be able to correlate the signal to the appropriate `ReceiveTask`.
+Create a ReceiveTask in your BPMN model and send a message in Camel to the following ID `camunda-bpm:<process definition id>:<receive task id>`. Note that the property `CamundaBpmProcessInstanceId` needs to be present in the message in order to be able to correlate the signal to the appropriate `ReceiveTask`.
 
 Check the test [ReceiveFromCamelTest](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/java/org/camunda/bpm/camel/spring/ReceiveFromCamelTest.java) and it's Spring configuration in [receive-from-camel-config.xml](https://github.com/rafacm/camunda-bpm-camel-integration/blob/master/src/test/resources/receive-from-camel-config.xml).
 
