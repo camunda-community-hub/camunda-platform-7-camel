@@ -1,6 +1,6 @@
 package org.camunda.bpm.camel.spring.util;
 
-import org.camunda.bpm.camel.spring.CamundaBpmProducer;
+import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 

@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-package org.camunda.bpm.camel.spring;
+package org.camunda.bpm.camel.common;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ import org.camunda.bpm.engine.impl.bpmn.behavior.BpmnActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.PvmProcessDefinition;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
-import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
+//import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
@@ -58,7 +58,7 @@ public abstract class CamelBehavior extends BpmnActivityBehavior implements Acti
   private static final long serialVersionUID = 1L;
   protected Expression camelContext;
   protected CamelContext camelContextObj;
-  protected SpringProcessEngineConfiguration springConfiguration;
+  //protected SpringProcessEngineConfiguration springConfiguration;
   
   protected abstract void modifyActivitiComponent(CamundaBpmComponent component);
   

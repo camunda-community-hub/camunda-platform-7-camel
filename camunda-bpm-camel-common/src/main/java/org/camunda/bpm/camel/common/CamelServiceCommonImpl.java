@@ -1,21 +1,15 @@
-package org.camunda.bpm.camel.spring.impl;
+package org.camunda.bpm.camel.common;
 
-import org.apache.camel.*;
-import org.camunda.bpm.camel.spring.CamelService;
-import org.camunda.bpm.camel.spring.CamundaBpmProducer;
+import org.apache.camel.CamelContext;
+import org.apache.camel.ExchangePattern;
+import org.apache.camel.ProducerTemplate;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.Map;
-
-/**
- *
- * @author Rafael Cordones <rafael@cordones.me>
- */
-public class CamelServiceImpl implements CamelService {
+public abstract class CamelServiceCommonImpl implements CamelService {
 
   final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -35,7 +29,7 @@ public class CamelServiceImpl implements CamelService {
     Object messageBody = execution.getVariable(processVariableForMessageBody);
 
     Object routeResult = producerTemplate.sendBodyAndProperty(uri, ExchangePattern.InOut, messageBody,
-                                                              CamundaBpmProducer.PROCESS_ID_PROPERTY, execution.getProcessInstanceId());
+      CamundaBpmProducer.PROCESS_ID_PROPERTY, execution.getProcessInstanceId());
 
     return routeResult;
   }

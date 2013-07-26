@@ -12,8 +12,8 @@ package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Versi
  */
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;

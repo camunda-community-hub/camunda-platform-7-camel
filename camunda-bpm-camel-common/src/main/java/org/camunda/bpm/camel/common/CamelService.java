@@ -1,4 +1,4 @@
-package org.camunda.bpm.camel.spring;
+package org.camunda.bpm.camel.common;
 
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 

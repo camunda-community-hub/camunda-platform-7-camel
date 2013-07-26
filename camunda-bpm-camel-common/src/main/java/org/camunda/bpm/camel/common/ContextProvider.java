@@ -10,28 +10,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.camunda.bpm.camel.spring;
+package org.camunda.bpm.camel.common;
 
 import org.apache.camel.CamelContext;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
+public interface ContextProvider {
 
-public class SimpleContextProvider implements ContextProvider {
+  CamelContext getContext(String processName);
 
-  private Map<String, CamelContext> contexts = new HashMap<String, CamelContext>();
-
-  public SimpleContextProvider(Map<String, CamelContext> contexts) {
-    this.contexts = contexts;
-  }
-
-  public SimpleContextProvider(String processName, CamelContext ctx) {
-    this(Collections.singletonMap(processName, ctx));
-  }
-
-  public CamelContext getContext(String processName) {
-    return contexts.get(processName);
-  }
 }

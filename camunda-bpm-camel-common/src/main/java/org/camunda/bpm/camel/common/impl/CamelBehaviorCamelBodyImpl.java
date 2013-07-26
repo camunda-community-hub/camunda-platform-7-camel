@@ -11,13 +11,13 @@
  * limitations under the License.
  */
 
-package org.camunda.bpm.camel.spring.impl;
+package org.camunda.bpm.camel.common.impl;
 
 import java.util.Map;
 
-import org.camunda.bpm.camel.spring.CamundaBpmComponent;
-import org.camunda.bpm.camel.spring.CamundaBpmEndpoint;
-import org.camunda.bpm.camel.spring.CamelBehavior;
+import org.camunda.bpm.camel.common.CamundaBpmComponent;
+import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
+import org.camunda.bpm.camel.common.CamelBehavior;
 import org.apache.camel.Exchange;
 
 /**

@@ -13,5 +13,16 @@
   <name>camunda BPM - Apache Camel Integration (Common)</name>
   <artifactId>camunda-bpm-camel-common</artifactId>
 
-
+  <dependencies>
+    <dependency>
+      <groupId>org.camunda.bpm</groupId>
+      <artifactId>camunda-engine</artifactId>
+      <version>${camunda-bpm.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+  </dependencies>
 </project>

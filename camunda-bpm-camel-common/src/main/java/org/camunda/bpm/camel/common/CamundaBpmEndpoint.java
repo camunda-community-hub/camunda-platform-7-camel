@@ -11,7 +11,7 @@
  * limitations under the License.
  */
 
-package org.camunda.bpm.camel.spring;
+package org.camunda.bpm.camel.common;
 
 import org.camunda.bpm.engine.RuntimeService;
 import org.apache.camel.*;
