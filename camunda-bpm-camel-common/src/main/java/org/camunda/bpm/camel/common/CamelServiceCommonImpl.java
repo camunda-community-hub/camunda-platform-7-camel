@@ -13,8 +13,8 @@ public abstract class CamelServiceCommonImpl implements CamelService {
 
   final Logger log = LoggerFactory.getLogger(this.getClass());
 
-  ProcessEngine processEngine;
-  CamelContext camelContext;
+  protected ProcessEngine processEngine;
+  protected CamelContext camelContext;
 
   @Override
   public Object sendTo(ActivityExecution execution, String uri, String processVariableForMessageBody) {
@@ -35,13 +35,8 @@ public abstract class CamelServiceCommonImpl implements CamelService {
   }
 
   @Required
-  public void setProcessEngine(ProcessEngine processEngine) {
-    this.processEngine = processEngine;
-  }
+  public abstract void setProcessEngine(ProcessEngine processEngine);
 
   @Required
-  public void setCamelContext(CamelContext camelContext) {
-    this.camelContext = camelContext;
-  }
-
+  public abstract void setCamelContext(CamelContext camelContext);
 }
