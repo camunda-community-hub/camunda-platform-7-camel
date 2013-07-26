@@ -7,7 +7,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 
 public abstract class BaseArquillianIntegrationTest {
 
-  public static WebArchive prepareTestDeployment(String deploymentArchiveName) {
+  public static WebArchive prepareTestDeployment(String deploymentArchiveName, String processDefinition) {
     MavenDependencyResolver resolver = DependencyResolvers.use(MavenDependencyResolver.class)
         .loadMetadataFromPom("pom.xml");
 
@@ -15,9 +15,10 @@ public abstract class BaseArquillianIntegrationTest {
         .addAsLibraries(resolver.artifact("org.camunda.bpm:camunda-engine-cdi").resolveAsFiles())
         .addAsLibraries(resolver.artifact("org.camunda.bpm.javaee:camunda-ejb-client").resolveAsFiles())
         .addAsLibraries(resolver.artifact("org.easytesting:fest-assert-core").resolveAsFiles())
+        .addClass(BaseArquillianIntegrationTest.class)
 
         .addAsWebResource("META-INF/processes.xml", "WEB-INF/classes/META-INF/processes.xml")
-        .addAsResource("process/SmokeTest.bpmn20.xml")
+        .addAsResource(processDefinition)
         ;
   }
 }

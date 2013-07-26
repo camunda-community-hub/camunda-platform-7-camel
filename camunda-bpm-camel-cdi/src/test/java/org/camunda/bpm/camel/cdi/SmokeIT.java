@@ -5,13 +5,9 @@ import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 
 import javax.inject.Inject;
 
@@ -20,9 +16,11 @@ import static org.fest.assertions.api.Assertions.assertThat;
 @RunWith(Arquillian.class)
 public class SmokeIT extends BaseArquillianIntegrationTest {
 
+  private static String PROCESS_DEFINITION_KEY = "smokeTestProcess";
+
   @Deployment
   public static WebArchive createDeployment() {
-    return prepareTestDeployment("process-smoke-test.war");
+    return prepareTestDeployment(PROCESS_DEFINITION_KEY + ".war", "process/SmokeTest.bpmn20.xml");
   }
 
   @Inject
@@ -32,8 +30,6 @@ public class SmokeIT extends BaseArquillianIntegrationTest {
   @Inject
   @SuppressWarnings("cdi-ambiguous-dependency")
   private TaskService taskService;
-
-  private static String PROCESS_DEFINITION_KEY = "smokeTestProcess";
 
   @Test
   public void testDeploymentAndStartInstance() throws InterruptedException {
