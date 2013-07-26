@@ -1,3 +1,5 @@
+![camunda BPM + Apache Camel][1]
+
 # Introduction
 
 TODO
@@ -70,3 +72,5 @@ Suggestions, pull requests, ... you name it... are very welcome! Meet us on the 
 # License
 
 This software is licensed under the terms you  find in the file named `LICENSE.txt` in the root directory.
+
+[1]: http://rafael.cordones.me/assets/camunda-bpm-camel.png
