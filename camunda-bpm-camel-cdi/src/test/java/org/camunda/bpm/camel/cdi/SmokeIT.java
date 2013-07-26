@@ -22,7 +22,7 @@ public class SmokeIT extends BaseArquillianIntegrationTest {
 
   @Deployment
   public static WebArchive createDeployment() {
-    return prepareTestDeployment("process-smole-test.war");
+    return prepareTestDeployment("process-smoke-test.war");
   }
 
   @Inject
