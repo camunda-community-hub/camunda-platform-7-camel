@@ -16,11 +16,15 @@ public class SmokeIT extends BaseArquillianIntegrationTest {
 
   @Deployment
   public static WebArchive createDeployment() {
-    return prepareTestDeployment(PROCESS_DEFINITION_KEY + ".war", "process/SmokeTest.bpmn20.xml");
+    return prepareTestDeployment(PROCESS_DEFINITION_KEY, "process/SmokeTest.bpmn20.xml");
   }
 
   @Test
   public void testDeploymentAndStartInstance() throws InterruptedException {
+
+    assertThat(camelContext).isNotNull();
+    assertThat(camelService).isNotNull();
+
     runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY);
     Task task = taskService.createTaskQuery().processDefinitionKey(PROCESS_DEFINITION_KEY).singleResult();
     assertThat(task).isNotNull();
