@@ -1,10 +1,11 @@
 package org.camunda.bpm.camel.cdi;
 
-import org.apache.camel.CamelContext;
+import org.apache.camel.cdi.CdiCamelContext;
 import org.camunda.bpm.camel.common.CamelService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
+import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -28,16 +29,21 @@ public abstract class BaseArquillianIntegrationTest {
   protected HistoryService historyService;
 
   @Inject
-  CamelContext camelContext;
-
-  @Inject
   CamelService camelService;
 
-  protected static WebArchive prepareTestDeployment(String deploymentArchiveName, String processDefinition) {
+  @Inject
+  CamelContextBootstrap camelContextBootstrap;
+
+  @Inject
+  CdiCamelContext camelContext;
+
+  protected static WebArchive prepareTestDeployment(String deploymentArchiveName,
+                                                    String processDefinition,
+                                                    Class camelRouteClass) {
     MavenDependencyResolver resolver = DependencyResolvers.use(MavenDependencyResolver.class)
       .loadMetadataFromPom("pom.xml");
 
-    return ShrinkWrap.create(WebArchive.class, deploymentArchiveName + ".war")
+    WebArchive war = ShrinkWrap.create(WebArchive.class, deploymentArchiveName + ".war")
       .addAsLibraries(resolver.artifact("org.camunda.bpm:camunda-engine-cdi").resolveAsFiles())
       .addAsLibraries(resolver.artifact("org.camunda.bpm.javaee:camunda-ejb-client").resolveAsFiles())
       .addAsLibraries(resolver.artifact("org.camunda.bpm.incubation:camunda-bpm-camel-common").resolveAsFiles())
@@ -47,12 +53,24 @@ public abstract class BaseArquillianIntegrationTest {
       // FIXME: this does not work we need to add this project's resources one by one
       //.addAsLibraries(resolver.artifact("org.camunda.bpm.incubation:camunda-bpm-camel-cdi").resolveAsFiles())
       .addClass(CamelServiceImpl.class)
-      .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
       .addClass(BaseArquillianIntegrationTest.class)
       .addClass(CamelContextBootstrap.class)
 
+      .addClass(StartUpBean.class)
+
+      .addClass(camelRouteClass)
+      .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
       .addAsWebResource("META-INF/processes.xml", "WEB-INF/classes/META-INF/processes.xml")
       .addAsResource(processDefinition)
       ;
+
+        /*
+         * For troubleshooting purposes use the following two lines to export the WAR to the filesystem
+         * to see if everything needed is there!
+         */
+    //File destinationDir = new File("/Users/rafa/dev/plexiti/vc/the-job-announcement-fox/target");
+    //war.as(ExplodedExporter.class).exportExploded(destinationDir);
+
+    return war;
   }
 }

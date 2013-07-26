@@ -2,6 +2,7 @@ package org.camunda.bpm.camel.cdi;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.cdi.CdiCamelContext;
+import org.camunda.bpm.camel.common.CamundaBpmComponent;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -24,15 +25,22 @@ public class CamelContextBootstrap {
 
   @PostConstruct
   public void init() throws Exception {
-    log.info(">> Starting Apache Camel's context: ...");
+    log.info(">> Starting Apache Camel's context");
+
+    // Register camunda BPM component
+    log.info(">> Registering camunda BPM component in Camel context");
+    CamundaBpmComponent component = new CamundaBpmComponent();
+    component.setCamelContext(camelCtx);
+    camelCtx.addComponent("camunda-bpm", component);
 
     // Add the Camel routes
-    //camelCtx.addRoutes(tweetRoute);
+    SmokeRoute route = new SmokeRoute();
+    camelCtx.addRoutes(route);
 
     // Start Camel context
     camelCtx.start();
 
-    log.info(">> Camel context started and routes started.");
+    log.info(">> Camel context started and routes started");
   }
 
   @PreDestroy

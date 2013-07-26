@@ -4,6 +4,8 @@ import org.camunda.bpm.engine.task.Task;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,13 +18,14 @@ public class SmokeIT extends BaseArquillianIntegrationTest {
 
   @Deployment
   public static WebArchive createDeployment() {
-    return prepareTestDeployment(PROCESS_DEFINITION_KEY, "process/SmokeTest.bpmn20.xml");
+    return prepareTestDeployment(PROCESS_DEFINITION_KEY, "process/SmokeTest.bpmn20.xml", SmokeRoute.class);
   }
 
   @Test
   public void testDeploymentAndStartInstance() throws InterruptedException {
 
-    assertThat(camelContext).isNotNull();
+    assertThat(camelContextBootstrap).isNotNull();
+    assertThat(camelContextBootstrap.getCamelContext()).isNotNull();
     assertThat(camelService).isNotNull();
 
     runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY);
