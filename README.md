@@ -1,10 +1,10 @@
 ![camunda BPM + Apache Camel][1]
 
-This project aims at bringing to great BPM and EIP Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.camunda.org). This way, we believe we can bring the development of Process-driven process applications a whole new level of awesomeness.
+This project aims at bringing to great BPM and EIP Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.camunda.org). We believe that this way we can bring the development of Process-driven process applications to a whole new level of awesome.
 
 # Approach
 
-This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and we have taken a back-to-basics approach in the migration of the code to camunda BPM. What this basically means (among other things) is that, at the moment, instead of providing a CamelBehavior to communicate with Camel, a light-weight CamelService is provided that can be used in ServiceTask expresssions to send data to Camel (see below for examples).
+This project started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and we have taken a back-to-basics approach in the migration of the code to camunda BPM. What this basically means (among other things) is that, at the moment, instead of providing a CamelBehavior to communicate with Camel, a light-weight CamelService is provided that can be used in ServiceTask expresssions to send data to Camel (see below for examples).
 
 # Project Structure
 
