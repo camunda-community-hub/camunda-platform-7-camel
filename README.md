@@ -4,7 +4,7 @@ This project aims at bringing to great BPM and EIP Open Source frameworks closer
 
 # Approach
 
-This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and we have taken a back-to-basics approach in the migration of the code to camunda BPM. What this basically means is that 
+This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and we have taken a back-to-basics approach in the migration of the code to camunda BPM. What this basically means (among other things) is that, at the moment, instead of providing a CamelBehavior to communicate with Camel, a light-weight CamelService is provided that can be used in ServiceTask expresssions to send data to Camel (see below for examples).
 
 # Project Structure
 
