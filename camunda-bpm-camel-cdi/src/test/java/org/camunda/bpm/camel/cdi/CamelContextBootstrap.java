@@ -1,6 +1,7 @@
 package org.camunda.bpm.camel.cdi;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelContext;
 import org.camunda.bpm.camel.common.CamundaBpmComponent;
 
@@ -34,18 +35,17 @@ public class CamelContextBootstrap {
     camelCtx.addComponent("camunda-bpm", component);
 
     // Add the Camel routes
-    SmokeRoute route = new SmokeRoute();
-    camelCtx.addRoutes(route);
+    //camelCtx.addRoutes(route);
 
     // Start Camel context
     camelCtx.start();
-
     log.info(">> Camel context started and routes started");
   }
 
   @PreDestroy
   public void stop() throws Exception {
     camelCtx.stop();
+    log.info(">> Camel context stopped");
   }
 
   public CamelContext getCamelContext() {

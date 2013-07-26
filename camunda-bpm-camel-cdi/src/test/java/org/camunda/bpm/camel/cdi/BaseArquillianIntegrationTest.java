@@ -1,6 +1,5 @@
 package org.camunda.bpm.camel.cdi;
 
-import org.apache.camel.cdi.CdiCamelContext;
 import org.camunda.bpm.camel.common.CamelService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -31,12 +30,6 @@ public abstract class BaseArquillianIntegrationTest {
   @Inject
   CamelService camelService;
 
-  @Inject
-  CamelContextBootstrap camelContextBootstrap;
-
-  @Inject
-  CdiCamelContext camelContext;
-
   protected static WebArchive prepareTestDeployment(String deploymentArchiveName,
                                                     String processDefinition,
                                                     Class camelRouteClass) {
@@ -54,11 +47,11 @@ public abstract class BaseArquillianIntegrationTest {
       //.addAsLibraries(resolver.artifact("org.camunda.bpm.incubation:camunda-bpm-camel-cdi").resolveAsFiles())
       .addClass(CamelServiceImpl.class)
       .addClass(BaseArquillianIntegrationTest.class)
-      .addClass(CamelContextBootstrap.class)
+      //.addClass(CamelContextBootstrap.class)
 
       .addClass(StartUpBean.class)
 
-      .addClass(camelRouteClass)
+      //.addClass(camelRouteClass)
       .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
       .addAsWebResource("META-INF/processes.xml", "WEB-INF/classes/META-INF/processes.xml")
       .addAsResource(processDefinition)
