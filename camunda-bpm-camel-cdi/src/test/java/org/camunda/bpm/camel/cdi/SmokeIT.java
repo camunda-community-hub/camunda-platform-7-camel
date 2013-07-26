@@ -1,15 +1,11 @@
 package org.camunda.bpm.camel.cdi;
 
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import javax.inject.Inject;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
@@ -22,14 +18,6 @@ public class SmokeIT extends BaseArquillianIntegrationTest {
   public static WebArchive createDeployment() {
     return prepareTestDeployment(PROCESS_DEFINITION_KEY + ".war", "process/SmokeTest.bpmn20.xml");
   }
-
-  @Inject
-  @SuppressWarnings("cdi-ambiguous-dependency")
-  private RuntimeService runtimeService;
-
-  @Inject
-  @SuppressWarnings("cdi-ambiguous-dependency")
-  private TaskService taskService;
 
   @Test
   public void testDeploymentAndStartInstance() throws InterruptedException {

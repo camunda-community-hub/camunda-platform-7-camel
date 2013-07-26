@@ -46,29 +46,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.14</version>
       </plugin>
-      <!-- Plugin for integration tests. Defaults to in include all "**/*IT.java" -->
-      <!-- See http://maven.apache.org/plugins/maven-failsafe-plugin/examples/inclusion-exclusion.html -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.14.1</version>
-        <executions>
-          <execution>
-            <id>failsafe-integration-tests</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>integration-test</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>failsafe-verify</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
