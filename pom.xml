@@ -47,11 +47,6 @@
         <artifactId>camunda-bpm-camel-spring</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.camunda.bpm.incubation</groupId>
-        <artifactId>camunda-bpm-camel-spring</artifactId>
-        <version>${project.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
