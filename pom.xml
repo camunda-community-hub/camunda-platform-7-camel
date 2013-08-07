@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -12,6 +12,7 @@
   <properties>
     <camunda-bpm.version>7.0.0-alpha8</camunda-bpm.version>
     <camel.version>2.11.1</camel.version>
+    <spring.framework.version>3.1.2.RELEASE</spring.framework.version>
     <fest.assert.version>2.0M10</fest.assert.version>
     <sl4j.version>1.6.1</sl4j.version>
     <junit.version>4.11</junit.version>
@@ -19,8 +20,6 @@
 
     <!-- Avoid the message "[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!" -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <!-- Avoid the message "[WARNING] Using platform encoding (UTF-8 actually) ... also for the failsafe plugin -->
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <modules>
@@ -29,6 +28,32 @@
     <module>camunda-bpm-camel-spring</module>
     <module>camunda-bpm-camel-cdi</module>
   </modules>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.camunda.bpm.incubation</groupId>
+        <artifactId>camunda-bpm-camel-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.camunda.bpm.incubation</groupId>
+        <artifactId>camunda-bpm-camel-common-tests</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.camunda.bpm.incubation</groupId>
+        <artifactId>camunda-bpm-camel-spring</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.camunda.bpm.incubation</groupId>
+        <artifactId>camunda-bpm-camel-spring</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <plugins>
@@ -39,6 +64,7 @@
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
 
