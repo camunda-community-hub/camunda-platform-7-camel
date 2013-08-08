@@ -38,6 +38,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
 public class StartProcessFromRouteTest {
 
   MockEndpoint mockEndpoint;
+  MockEndpoint processVariableEndpoint;
 
   @Autowired(required = true)
   CamelContext camelContext;
@@ -56,6 +57,8 @@ public class StartProcessFromRouteTest {
   public void setUp() {
     mockEndpoint = (MockEndpoint) camelContext.getEndpoint("mock:endpoint");
     mockEndpoint.reset();
+    processVariableEndpoint = (MockEndpoint) camelContext.getEndpoint("mock:processVariable");
+    processVariableEndpoint.reset();
   }
 
   @Test
@@ -69,9 +72,15 @@ public class StartProcessFromRouteTest {
 
     // Verify that a process instance was executed and there are no instances executing now
     assertThat(historyService.createHistoricProcessInstanceQuery().processDefinitionKey("startProcessFromRoute").count()).isEqualTo(1);
-    assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(0);
+    assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("startProcessFromRoute").count()).isEqualTo(0);
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
     assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstanceId);
+
+    // The body of the message comming out from the camunda-bpm:<process definition> endpoint is the process instance
+    assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo(processInstanceId);
+    
+    // We should receive the value of 'var1' as the body of the message
+    assertThat(processVariableEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo("valueOfVar1");
   }
 }
