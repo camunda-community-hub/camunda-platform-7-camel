@@ -1,6 +1,7 @@
 package org.camunda.bpm.camel.cdi;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.cdi.Mock;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -27,15 +28,25 @@ public class SendToCamelIT extends BaseArquillianIntegrationTest {
 
   @Deployment
   public static WebArchive createDeployment() {
-    return prepareTestDeployment(PROCESS_DEFINITION_KEY, "process/SendToCamel.bpmn20.xml", SendToCamelRoute.class);
+    return prepareTestDeployment(PROCESS_DEFINITION_KEY, "process/SendToCamel.bpmn20.xml");
   }
 
-  MockEndpoint mockEndpoint;
+  @Inject
+  @Mock
+  MockEndpoint resultEndpoint;
 
-  @Before
-  public void setUp() {
-//    mockEndpoint = (MockEndpoint) camelContext.getEndpoint("mock:endpoint");
-    mockEndpoint.reset();
+  @Produces
+  @ApplicationScoped
+  public RouteBuilder createRoute() {
+    return new RouteBuilder() {
+      public void configure() {
+        from("direct:sendToCamelServiceTask")
+          .routeId("send-to-camel-route")
+          .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
+          .to(resultEndpoint)
+        ;
+      }
+    };
   }
 
   @Test
@@ -47,19 +58,14 @@ public class SendToCamelIT extends BaseArquillianIntegrationTest {
 
     // Verify that a process instance was executed and there are no instances executing now
     assertThat(historyService.createHistoricProcessInstanceQuery().processDefinitionKey("sendToCamelProcess").count()).isEqualTo(1);
-    assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(0);
+    assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("sendToCamelProcess").count()).isEqualTo(0);
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstance.getId());
+    assertThat(resultEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstance.getId());
+
+    // Assert that the body of the message received by the endpoint contains the value of the process variable 'var1' sent from camunda BPM
+    assertThat(resultEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo((String) processVariables.get("var1"));
 
     // FIXME: check that var2 is also present as a property!
-
-//    runtimeService.startProcessInstanceByKey(PROCESS_DEFINITION_KEY);
-//    Task task = taskService.createTaskQuery().processDefinitionKey(PROCESS_DEFINITION_KEY).singleResult();
-//    assertThat(task).isNotNull();
-//    assertThat("My Task").isEqualTo(task.getName());
-//
-//    taskService.complete(task.getId());
-//    assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey(PROCESS_DEFINITION_KEY).count()).isEqualTo(0);
   }
 }

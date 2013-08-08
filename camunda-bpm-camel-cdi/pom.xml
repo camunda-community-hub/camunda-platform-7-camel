@@ -29,11 +29,6 @@
       <artifactId>camunda-engine-cdi</artifactId>
       <version>${camunda-bpm.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.camunda.bpm.javaee</groupId>
-      <artifactId>camunda-ejb-client</artifactId>
-      <version>${camunda-bpm.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
