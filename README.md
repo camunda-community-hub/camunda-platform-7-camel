@@ -39,7 +39,7 @@ Choose a dependency depending on your target environment:
 ```xml
 <dependency>
     <groupId>org.camunda.bpm.incubation</groupId>
-    <artifactId>camunda-bpm-camel-spring</artifactId>
+    <artifactId>camunda-bpm-camel-cdi</artifactId>
     <version>0.1-SNAPSHOT</version>
 </dependency>
 ```
@@ -110,14 +110,14 @@ Brutal honest (and constructive) feedback, pull requests, ... you name it... are
 
 ## TODOs
 
-- [x] initial CDI support
-- [ ] Exception handling, i.e. Apache Camel exceptions to BPMNErrors mapping
-- [ ] Implement asynchronous support  
-- [ ] Start process by process definition key passed in message property.
-- [ ] Copy all other process variables as message properties when sending to a Camel endpoint
-- [ ] Better data mapping (process variables <-> Camel) configuration
-- [ ] Refactor Camel to camunda BPM signalling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
-- [ ] Deploy process definition from Camel message
+- initial CDI support
+- Exception handling, i.e. Apache Camel exceptions to BPMNErrors mapping
+- Implement asynchronous support  
+- Start process by process definition key passed in message property.
+- Copy all other process variables as message properties when sending to a Camel endpoint
+- Better data mapping (process variables <-> Camel) configuration
+- Refactor Camel to camunda BPM signalling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
+- Deploy process definition from Camel message
 
 ## Project Structure
 
