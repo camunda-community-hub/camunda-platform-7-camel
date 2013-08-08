@@ -118,6 +118,7 @@ Brutal honest (and constructive) feedback, pull requests, ... you name it... are
 - Better data mapping (process variables <-> Camel) configuration
 - Refactor Camel to camunda BPM signalling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
 - Deploy process definition from Camel message
+- Create JBoss Distribution with Camel (including Bootstrapping) as a JBoss Module and Routes to be defined within Process Applications [CIS-19](https://app.camunda.com/jira/browse/CIS-19)
 
 ## Project Structure
 
