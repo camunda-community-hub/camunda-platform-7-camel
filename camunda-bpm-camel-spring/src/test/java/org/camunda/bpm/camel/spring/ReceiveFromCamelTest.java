@@ -65,7 +65,6 @@ public class ReceiveFromCamelTest {
   @Test
   @Deployment(resources = {"process/ReceiveFromCamel.bpmn20.xml"})
   public void doTest() throws Exception {
-
     Map<String, Object> processVariables = new HashMap<String, Object>();
     processVariables.put("var1", "foo");
     processVariables.put("var2", "bar");
@@ -73,7 +72,7 @@ public class ReceiveFromCamelTest {
 
     // Verify that a process instance has executed and there is one instance executing now
     assertThat(historyService.createHistoricProcessInstanceQuery().processDefinitionKey("receiveFromCamelProcess").count()).isEqualTo(1);
-    assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(1);
+    assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("receiveFromCamelProcess").count()).isEqualTo(1);
 
     /*
      * We need the process instance ID to be able to send the message to it
@@ -88,6 +87,6 @@ public class ReceiveFromCamelTest {
     assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstance.getId());
 
     // Assert that the process instance is finished
-    assertThat(runtimeService.createProcessInstanceQuery().count()).isEqualTo(0);
+    assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("receiveFromCamelProcess").count()).isEqualTo(0);
   }
 }

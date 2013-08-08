@@ -5,14 +5,19 @@
       <outgoing>SequenceFlow_2</outgoing>
     </startEvent>
     <sequenceFlow id="SequenceFlow_2" name="" sourceRef="start" targetRef="logProcessVariableServiceTask"/>
-    <endEvent id="end">
-      <incoming>SequenceFlow_1</incoming>
-    </endEvent>
     <serviceTask id="logProcessVariableServiceTask" activiti:expression="${log.debug(var1)}" name="Log process variable&#xA;variable">
       <incoming>SequenceFlow_2</incoming>
-      <outgoing>SequenceFlow_1</outgoing>
+      <outgoing>SequenceFlow_4</outgoing>
     </serviceTask>
-    <sequenceFlow id="SequenceFlow_1" name="" sourceRef="logProcessVariableServiceTask" targetRef="end"/>
+    <endEvent id="end">
+      <incoming>SequenceFlow_3</incoming>
+    </endEvent>
+    <serviceTask id="ServiceTask_1" activiti:expression="${camel.sendTo(execution, 'direct:processVariable', 'var1')}" name="Send process variable to Camel">
+      <incoming>SequenceFlow_4</incoming>
+      <outgoing>SequenceFlow_3</outgoing>
+    </serviceTask>
+    <sequenceFlow id="SequenceFlow_3" name="" sourceRef="ServiceTask_1" targetRef="end"/>
+    <sequenceFlow id="SequenceFlow_4" name="" sourceRef="logProcessVariableServiceTask" targetRef="ServiceTask_1"/>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_camelProcess">
     <bpmndi:BPMNPlane id="BPMNPlane_camelProcess" bpmnElement="startProcessFromRoute">
@@ -23,9 +28,9 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_end" bpmnElement="end">
-        <omgdc:Bounds height="35.0" width="35.0" x="396.0" y="145.0"/>
+        <omgdc:Bounds height="35.0" width="35.0" x="612.0" y="144.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="0.0" width="0.0" x="413.0" y="185.0"/>
+          <omgdc:Bounds height="0.0" width="0.0" x="629.0" y="184.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_2" bpmnElement="logProcessVariableServiceTask">
@@ -38,14 +43,20 @@
           <omgdc:Bounds height="6.0" width="6.0" x="177.0" y="159.0"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_1" bpmnElement="SequenceFlow_1" sourceElement="_BPMNShape_ServiceTask_2" targetElement="BPMNShape_end">
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_3" bpmnElement="ServiceTask_1">
+        <omgdc:Bounds height="60.0" width="100.0" x="408.0" y="132.0"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_3" bpmnElement="SequenceFlow_3" sourceElement="_BPMNShape_ServiceTask_3" targetElement="BPMNShape_end">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="508.0" y="162.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="560.0" y="162.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="560.0" y="161.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="612.0" y="161.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_4" bpmnElement="SequenceFlow_4" sourceElement="_BPMNShape_ServiceTask_2" targetElement="_BPMNShape_ServiceTask_3">
         <omgdi:waypoint xsi:type="omgdc:Point" x="328.0" y="160.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="362.0" y="160.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="362.0" y="162.0"/>
-        <omgdi:waypoint xsi:type="omgdc:Point" x="396.0" y="162.0"/>
-        <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="6.0" width="6.0" x="359.0" y="160.0"/>
-        </bpmndi:BPMNLabel>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="368.0" y="160.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="368.0" y="162.0"/>
+        <omgdi:waypoint xsi:type="omgdc:Point" x="408.0" y="162.0"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
