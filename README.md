@@ -1,45 +1,55 @@
 ![camunda BPM + Apache Camel][1]
 
-This project aims at bringing to great BPM and EIP Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.camunda.org). We believe that this way we can bring the development of Process-driven process applications to a whole new level of awesome.
+This project aims at bringing two great BPM and EIP Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.camunda.org) in order to bring the development of Process-driven  applications to a whole new level.
 
-# Approach
+This project started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and we have taken a back-to-basics approach in the migration of the code to camunda BPM. Instead of migrating all the exisiting Activiti features as-is, we have decided to start with the bare minimum that adds value and iterate/refactor from that.
 
-This project started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and we have taken a back-to-basics approach in the migration of the code to camunda BPM. What this basically means (among other things) is that, at the moment, instead of providing a CamelBehavior to communicate with Camel, a light-weight CamelService is provided that can be used in ServiceTask expresssions to send data to Camel (see below for examples).
+# Great! How do I use it in my project?!
 
-# Project Structure
+## Add the library to your `pom.xml'
 
-Since one of the (many unique) strong points of camunda BPM is that it supports (well) both the Spring and CDI environments, this projects is split into several submodules to catter for each of them:
+Declare the camunda BPM repository in your project's `pom.xml` and make sure you also add the `<updatePolicy>` element so Maven always downloads the latest SNAPSHOT: 
 
-* **camunda-bpm-camel-common**: common code shared between both Spring and CDI modules
-* **camunda-bpm-camel-common-tests**: common test resources (mainly BPMN process definition files)
-* **camunda-bpm-camel-spring**: Spring Framework support
-* **camunda-bpm-camel-cdi**: JavaEE/CDI support
+```xml
+<repositories>
+	<repository>
+		<id>camunda-bpm-nexus</id>
+		<name>camunda-bpm-nexus</name>
+		<url>https://app.camunda.com/nexus/content/groups/public</url>
+		<snapshots>
+			<updatePolicy>always</updatePolicy>
+		</snapshots>
+	</repository>
+</repositories>
+...
+```
 
-# What works?
+Choose a dependency depending on your target environment:
 
-The **Spring module** already supports the following use cases:
+### Spring
+```xml
+<dependency>
+    <groupId>org.camunda.bpm.incubation</groupId>
+    <artifactId>camunda-bpm-camel-spring</artifactId>
+    <version>0.1-SNAPSHOT</version>
+</dependency>
+```
 
-## Start a process instance from a Camel route
+### CDI
+```xml
+<dependency>
+    <groupId>org.camunda.bpm.incubation</groupId>
+    <artifactId>camunda-bpm-camel-cdi</artifactId>
+    <version>0.1-SNAPSHOT</version>
+</dependency>
+```
 
-Send a message to the Camel endpoint `camunda-bpm:<process definition>`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processesors in the Camel route. 
+## Container Configuration
 
-Check the test [StartProcessFromRouteTest](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java) and it's Spring configuration in [start-process-from-route-config.xml](hhttps://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/resources/start-process-from-route-config.xml).
-
-## Send data to a Camel endpoint
-
-Create a ServiceTask with the following expression `${camel.sendTo(execution, <camel endpoint URI>, '<process variable for body of message>')}`. The property `CamundaBpmProcessInstanceId` will be available to any downstream processesors in the route.
-
-Check the test [SendToCamelTest](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring/SendToCamelTest.java) and it's Spring configuration in [send-to-camel-config.xml](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/test/resources/send-to-camel-config.xml).
-
-## Signal a process instance waiting at a receive task
-
-Create a ReceiveTask in your BPMN model and send a message in Camel to the following endpoint `camunda-bpm:<process definition id>:<receive task id>`. Note that the property `CamundaBpmProcessInstanceId` needs to be present in the message in order to be able to correlate the signal to the appropriate `ReceiveTask`.
-
-Check the test [ReceiveFromCamelTest](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring/ReceiveFromCamelTest.java) and it's Spring configuration in [receive-from-camel-config.xml](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/resources/receive-from-camel-config.xml).
-
-# Spring Configuration
+## Spring Framework
 
 In your Spring configuration you need to configure the `CamelService` like this:
+
 ```xml
 ...
   <bean id="camel" class="org.camunda.bpm.camel.spring.impl.CamelServiceImpl">
@@ -48,32 +58,82 @@ In your Spring configuration you need to configure the `CamelService` like this:
   </bean>
 ...
 ```
+
 The Spring bean id `camel` will be then available to expressions used in ServiceTasks to send data to Camel.
 
-# What doesn't work?
+## CDI
 
-The CDI module is at the moment a **hazardous working area** and should only be entered with the appropriate protection! Follow up on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev) for more on the further development of this module.
+The CDI configuration needs a bit more work. Make sure you read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html). Then have a look at the CDI integration tests:
+
+* [ArquillianTestsProcessApplication](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/ArquillianTestsProcessApplication.java): this class is [bootstrapped by the camunda BPM platform](http://docs.camunda.org/guides/user-guide/#the-ejb-process-application) and we use it to have a guaranteed way of bootstrapping the Camel CDI context and the Camel routes. We need this because the [@Startup annotation is (unfortunately) lazily initializied](http://rmannibucau.wordpress.com/2012/12/11/ensure-some-applicationscoped-beans-are-eagerly-initialized-with-javaee/). If you know a better way to do this, just [shout](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev)!
+* [CamelContextBootstrap](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/CamelContextBootstrap.java): gets the  CdiCamelContext injected, registers the camunda BPM Camel component, registers the routes and starts the Camel context.
+* [BaseArquillianIntegrationTest](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/BaseArquillianIntegrationTest.java): base class that all Arquillian tests use. Have a look at this class for the maven dependencies you will need for your app.
+
+# Usage Patterns
+
+The following usage patterns are already supported in both Spring and CDI environments and we provide a (working) test for each. Please note that you will need a [camunda BPM JBoss AS distribution](http://camunda.org/download/) up and running to be able to execute the Arquillian CDI tests. Once you have that, use `mvn verify` to execute them.
+
+## Start a process instance from a Camel route
+
+Send a message to the Camel endpoint `camunda-bpm:<process definition>`. The property `CamundaBpmProcessInstanceId` will be available to the downstream processors in the Camel route. 
+
+Environment | Test
+--- | --- 
+Spring | [StartProcessFromRouteTest](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java) 
+CDI | [StartProcessFromRouteIT](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/StartProcessFromRouteIT.java)
+
+
+## Send data to a Camel endpoint
+
+Create a ServiceTask with the following expression `${camel.sendTo(execution, <camel endpoint URI>, '<process variable for body of message>')}`. The property `CamundaBpmProcessInstanceId` will be available to any downstream processesors in the route.
+
+Environment | Test
+--- | --- 
+Spring | [SendToCamelTest](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring/SendToCamelTest.java)
+CDI | [SendToCamelIT](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/SendToCamelIT.java)
+
+
+## Signal a process instance waiting at a receive task
+
+Create a ReceiveTask in your BPMN model and send a message in Camel to the following endpoint `camunda-bpm:<process definition id>:<receive task id>`. Note that the property `CamundaBpmProcessInstanceId` needs to be present in the message in order to be able to correlate the signal to the appropriate `ReceiveTask`.
+
+Environment | Test
+--- | --- 
+Spring | [ReceiveFromCamelTest](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring/ReceiveFromCamelTest.java)
+CDI | [ReceiveFromCamelIT](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/ReceiveFromCamelIT.java)
+
+# Development
+
+This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation) and still needs some work to bring it up to version 1.0.
+
+Brutal honest (and constructive) feedback, pull requests, ... you name it... are very welcome! Meet us on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev) list.
+
+## TODOs
+
+- initial CDI support
+- Exception handling, i.e. Apache Camel exceptions to BPMNErrors mapping
+- Implement asynchronous support  
+- Start process by process definition key passed in message property.
+- Copy all other process variables as message properties when sending to a Camel endpoint
+- Better data mapping (process variables <-> Camel) configuration
+- Refactor Camel to camunda BPM signalling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
+- Deploy process definition from Camel message
+
+## Project Structure
+
+Since one of the (many unique) strong points of camunda BPM is that it supports (well) both the Spring and CDI environments, this projects is split into several submodules to catter for each of them:
+
+* **camunda-bpm-camel-common**: common code shared between both Spring and CDI modules
+* **camunda-bpm-camel-common-tests**: common test resources (mainly BPMN process definition files)
+* **camunda-bpm-camel-spring**: Spring Framework support
+* **camunda-bpm-camel-cdi**: JavaEE/CDI support
 
 # Credits
 
 This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and the following people have contributed to its further develoment in the context of camunda BPM:
+
 * [Rafael Cordones](http://rafael.cordones.me/)
 * [Bernd Rücker](http://camunda.org/community/team.html)
-
-# TODOs
-
-* Start process by process definition key passed in message property.
-* Copy all the other process variables as message properties
-* What happens when we have more than one receive task active for a given process instance, i.e. several waiting process executions?
-* Support for CDI
-* Exception handling
-* Better Apache Camel exceptions to BPMNErrors mapping
-* Better data mapping (process variables <-> Camel) configuration
-* Deploy process definition from Camel message
-
-# Feedback
-
-Suggestions, pull requests, ... you name it... are very welcome! Meet us on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev) list.
 
 # License
 
