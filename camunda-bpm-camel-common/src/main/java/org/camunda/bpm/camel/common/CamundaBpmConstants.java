@@ -8,5 +8,5 @@ public final class CamundaBpmConstants {
   public static final String CAMUNDA_BPM_PROCESS_DEFINITION_KEY = "CamundaBpmProcessDefinitionKey";
   public static final String CAMUNDA_BPM_PROCESS_INSTANCE_ID = "CamundaBpmProcessInstanceId";
 
-  public CamundaBpmConstants() {}
+  private CamundaBpmConstants() {}
 }
