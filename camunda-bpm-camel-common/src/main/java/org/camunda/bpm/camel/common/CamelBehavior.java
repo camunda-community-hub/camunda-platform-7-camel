@@ -23,11 +23,11 @@ import org.camunda.bpm.engine.impl.bpmn.behavior.BpmnActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.PvmProcessDefinition;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityBehavior;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
-//import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultExchange;
+import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
 /**
 * This abstract class takes the place of the now-deprecated CamelBehaviour class (which can still be used for legacy compatibility)
@@ -53,23 +53,18 @@ import org.apache.camel.impl.DefaultExchange;
 * @author Ryan Johnston (@rjfsu), Tijs Rademakers
 * @version 5.12
 */
-public abstract class CamelBehavior extends BpmnActivityBehavior implements ActivityBehavior {
+public class CamelBehavior extends BpmnActivityBehavior implements ActivityBehavior {
 
   private static final long serialVersionUID = 1L;
   protected Expression camelContext;
   protected CamelContext camelContextObj;
   //protected SpringProcessEngineConfiguration springConfiguration;
-  
-  protected abstract void modifyActivitiComponent(CamundaBpmComponent component);
-  
-  protected abstract void copyVariables(Map<String, Object> variables, Exchange exchange, CamundaBpmEndpoint endpoint);
 
   public void execute(ActivityExecution execution) throws Exception {
     setAppropriateCamelContext(execution);
     //Retrieve the CamundaBpmComponent object.
     CamundaBpmComponent component = camelContextObj.getComponent("activiti", CamundaBpmComponent.class);
-    modifyActivitiComponent(component);
-    
+
     CamundaBpmEndpoint endpoint = createEndpoint(execution);
     Exchange exchange = createExchange(execution, endpoint);
     endpoint.process(exchange);
@@ -94,7 +89,7 @@ public abstract class CamelBehavior extends BpmnActivityBehavior implements Acti
 
   protected Exchange createExchange(ActivityExecution activityExecution, CamundaBpmEndpoint endpoint) {
     Exchange ex = new DefaultExchange(camelContextObj);
-    ex.setProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY, activityExecution.getProcessInstanceId());
+    ex.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, activityExecution.getProcessInstanceId());
     Map<String, Object> variables = activityExecution.getVariables();
     copyVariables(variables, ex, endpoint);
     return ex;
@@ -187,5 +182,9 @@ public abstract class CamelBehavior extends BpmnActivityBehavior implements Acti
 
   public void setCamelContext(Expression camelContext) {
     this.camelContext = camelContext;
+  }
+
+  protected void copyVariables(Map<String, Object> variables, Exchange exchange, CamundaBpmEndpoint endpoint) {
+    copyVariablesToBodyAsMap(variables, exchange);
   }
 }

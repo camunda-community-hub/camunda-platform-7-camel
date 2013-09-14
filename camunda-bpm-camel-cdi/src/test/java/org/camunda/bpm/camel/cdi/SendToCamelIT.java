@@ -3,12 +3,10 @@ package org.camunda.bpm.camel.cdi;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.Mock;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -20,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
 @RunWith(Arquillian.class)
 public class SendToCamelIT extends BaseArquillianIntegrationTest {
@@ -61,7 +60,7 @@ public class SendToCamelIT extends BaseArquillianIntegrationTest {
     assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("sendToCamelProcess").count()).isEqualTo(0);
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(resultEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstance.getId());
+    assertThat(resultEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
 
     // Assert that the body of the message received by the endpoint contains the value of the process variable 'var1' sent from camunda BPM
     assertThat(resultEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo((String) processVariables.get("var1"));

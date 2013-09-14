@@ -8,6 +8,7 @@ import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
 public abstract class CamelServiceCommonImpl implements CamelService {
 
@@ -29,7 +30,7 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     Object messageBody = execution.getVariable(processVariableForMessageBody);
 
     Object routeResult = producerTemplate.sendBodyAndProperty(uri, ExchangePattern.InOut, messageBody,
-      CamundaBpmProducer.PROCESS_ID_PROPERTY, execution.getProcessInstanceId());
+      CAMUNDA_BPM_PROCESS_INSTANCE_ID, execution.getProcessInstanceId());
 
     return routeResult;
   }

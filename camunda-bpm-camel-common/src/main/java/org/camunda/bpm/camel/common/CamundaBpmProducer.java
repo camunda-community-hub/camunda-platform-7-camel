@@ -17,14 +17,11 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
+import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
 public class CamundaBpmProducer extends DefaultProducer {
 
   private RuntimeService runtimeService;
-
-  public static final String PROCESS_KEY_PROPERTY = "CamundaBpmProcessDefinitionKey";
-
-  public static final String PROCESS_ID_PROPERTY = "CamundaBpmProcessInstanceId";
 
   private String processKey = null;
 
@@ -43,7 +40,7 @@ public class CamundaBpmProducer extends DefaultProducer {
   public void process(Exchange exchange) throws Exception {
     if (shouldStartProcess()) {
       ProcessInstance pi = startProcess(exchange);
-      exchange.setProperty(PROCESS_ID_PROPERTY, pi.getProcessInstanceId());
+      exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, pi.getProcessInstanceId());
       exchange.getOut().setBody(pi.getId());
     } else {
       signal(exchange);
@@ -70,11 +67,11 @@ public class CamundaBpmProducer extends DefaultProducer {
   }
 
   private String findProcessInstanceId(Exchange exchange) {
-    String processInstanceId = exchange.getProperty(PROCESS_ID_PROPERTY, String.class);
+    String processInstanceId = exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, String.class);
     if (processInstanceId != null) {
       return processInstanceId;
     }
-    String processInstanceKey = exchange.getProperty(PROCESS_KEY_PROPERTY, String.class);
+    String processInstanceKey = exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, String.class);
     ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
         .processInstanceBusinessKey(processInstanceKey).singleResult();
 
@@ -85,7 +82,7 @@ public class CamundaBpmProducer extends DefaultProducer {
   }
 
   private ProcessInstance startProcess(Exchange exchange) {
-    String key = exchange.getProperty(PROCESS_KEY_PROPERTY, String.class);
+    String key = exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, String.class);
     if (key == null) {
       return runtimeService.startProcessInstanceByKey(processKey, ExchangeUtils.prepareVariables(exchange, getActivitiEndpoint()));
     } else {

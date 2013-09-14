@@ -16,7 +16,6 @@ package org.camunda.bpm.camel.spring;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.test.Deployment;
@@ -32,6 +31,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.Collections;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:start-process-from-route-config.xml")
@@ -75,7 +75,7 @@ public class StartProcessFromRouteTest {
     assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("startProcessFromRoute").count()).isEqualTo(0);
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstanceId);
+    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstanceId);
 
     // The body of the message comming out from the camunda-bpm:<process definition> endpoint is the process instance
     assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo(processInstanceId);
