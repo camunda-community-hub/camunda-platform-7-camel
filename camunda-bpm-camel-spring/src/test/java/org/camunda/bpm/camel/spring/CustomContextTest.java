@@ -13,7 +13,6 @@
 
 package org.camunda.bpm.camel.spring;
 
-import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineTestCase;
 import org.apache.camel.CamelContext;

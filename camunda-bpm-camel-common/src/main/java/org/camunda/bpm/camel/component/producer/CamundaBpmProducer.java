@@ -10,8 +10,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.camunda.bpm.camel.common;
+package org.camunda.bpm.camel.component.producer;
 
+import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
+import org.camunda.bpm.camel.common.ExchangeUtils;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -38,17 +40,7 @@ public class CamundaBpmProducer extends DefaultProducer {
   }
 
   public void process(Exchange exchange) throws Exception {
-    if (shouldStartProcess()) {
-      ProcessInstance pi = startProcess(exchange);
-      exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, pi.getProcessInstanceId());
-      exchange.getOut().setBody(pi.getId());
-    } else {
-      signal(exchange);
-    }
-  }
-
-  private boolean shouldStartProcess() {
-    return activity == null;
+    signal(exchange);
   }
 
   private void signal(Exchange exchange) {
@@ -66,7 +58,7 @@ public class CamundaBpmProducer extends DefaultProducer {
 
   }
 
-  private String findProcessInstanceId(Exchange exchange) {
+  protected String findProcessInstanceId(Exchange exchange) {
     String processInstanceId = exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, String.class);
     if (processInstanceId != null) {
       return processInstanceId;
@@ -79,16 +71,6 @@ public class CamundaBpmProducer extends DefaultProducer {
       throw new RuntimeException("Could not find activiti with key " + processInstanceKey);
     }
     return processInstance.getId();
-  }
-
-  private ProcessInstance startProcess(Exchange exchange) {
-    String key = exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, String.class);
-    if (key == null) {
-      return runtimeService.startProcessInstanceByKey(processKey, ExchangeUtils.prepareVariables(exchange, getActivitiEndpoint()));
-    } else {
-      return runtimeService.startProcessInstanceByKey(processKey, key, ExchangeUtils.prepareVariables(exchange, getActivitiEndpoint()));
-    }
-
   }
 
   protected CamundaBpmEndpoint getActivitiEndpoint() {

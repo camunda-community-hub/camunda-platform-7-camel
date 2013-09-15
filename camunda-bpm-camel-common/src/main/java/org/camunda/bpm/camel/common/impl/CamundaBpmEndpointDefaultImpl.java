@@ -13,13 +13,17 @@
 
 package org.camunda.bpm.camel.common.impl;
 
+import org.camunda.bpm.camel.common.CamundaBpmComponent;
 import org.camunda.bpm.camel.common.CamundaBpmConsumer;
 import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
-import org.camunda.bpm.camel.common.CamundaBpmProducer;
+import org.camunda.bpm.camel.common.CamundaBpmFactory;
+import org.camunda.bpm.camel.component.producer.CamundaBpmProducer;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.apache.camel.*;
 import org.apache.camel.impl.DefaultEndpoint;
+
+import java.util.Map;
 
 /**
  * This class has been modified to be consistent with the changes to CamelBehavior and its implementations. The set of changes
@@ -31,22 +35,20 @@ import org.apache.camel.impl.DefaultEndpoint;
  */
 public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements CamundaBpmEndpoint {
 
-  private ProcessEngine processEngine;
-
-  private RuntimeService runtimeService;
-
+  private CamundaBpmComponent component;
   private CamundaBpmConsumer camundaBpmConsumer;
+  private Map<String, Object> parameters;
 
-  public CamundaBpmEndpointDefaultImpl(String uri, CamelContext camelContext, ProcessEngine processEngine) {
+  public CamundaBpmEndpointDefaultImpl(String uri, CamundaBpmComponent component, Map<String, Object> parameters) {
     super();
-    setCamelContext(camelContext);
+    setCamelContext(component.getCamelContext());
     setEndpointUri(uri);
-    this.processEngine = processEngine;
-    this.runtimeService = processEngine.getRuntimeService();
+    this.component = component;
+    this.parameters = parameters;
   }
 
   public ProcessEngine getProcessEngine() {
-    return this.processEngine;
+    return this.component.getProcessEngine();
   }
 
   public void addConsumer(CamundaBpmConsumer consumer) {
@@ -64,7 +66,7 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
   }
 
   public Producer createProducer() throws Exception {
-    return new CamundaBpmProducer(this, runtimeService);
+    return CamundaBpmFactory.createProducer(this, getEndpointUri(), this.parameters);
   }
 
   public Consumer createConsumer(Processor processor) throws Exception {

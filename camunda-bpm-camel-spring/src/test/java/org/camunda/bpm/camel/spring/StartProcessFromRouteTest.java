@@ -28,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.Collections;
-
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
@@ -66,7 +64,7 @@ public class StartProcessFromRouteTest {
   public void doTest() throws Exception {
     ProducerTemplate tpl = camelContext.createProducerTemplate();
 
-    String processInstanceId = (String) tpl.requestBody("direct:start", Collections.singletonMap("var1", "valueOfVar1"));
+    String processInstanceId = (String) tpl.requestBody("direct:start", "valueOfVar1");
     assertThat(processInstanceId).isNotNull();
     System.out.println("Process instance ID: " + processInstanceId);
 

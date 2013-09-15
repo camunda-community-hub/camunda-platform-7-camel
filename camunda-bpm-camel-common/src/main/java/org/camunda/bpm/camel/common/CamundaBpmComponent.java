@@ -25,23 +25,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * camunda BPM Apache Camel component
  * 
- * @author Ryan Johnston (@rjfsu),
+ * @author Ryan Johnston (@rjfsu)
  * @author Tijs Rademakers (@tijsrademakers)
  * @author Rafael Cordones (@rafacm)
  */
 public class CamundaBpmComponent extends DefaultComponent {
 
-  final Logger log = LoggerFactory.getLogger(this.getClass());
-
+  final Logger log = LoggerFactory.getLogger(CamundaBpmComponent.class);
 
   @Autowired(required = true)
   protected ProcessEngine processEngine;
 
+  public CamundaBpmComponent(ProcessEngine processEngine) {
+    super();
+    this.processEngine = processEngine;
+  }
+
   @Override
   protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-    log.debug("Creating endpoint: {}", uri);
-    CamundaBpmEndpoint endpoint = new CamundaBpmEndpointDefaultImpl(uri, getCamelContext(), processEngine);
-    return endpoint;
+    return new CamundaBpmEndpointDefaultImpl(uri, this, parameters);
+  }
+
+  public ProcessEngine getProcessEngine() {
+    return this.processEngine;
   }
 
   public void setProcessEngine(ProcessEngine processEngine) {

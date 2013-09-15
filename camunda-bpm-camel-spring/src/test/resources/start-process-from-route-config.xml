@@ -12,7 +12,7 @@
     <route id="startRoute">
       <from uri="direct:start"/>
       <to uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true"/>
-      <to uri="camunda-bpm:startProcessFromRoute"/>
+      <to uri="camunda-bpm://start?processDefinitionKey=startProcessFromRoute&amp;copyBodyAsVariable=var1"/>
       <to uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true"/>
       <to uri="mock:endpoint"/>
     </route>
