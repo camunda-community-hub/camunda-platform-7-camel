@@ -6,7 +6,7 @@
   <name>camunda BPM - Apache Camel Integration</name>
   <groupId>org.camunda.bpm.incubation</groupId>
   <artifactId>camunda-bpm-camel</artifactId>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>

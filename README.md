@@ -78,7 +78,7 @@ Choose a dependency depending on your target environment:
 <dependency>
     <groupId>org.camunda.bpm.incubation</groupId>
     <artifactId>camunda-bpm-camel-spring</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
 </dependency>
 ```
 In your Spring configuration you need to configure the `CamelService` like this:
@@ -97,7 +97,7 @@ The Spring bean id `camel` will be then available to expressions used in Service
 <dependency>
     <groupId>org.camunda.bpm.incubation</groupId>
     <artifactId>camunda-bpm-camel-cdi</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
 </dependency>
 ```
 
