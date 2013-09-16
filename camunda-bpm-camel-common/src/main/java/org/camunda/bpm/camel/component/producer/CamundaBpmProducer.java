@@ -14,66 +14,22 @@ package org.camunda.bpm.camel.component.producer;
 
 import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
 import org.camunda.bpm.camel.common.ExchangeUtils;
+import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.runtime.Execution;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
-public class CamundaBpmProducer extends DefaultProducer {
+import java.util.Map;
 
-  private RuntimeService runtimeService;
+public abstract class CamundaBpmProducer extends DefaultProducer {
 
-  private String processKey = null;
+  protected ProcessEngine processEngine;
+  protected RuntimeService runtimeService;
+  protected Map<String, Object> parameters;
 
-  private String activity = null;
-
-  public CamundaBpmProducer(CamundaBpmEndpoint endpoint, RuntimeService runtimeService) {
+  public CamundaBpmProducer(CamundaBpmEndpoint endpoint, Map<String, Object> parameters) {
     super(endpoint);
-    this.runtimeService = runtimeService;
-    String[] path = endpoint.getEndpointKey().split(":");
-    processKey = path[1].replace("//", "");
-    if (path.length > 2) {
-      activity = path[2];
-    }
-  }
-
-  public void process(Exchange exchange) throws Exception {
-    signal(exchange);
-  }
-
-  private void signal(Exchange exchange) {
-    String processInstanceId = findProcessInstanceId(exchange);
-    Execution execution = runtimeService.createExecutionQuery()
-        .processDefinitionKey(processKey)
-        .processInstanceId(processInstanceId)
-        .activityId(activity).singleResult();
-
-    if (execution == null) {
-      throw new RuntimeException("Couldn't find activity "+activity+" for processId " + processInstanceId);
-    }
-    runtimeService.setVariables(execution.getId(), ExchangeUtils.prepareVariables(exchange, getActivitiEndpoint()));
-    runtimeService.signal(execution.getId());
-
-  }
-
-  protected String findProcessInstanceId(Exchange exchange) {
-    String processInstanceId = exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, String.class);
-    if (processInstanceId != null) {
-      return processInstanceId;
-    }
-    String processInstanceKey = exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, String.class);
-    ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-        .processInstanceBusinessKey(processInstanceKey).singleResult();
-
-    if (processInstance == null) {
-      throw new RuntimeException("Could not find activiti with key " + processInstanceKey);
-    }
-    return processInstance.getId();
-  }
-
-  protected CamundaBpmEndpoint getActivitiEndpoint() {
-    return (CamundaBpmEndpoint) getEndpoint();
+    this.processEngine = endpoint.getProcessEngine();
+    this.runtimeService = processEngine.getRuntimeService();
+    this.parameters = parameters;
   }
 }

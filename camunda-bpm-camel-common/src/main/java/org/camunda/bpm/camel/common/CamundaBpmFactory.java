@@ -1,6 +1,7 @@
 package org.camunda.bpm.camel.common;
 
 import org.camunda.bpm.camel.component.producer.CamundaBpmProducer;
+import org.camunda.bpm.camel.component.producer.SignalProcessProducer;
 import org.camunda.bpm.camel.component.producer.StartProcessProducer;
 import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 import org.slf4j.Logger;
@@ -24,8 +25,10 @@ public final class CamundaBpmFactory {
     if (uriTokens.length > 0) {
       if ("start".equals(uriTokens[0])) {
         return new StartProcessProducer(endpoint, parameters);
+      } else if ("signal".equals(uriTokens[0])) {
+          return new SignalProcessProducer(endpoint, parameters);
       } else {
-        return new CamundaBpmProducer(endpoint, endpoint.getProcessEngine().getRuntimeService());
+          throw new IllegalArgumentException("Cannot create a producer for URI '" + uri);
       }
     } else {
       throw new IllegalArgumentException("Cannot create a producer for URI '" + uri);

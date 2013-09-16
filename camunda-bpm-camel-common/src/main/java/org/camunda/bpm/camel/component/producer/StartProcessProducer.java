@@ -14,14 +14,11 @@ package org.camunda.bpm.camel.component.producer;
 
 import org.apache.camel.Exchange;
 import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
-import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 
 /**
  * Starts a process instance given a process definition key.
@@ -34,21 +31,10 @@ import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
  */
 public class StartProcessProducer extends CamundaBpmProducer {
 
-  public final static String PROCESS_DEFINITION_KEY_PARAMETER = "processDefinitionKey";
-  public final static String COPY_MESSAGE_PROPERTIES_PARAMETER = "copyProperties";
-  public final static String COPY_MESSAGE_HEADERS_PARAMETER = "copyHeaders";
-  public final static String COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER = "copyBodyAsVariable";
-
-  private String processDefinitionKey;
-  private ProcessEngine processEngine;
-  private RuntimeService runtimeService;
-  private Map<String, Object> parameters;
+  private final String processDefinitionKey;
 
   public StartProcessProducer(CamundaBpmEndpoint endpoint, Map<String, Object> parameters) {
-    super(endpoint, endpoint.getProcessEngine().getRuntimeService());
-    this.processEngine = endpoint.getProcessEngine();
-    this.runtimeService = processEngine.getRuntimeService();
-    this.parameters = parameters;
+    super(endpoint, parameters);
 
     if (parameters.containsKey(PROCESS_DEFINITION_KEY_PARAMETER)) {
       this.processDefinitionKey = (String) parameters.get(PROCESS_DEFINITION_KEY_PARAMETER);

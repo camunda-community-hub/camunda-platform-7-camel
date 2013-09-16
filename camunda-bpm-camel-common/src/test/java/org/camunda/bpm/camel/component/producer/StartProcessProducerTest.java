@@ -13,7 +13,7 @@ import static org.camunda.bpm.camel.common.CamundaBpmConstants.CAMUNDA_BPM_PROCE
 import static org.camunda.bpm.camel.common.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
 import static org.camunda.bpm.camel.common.CamundaBpmConstants.camundaBpmUri;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.camunda.bpm.camel.component.producer.StartProcessProducer.*;
+import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
 import static org.mockito.Mockito.*;
 
 public class StartProcessProducerTest extends BaseCamelTest {
@@ -28,8 +28,7 @@ public class StartProcessProducerTest extends BaseCamelTest {
   @Test(expected = IllegalArgumentException.class)
   public void noProcessDefinitionKeyParameterShouldThrowException() throws Exception {
     Endpoint endpoint = camelContext.getEndpoint(camundaBpmUri("start"));
-    Producer producer = endpoint.createProducer();
-    assertThat(producer).isInstanceOf(StartProcessProducer.class);
+    endpoint.createProducer(); // This triggers the exception
   }
 
   @Test

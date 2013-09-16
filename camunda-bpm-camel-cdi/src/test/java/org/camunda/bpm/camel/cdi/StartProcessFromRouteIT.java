@@ -45,7 +45,7 @@ public class StartProcessFromRouteIT extends BaseArquillianIntegrationTest {
         from("direct:start")
           .routeId("start-process-from-route")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
-          .to("camunda-bpm:startProcessFromRoute")
+          .to("camunda-bpm://start?processDefinitionKey=startProcessFromRoute&copyBodyAsVariable=var1")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
           .to(mockEndpoint)
         ;
