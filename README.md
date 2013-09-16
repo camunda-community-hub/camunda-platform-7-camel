@@ -2,9 +2,9 @@
 
 This project focuses on bringing two great BPM and EIP Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.camunda.org) in order to bring the development of process-driven  applications to a whole new level.
 
-Having started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel), we have in the meantime refactored the hell out of it to make it more first more lean in preparation to make it also more mean.
+Having started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel), we have in the meantime refactored the code a bit.
 
-# What can I do with it?!
+# Current features
 ## camunda BPM --> Apache Camel
 For the moment we provide the MVP (minimum viable possibility) to communicate with Camel, i.e. a service. In a ServiceTask you can use the following expression:
 
@@ -81,20 +81,6 @@ Choose a dependency depending on your target environment:
     <version>0.1-SNAPSHOT</version>
 </dependency>
 ```
-
-### CDI
-```
-<dependency>
-    <groupId>org.camunda.bpm.incubation</groupId>
-    <artifactId>camunda-bpm-camel-cdi</artifactId>
-    <version>0.1-SNAPSHOT</version>
-</dependency>
-```
-
-## Container Configuration
-
-## Spring Framework
-
 In your Spring configuration you need to configure the `CamelService` like this:
 
 ```
@@ -106,10 +92,16 @@ In your Spring configuration you need to configure the `CamelService` like this:
 
 The Spring bean id `camel` will be then available to expressions used in ServiceTasks to send data to Camel.
 
-## CDI
+### CDI
+```
+<dependency>
+    <groupId>org.camunda.bpm.incubation</groupId>
+    <artifactId>camunda-bpm-camel-cdi</artifactId>
+    <version>0.1-SNAPSHOT</version>
+</dependency>
+```
 
-The CDI configuration needs a bit more work. Make sure you read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html). Then have a look at the CDI integration tests. See the current CDI tests [here](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/) for guidance. Pull-requests are very welcome!
-
+The CDI configuration needs a bit more work. Make sure you read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html). Then have a look at the CDI integration tests [here](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/) for guidance. 
 
 # Feedback and further development
 
