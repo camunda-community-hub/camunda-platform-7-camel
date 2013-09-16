@@ -10,8 +10,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <camunda-bpm.version>7.0.0-alpha8</camunda-bpm.version>
-    <camel.version>2.11.1</camel.version>
+    <camunda-bpm.version>7.0.0-Final</camunda-bpm.version>
+    <camel.version>2.12.0</camel.version>
     <spring.framework.version>3.1.2.RELEASE</spring.framework.version>
     <fest.assert.version>2.0M10</fest.assert.version>
     <sl4j.version>1.6.1</sl4j.version>
