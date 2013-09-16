@@ -13,9 +13,9 @@
 package org.camunda.bpm.camel.component.producer;
 
 import org.apache.camel.Exchange;
-import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;

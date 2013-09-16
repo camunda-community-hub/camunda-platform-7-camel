@@ -1,4 +1,4 @@
-package org.camunda.bpm.camel.common;
+package org.camunda.bpm.camel.component;
 
 /**
  * Common constants for the camunda BPM Apache Camel component

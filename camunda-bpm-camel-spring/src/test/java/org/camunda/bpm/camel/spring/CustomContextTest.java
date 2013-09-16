@@ -23,7 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Collections;
 import java.util.Map;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 @ContextConfiguration("classpath:custom-camel-activiti-context.xml")
 public class CustomContextTest extends ProcessEngineTestCase {

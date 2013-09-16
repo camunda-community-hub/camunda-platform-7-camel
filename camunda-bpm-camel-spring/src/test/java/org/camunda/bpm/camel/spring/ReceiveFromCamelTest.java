@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:receive-from-camel-config.xml")

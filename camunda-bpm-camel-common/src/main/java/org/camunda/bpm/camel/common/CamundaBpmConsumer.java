@@ -14,6 +14,7 @@ package org.camunda.bpm.camel.common;
 
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultConsumer;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 
 public class CamundaBpmConsumer extends DefaultConsumer {
 

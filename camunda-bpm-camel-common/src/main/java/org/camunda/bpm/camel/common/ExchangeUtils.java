@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.camel.Exchange;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 
 /**
  * This class contains one method - prepareVariables - that is used to copy variables from Camel into Activiti.

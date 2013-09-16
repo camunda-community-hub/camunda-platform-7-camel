@@ -2,7 +2,7 @@ package org.camunda.bpm.camel.spring.util;
 
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 public class InitDelegate implements JavaDelegate {
 

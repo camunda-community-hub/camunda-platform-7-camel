@@ -1,9 +1,9 @@
-package org.camunda.bpm.camel.common;
+package org.camunda.bpm.camel.component;
 
 import org.camunda.bpm.camel.component.producer.CamundaBpmProducer;
 import org.camunda.bpm.camel.component.producer.SignalProcessProducer;
 import org.camunda.bpm.camel.component.producer.StartProcessProducer;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

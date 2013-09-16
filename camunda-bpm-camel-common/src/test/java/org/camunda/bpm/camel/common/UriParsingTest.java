@@ -3,8 +3,10 @@ package org.camunda.bpm.camel.common;
 import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
 import org.camunda.bpm.camel.BaseCamelTest;
+import org.camunda.bpm.camel.component.CamundaBpmComponent;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.junit.Test;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 public class UriParsingTest extends BaseCamelTest {

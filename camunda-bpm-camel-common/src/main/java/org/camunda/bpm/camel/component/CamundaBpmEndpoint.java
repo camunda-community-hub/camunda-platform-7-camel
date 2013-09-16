@@ -10,10 +10,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.camunda.bpm.camel.common;
+package org.camunda.bpm.camel.component;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
+import org.camunda.bpm.camel.common.CamundaBpmConsumer;
 import org.camunda.bpm.engine.ProcessEngine;
 
 public interface CamundaBpmEndpoint extends Endpoint {

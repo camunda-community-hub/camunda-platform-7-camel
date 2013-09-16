@@ -12,8 +12,7 @@
  */
 package org.camunda.bpm.camel.component.producer;
 
-import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
-import org.camunda.bpm.camel.common.ExchangeUtils;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.apache.camel.impl.DefaultProducer;

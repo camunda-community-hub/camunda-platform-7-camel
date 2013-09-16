@@ -16,6 +16,8 @@ package org.camunda.bpm.camel.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.camunda.bpm.camel.component.CamundaBpmComponent;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ProcessEngineException;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.Expression;
@@ -27,7 +29,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultExchange;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 /**
 * This abstract class takes the place of the now-deprecated CamelBehaviour class (which can still be used for legacy compatibility)

@@ -5,15 +5,15 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultExchange;
 import org.camunda.bpm.camel.BaseCamelTest;
-import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.junit.Test;
 
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_ID;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.camundaBpmUri;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.camundaBpmUri;
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 import static org.mockito.Mockito.*;
 
 public class StartProcessProducerTest extends BaseCamelTest {

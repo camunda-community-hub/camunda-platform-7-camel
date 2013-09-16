@@ -2,12 +2,12 @@ package org.camunda.bpm.camel;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.impl.DefaultCamelContext;
-import org.camunda.bpm.camel.common.CamundaBpmComponent;
+import org.camunda.bpm.camel.component.CamundaBpmComponent;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
 import org.junit.Before;
 
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.CAMUNDA_BPM_CAMEL_URI_SCHEME;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CAMEL_URI_SCHEME;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

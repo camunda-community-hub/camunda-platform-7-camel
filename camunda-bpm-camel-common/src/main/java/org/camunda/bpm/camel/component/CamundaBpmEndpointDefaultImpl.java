@@ -11,15 +11,10 @@
  * limitations under the License.
  */
 
-package org.camunda.bpm.camel.common.impl;
+package org.camunda.bpm.camel.component;
 
-import org.camunda.bpm.camel.common.CamundaBpmComponent;
 import org.camunda.bpm.camel.common.CamundaBpmConsumer;
-import org.camunda.bpm.camel.common.CamundaBpmEndpoint;
-import org.camunda.bpm.camel.common.CamundaBpmFactory;
-import org.camunda.bpm.camel.component.producer.CamundaBpmProducer;
 import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.RuntimeService;
 import org.apache.camel.*;
 import org.apache.camel.impl.DefaultEndpoint;
 
