@@ -26,13 +26,11 @@ public final class CamundaBpmFactory {
       if ("start".equals(uriTokens[0])) {
         return new StartProcessProducer(endpoint, parameters);
       } else if ("signal".equals(uriTokens[0])) {
-          return new SignalProcessProducer(endpoint, parameters);
-      } else {
-          throw new IllegalArgumentException("Cannot create a producer for URI '" + uri);
+        return new SignalProcessProducer(endpoint, parameters);
       }
-    } else {
-      throw new IllegalArgumentException("Cannot create a producer for URI '" + uri);
     }
+
+    throw new IllegalArgumentException("Cannot create a producer for URI '" + uri);
   }
 
   //public static CamundaBpmConsumer createConsumer(CamundaBpmEndpoint endpoint, String uri) throws IllegalArgumentException {
