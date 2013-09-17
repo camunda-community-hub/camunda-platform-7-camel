@@ -44,7 +44,7 @@ public class ReceiveFromCamelIT extends BaseArquillianIntegrationTest {
         from("direct:sendToCamundaBpm")
           .routeId("receive-from-camel-route")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
-          .to("camunda-bpm:receiveFromCamelProcess:watForCamel")
+          .to("camunda-bpm:receiveFromCamelProcess:waitForCamel")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
           .to(resultEndpoint)
         ;
