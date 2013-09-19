@@ -5,7 +5,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.Mock;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -65,7 +65,7 @@ public class ReceiveFromCamelIT extends BaseArquillianIntegrationTest {
     /*
      * We need the process instance ID to be able to send the message to it
      *
-     * FIXE: we need to fix this with the process execution id or even better with the Activity Instance Model
+     * FIXME: we need to fix this with the process execution id or even better with the Activity Instance Model
      * http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html
      */
     ProducerTemplate tpl = camelContextBootstrap.getCamelContext().createProducerTemplate();

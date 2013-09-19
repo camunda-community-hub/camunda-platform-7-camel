@@ -3,7 +3,8 @@ package org.camunda.bpm.camel.cdi;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelContext;
-import org.camunda.bpm.camel.common.CamundaBpmComponent;
+import org.camunda.bpm.camel.component.CamundaBpmComponent;
+import org.camunda.bpm.engine.ProcessEngine;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -31,6 +32,9 @@ public class CamelContextBootstrap {
   @Inject
   CdiCamelContext camelCtx;
 
+  @Inject
+  ProcessEngine processEngine;
+
   @PostConstruct
   public void init() throws Exception {
     log.info(">>");
@@ -40,7 +44,7 @@ public class CamelContextBootstrap {
     log.info(">>");
     log.info(">> Registering camunda BPM component in Camel context");
     log.info(">>");
-    CamundaBpmComponent component = new CamundaBpmComponent();
+    CamundaBpmComponent component = new CamundaBpmComponent(processEngine);
     component.setCamelContext(camelCtx);
     camelCtx.addComponent("camunda-bpm", component);
   }

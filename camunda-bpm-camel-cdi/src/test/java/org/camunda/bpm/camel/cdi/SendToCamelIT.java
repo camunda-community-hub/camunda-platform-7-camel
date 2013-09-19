@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
-import static org.camunda.bpm.camel.common.CamundaBpmConstants.*;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 @RunWith(Arquillian.class)
 public class SendToCamelIT extends BaseArquillianIntegrationTest {
@@ -62,8 +62,8 @@ public class SendToCamelIT extends BaseArquillianIntegrationTest {
     // Assert that the camunda BPM process instance ID has been added as a property to the message
     assertThat(resultEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
 
-    // Assert that the body of the message received by the endpoint contains the value of the process variable 'var1' sent from camunda BPM
-    assertThat(resultEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo((String) processVariables.get("var1"));
+    // Assert that the body of the message received by the endpoint contains a hash map with the value of the process variable 'var1' sent from camunda BPM
+    assertThat(resultEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo("{var1=foo}");
 
     // FIXME: check that var2 is also present as a property!
   }

@@ -58,6 +58,7 @@ public class SignalProcessProducer extends CamundaBpmProducer {
     if (execution == null) {
       throw new RuntimeException("Couldn't find activity with id '" + activityId + "' for process instance with id '" + processInstanceId + "'");
     }
+
     runtimeService.setVariables(execution.getId(), ExchangeUtils.prepareVariables(exchange, getActivitiEndpoint()));
     runtimeService.signal(execution.getId());
   }

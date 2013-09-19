@@ -12,6 +12,10 @@
     <version>0.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
+  
+  <properties>
+    <skipITs>true</skipITs>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -119,6 +123,11 @@
     <plugins>
       <!-- Plugin for integration tests. Defaults to in include all "**/*IT.java" -->
       <!-- See http://maven.apache.org/plugins/maven-failsafe-plugin/examples/inclusion-exclusion.html -->
+      
+      <!-- Integration tests are disabled by default. 
+           They require a running JBoss AS 7.1.2 instance listening to default ports.
+           Set -DskipITs=false on the Maven command line to enable the tests.
+      -->
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.14.1</version>
@@ -126,9 +135,6 @@
           <!-- See https://community.jboss.org/thread/198980 -->
           <argLine>-Djava.util.logging.config.file=${basedir}/src/test/resources/logging.properties</argLine>
           <encoding>${project.build.sourceEncoding}</encoding>
-          <excludes>
-            <exclude>**/*IT.java</exclude>
-          </excludes>
         </configuration>
         <executions>
           <execution>

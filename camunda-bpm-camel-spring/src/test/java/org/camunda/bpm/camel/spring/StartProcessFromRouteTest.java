@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Collections;
+
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
@@ -64,7 +66,7 @@ public class StartProcessFromRouteTest {
   public void doTest() throws Exception {
     ProducerTemplate tpl = camelContext.createProducerTemplate();
 
-    String processInstanceId = (String) tpl.requestBody("direct:start", "valueOfVar1");
+    String processInstanceId = (String) tpl.requestBody("direct:start", Collections.singletonMap("var1", "valueOfVar1"));
     assertThat(processInstanceId).isNotNull();
     System.out.println("Process instance ID: " + processInstanceId);
 
@@ -78,7 +80,7 @@ public class StartProcessFromRouteTest {
     // The body of the message comming out from the camunda-bpm:<process definition> endpoint is the process instance
     assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo(processInstanceId);
     
-    // We should receive the value of 'var1' as the body of the message
-    assertThat(processVariableEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo("valueOfVar1");
+    // We should receive a hash map as the body of the message with a 'var1' key
+    assertThat(processVariableEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo("{var1=valueOfVar1}");
   }
 }
