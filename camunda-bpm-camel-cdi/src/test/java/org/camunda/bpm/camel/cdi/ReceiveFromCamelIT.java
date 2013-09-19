@@ -4,12 +4,11 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.Mock;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -44,7 +43,7 @@ public class ReceiveFromCamelIT extends BaseArquillianIntegrationTest {
         from("direct:sendToCamundaBpm")
           .routeId("receive-from-camel-route")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
-          .to("camunda-bpm:receiveFromCamelProcess:waitForCamel")
+          .to("camunda-bpm://signal?processDefinitionKey=receiveFromCamelProcess&activityId=waitForCamel")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
           .to(resultEndpoint)
         ;
@@ -66,14 +65,14 @@ public class ReceiveFromCamelIT extends BaseArquillianIntegrationTest {
     /*
      * We need the process instance ID to be able to send the message to it
      *
-     * FIXE: we need to fix this with the process execution id or even better with the Activity Instance Model
+     * FIXME: we need to fix this with the process execution id or even better with the Activity Instance Model
      * http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html
      */
     ProducerTemplate tpl = camelContextBootstrap.getCamelContext().createProducerTemplate();
-    tpl.sendBodyAndProperty("direct:sendToCamundaBpm", null, CamundaBpmProducer.PROCESS_ID_PROPERTY, processInstance.getId());
+    tpl.sendBodyAndProperty("direct:sendToCamundaBpm", null, CAMUNDA_BPM_PROCESS_INSTANCE_ID, processInstance.getId());
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(resultEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstance.getId());
+    assertThat(resultEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
 
     // Assert that the process instance is finished
     assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("receiveFromCamelProcess").count()).isEqualTo(0);

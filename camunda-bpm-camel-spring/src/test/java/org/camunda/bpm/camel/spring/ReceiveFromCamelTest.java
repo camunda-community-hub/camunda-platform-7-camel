@@ -14,7 +14,6 @@ package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Versi
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -33,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:receive-from-camel-config.xml")
@@ -81,10 +81,10 @@ public class ReceiveFromCamelTest {
      * http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html
      */
     ProducerTemplate tpl = camelContext.createProducerTemplate();
-    tpl.sendBodyAndProperty("direct:sendToCamundaBpm", null, CamundaBpmProducer.PROCESS_ID_PROPERTY, processInstance.getId());
+    tpl.sendBodyAndProperty("direct:sendToCamundaBpm", null, CAMUNDA_BPM_PROCESS_INSTANCE_ID, processInstance.getId());
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstance.getId());
+    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
 
     // Assert that the process instance is finished
     assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("receiveFromCamelProcess").count()).isEqualTo(0);

@@ -13,7 +13,6 @@
 
 package org.camunda.bpm.camel.spring;
 
-import org.camunda.bpm.camel.common.CamundaBpmProducer;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineTestCase;
 import org.apache.camel.CamelContext;
@@ -24,6 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Collections;
 import java.util.Map;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 @ContextConfiguration("classpath:custom-camel-activiti-context.xml")
 public class CustomContextTest extends ProcessEngineTestCase {
@@ -54,7 +54,7 @@ public class CustomContextTest extends ProcessEngineTestCase {
     String instanceId = (String) tpl.requestBody("direct:start", Collections.singletonMap("var1", "ala"));
 
 
-    tpl.sendBodyAndProperty("direct:receive", null, CamundaBpmProducer.PROCESS_ID_PROPERTY, instanceId);
+    tpl.sendBodyAndProperty("direct:receive", null, CAMUNDA_BPM_PROCESS_INSTANCE_ID, instanceId);
 
     assertProcessEnded(instanceId);
 

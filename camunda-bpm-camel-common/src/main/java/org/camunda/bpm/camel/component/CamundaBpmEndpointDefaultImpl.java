@@ -11,11 +11,14 @@
  * limitations under the License.
  */
 
-package org.camunda.bpm.camel.common;
+package org.camunda.bpm.camel.component;
 
-import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.camel.common.CamundaBpmConsumer;
+import org.camunda.bpm.engine.ProcessEngine;
 import org.apache.camel.*;
 import org.apache.camel.impl.DefaultEndpoint;
+
+import java.util.Map;
 
 /**
  * This class has been modified to be consistent with the changes to CamelBehavior and its implementations. The set of changes
@@ -25,28 +28,25 @@ import org.apache.camel.impl.DefaultEndpoint;
  * 
  * @author Ryan Johnston (@rjfsu), Tijs Rademakers
  */
-public class CamundaBpmEndpoint extends DefaultEndpoint {
+public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements CamundaBpmEndpoint {
 
-  private RuntimeService runtimeService;
-
+  private CamundaBpmComponent component;
   private CamundaBpmConsumer camundaBpmConsumer;
+  private Map<String, Object> parameters;
 
-  private boolean copyVariablesToProperties;
-
-  private boolean copyVariablesToBodyAsMap;
-
-  private boolean copyCamelBodyToBody;
-  
-  private boolean copyVariablesFromProperties;
-
-  public CamundaBpmEndpoint(String uri, CamelContext camelContext, RuntimeService runtimeService) {
+  public CamundaBpmEndpointDefaultImpl(String uri, CamundaBpmComponent component, Map<String, Object> parameters) {
     super();
-    setCamelContext(camelContext);
+    setCamelContext(component.getCamelContext());
     setEndpointUri(uri);
-    this.runtimeService = runtimeService;
+    this.component = component;
+    this.parameters = parameters;
   }
 
-  void addConsumer(CamundaBpmConsumer consumer) {
+  public ProcessEngine getProcessEngine() {
+    return this.component.getProcessEngine();
+  }
+
+  public void addConsumer(CamundaBpmConsumer consumer) {
     if (camundaBpmConsumer != null) {
       throw new RuntimeException("camunda BPM consumer already defined for " + getEndpointUri() + "!");
     }
@@ -61,7 +61,7 @@ public class CamundaBpmEndpoint extends DefaultEndpoint {
   }
 
   public Producer createProducer() throws Exception {
-    return new CamundaBpmProducer(this, runtimeService);
+    return CamundaBpmFactory.createProducer(this, getEndpointUri(), this.parameters);
   }
 
   public Consumer createConsumer(Processor processor) throws Exception {
@@ -71,39 +71,6 @@ public class CamundaBpmEndpoint extends DefaultEndpoint {
   public boolean isSingleton() {
     return true;
   }
-
-  public boolean isCopyVariablesToProperties() {
-    return copyVariablesToProperties;
-  }
-
-  public void setCopyVariablesToProperties(boolean copyVariablesToProperties) {
-    this.copyVariablesToProperties = copyVariablesToProperties;
-  }
-
-  public boolean isCopyCamelBodyToBody() {
-    return copyCamelBodyToBody;
-  }
-
-  public void setCopyCamelBodyToBody(boolean copyCamelBodyToBody) {
-    this.copyCamelBodyToBody = copyCamelBodyToBody;
-  }
-
-  public boolean isCopyVariablesToBodyAsMap() {
-    return copyVariablesToBodyAsMap;
-  }
-
-  public void setCopyVariablesToBodyAsMap(boolean copyVariablesToBodyAsMap) {
-    this.copyVariablesToBodyAsMap = copyVariablesToBodyAsMap;
-  }
-  
-  public boolean isCopyVariablesFromProperties() {
-    return copyVariablesFromProperties;
-  }
-
-  public void setCopyVariablesFromProperties(boolean copyVariablesFromProperties) {
-    this.copyVariablesFromProperties = copyVariablesFromProperties;
-  }
-
   @Override
   public boolean isLenientProperties() {
     return true;

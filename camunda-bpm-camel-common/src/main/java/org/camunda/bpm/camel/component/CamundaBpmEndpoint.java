@@ -10,21 +10,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.camunda.bpm.camel.common;
+package org.camunda.bpm.camel.component;
 
-import org.apache.camel.Processor;
-import org.apache.camel.impl.DefaultConsumer;
-import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
+import org.apache.camel.Endpoint;
+import org.apache.camel.Exchange;
+import org.camunda.bpm.camel.common.CamundaBpmConsumer;
+import org.camunda.bpm.engine.ProcessEngine;
 
-public class CamundaBpmConsumer extends DefaultConsumer {
+public interface CamundaBpmEndpoint extends Endpoint {
 
-  public CamundaBpmConsumer(CamundaBpmEndpoint endpoint, Processor processor) {
-    super(endpoint, processor);
-  }
+  ProcessEngine  getProcessEngine();
 
-  @Override
-  protected void doStart() throws Exception {
-    super.doStart();
-    ((CamundaBpmEndpoint) getEndpoint()).addConsumer(this);
-  }
+  public void addConsumer(CamundaBpmConsumer consumer);
+  public void process(Exchange ex) throws Exception;
 }

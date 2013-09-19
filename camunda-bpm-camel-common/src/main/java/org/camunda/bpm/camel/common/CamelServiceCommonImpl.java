@@ -11,6 +11,7 @@ import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 public abstract class CamelServiceCommonImpl implements CamelService {
 
@@ -23,17 +24,20 @@ public abstract class CamelServiceCommonImpl implements CamelService {
   public Object sendTo(ActivityExecution execution, String uri, String processVariableForMessageBody) {
     log.debug("Process execution:" + execution.toString());
 
-    log.debug("Sending process variable '{}' as body of message to Camel endpoint '{}'", processVariableForMessageBody, uri);
+    Object processVariableValue = execution.getVariable(processVariableForMessageBody);
+    if (processVariableValue == null) {
+      throw new IllegalAccessError("Process variable '" + processVariableForMessageBody + "' no found!");
+    }
+    log.debug("Sending process variable '{}' in body of message to Camel endpoint '{}'", processVariableForMessageBody, uri);
 
     ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
 
-    // FIXME: Map<String, Object> processVariables = execution.getVariables();
-    
     Map<String, Object> processVariables = new HashMap<String, Object>();
-    processVariables.put(processVariableForMessageBody, execution.getVariable(processVariableForMessageBody));
+    processVariables.put(processVariableForMessageBody, processVariableValue);
 
-    Object routeResult = producerTemplate.sendBodyAndProperty(uri, ExchangePattern.InOut, processVariables,
-      CamundaBpmProducer.PROCESS_ID_PROPERTY, execution.getProcessInstanceId());
+    Object routeResult = producerTemplate.sendBodyAndProperty(uri,
+                                              ExchangePattern.InOut, processVariables,
+                                              CAMUNDA_BPM_PROCESS_INSTANCE_ID, execution.getProcessInstanceId());
 
     return routeResult;
   }
