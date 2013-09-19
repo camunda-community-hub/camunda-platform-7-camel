@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.camel.Exchange;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 
 /**
  * This class contains one method - prepareVariables - that is used to copy variables from Camel into Activiti.
@@ -37,7 +38,7 @@ public class ExchangeUtils {
    */
   
   public static Map<String, Object> prepareVariables(Exchange exchange, CamundaBpmEndpoint camundaBpmEndpoint) {
-    boolean shouldReadFromProperties = camundaBpmEndpoint.isCopyVariablesFromProperties();
+    boolean shouldReadFromProperties = false;
     Map<String, Object> camelVarMap = null;
     
     if (shouldReadFromProperties) {

@@ -4,8 +4,6 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.Mock;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.camunda.bpm.camel.common.CamundaBpmProducer;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -17,10 +15,9 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 @RunWith(Arquillian.class)
 public class StartProcessFromRouteIT extends BaseArquillianIntegrationTest {
@@ -48,14 +45,14 @@ public class StartProcessFromRouteIT extends BaseArquillianIntegrationTest {
         from("direct:start")
           .routeId("start-process-from-route")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
-          .to("camunda-bpm:startProcessFromRoute")
+          .to("camunda-bpm://start?processDefinitionKey=startProcessFromRoute&copyBodyAsVariable=var1")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
           .to(mockEndpoint)
         ;
         
         from("direct:processVariable")
           .routeId("processVariableRoute")
-          .to("log:org.camunda.bpm.camel.spring.samples?level=INFO&showAll=true&multiline=true")
+          .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
           .to(processVariableEndpoint)
         ;
       }
@@ -75,7 +72,7 @@ public class StartProcessFromRouteIT extends BaseArquillianIntegrationTest {
     assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("startProcessFromRoute").count()).isEqualTo(0);
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CamundaBpmProducer.PROCESS_ID_PROPERTY)).isEqualTo(processInstanceId);
+    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstanceId);
 
     // The body of the message comming out from the camunda-bpm:<process definition> endpoint is the process instance
     assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo(processInstanceId);

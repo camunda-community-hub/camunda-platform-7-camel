@@ -2,7 +2,6 @@ package org.camunda.bpm.camel.cdi;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.Mock;
-import org.apache.camel.cdi.internal.CamelContextMap;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.engine.task.Task;
 import org.jboss.arquillian.container.test.api.Deployment;

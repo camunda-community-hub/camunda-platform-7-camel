@@ -1,6 +1,5 @@
 package org.camunda.bpm.camel.cdi;
 
-import org.apache.camel.CamelContext;
 import org.camunda.bpm.camel.common.CamelService;
 import org.camunda.bpm.camel.spring.util.LogService;
 import org.camunda.bpm.camel.spring.util.LogServiceImpl;
@@ -14,9 +13,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.DependencyResolvers;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenDependencyResolver;
 
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public abstract class BaseArquillianIntegrationTest {
 
