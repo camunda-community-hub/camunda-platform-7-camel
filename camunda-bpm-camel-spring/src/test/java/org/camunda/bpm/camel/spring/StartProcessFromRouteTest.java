@@ -80,7 +80,7 @@ public class StartProcessFromRouteTest {
     // The body of the message comming out from the camunda-bpm:<process definition> endpoint is the process instance
     assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo(processInstanceId);
     
-    // We should receive the value of 'var1' as the body of the message
-    assertThat(processVariableEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo("valueOfVar1");
+    // We should receive a hash map with the value of 'var1' as the body of the message
+    assertThat(processVariableEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo("{var1=valueOfVar1}");
   }
 }

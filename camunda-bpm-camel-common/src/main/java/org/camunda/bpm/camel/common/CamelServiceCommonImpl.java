@@ -1,5 +1,8 @@
 package org.camunda.bpm.camel.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
@@ -25,10 +28,11 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
 
     // FIXME: Map<String, Object> processVariables = execution.getVariables();
+    
+    Map<String, Object> processVariables = new HashMap<String, Object>();
+    processVariables.put(processVariableForMessageBody, execution.getVariable(processVariableForMessageBody));
 
-    Object messageBody = execution.getVariable(processVariableForMessageBody);
-
-    Object routeResult = producerTemplate.sendBodyAndProperty(uri, ExchangePattern.InOut, messageBody,
+    Object routeResult = producerTemplate.sendBodyAndProperty(uri, ExchangePattern.InOut, processVariables,
       CamundaBpmProducer.PROCESS_ID_PROPERTY, execution.getProcessInstanceId());
 
     return routeResult;
