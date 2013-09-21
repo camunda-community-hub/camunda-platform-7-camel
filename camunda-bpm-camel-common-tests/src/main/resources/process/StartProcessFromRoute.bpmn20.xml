@@ -12,7 +12,7 @@
     <endEvent id="end">
       <incoming>SequenceFlow_3</incoming>
     </endEvent>
-    <serviceTask id="ServiceTask_1" activiti:expression="${camel.sendTo(execution, 'direct:processVariable', 'var1')}" name="Send process variable to Camel">
+    <serviceTask id="ServiceTask_1" activiti:expression="${camel.sendTo('direct:processVariable', 'var1')}" name="Send process variable to Camel">
       <incoming>SequenceFlow_4</incoming>
       <outgoing>SequenceFlow_3</outgoing>
     </serviceTask>

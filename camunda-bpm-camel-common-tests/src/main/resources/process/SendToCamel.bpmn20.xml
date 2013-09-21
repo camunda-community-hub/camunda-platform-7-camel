@@ -5,7 +5,7 @@
       <outgoing>flow1</outgoing>
     </startEvent>
     <sequenceFlow id="flow1" sourceRef="start" targetRef="sendToCamelServiceTask"/>
-    <serviceTask id="sendToCamelServiceTask" activiti:expression="${camel.sendTo(execution, 'direct:sendToCamelServiceTask', 'var1')}" activiti:resultVariableName="message" name="Send to Camel">
+    <serviceTask id="sendToCamelServiceTask" activiti:expression="${camel.sendTo('direct:sendToCamelServiceTask', 'var1')}" activiti:resultVariableName="message" name="Send to Camel">
       <incoming>flow1</incoming>
       <outgoing>flow2</outgoing>
     </serviceTask>

@@ -1,12 +1,12 @@
 package org.camunda.bpm.camel.common;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,24 +21,34 @@ public abstract class CamelServiceCommonImpl implements CamelService {
   protected CamelContext camelContext;
 
   @Override
-  public Object sendTo(ActivityExecution execution, String uri, String processVariableForMessageBody) {
-    log.debug("Process execution:" + execution.toString());
+  public Object sendTo(String endpointUri) {
+    ActivityExecution execution = Context.getExecutionContext().getExecution();
+    return sendTo(endpointUri, execution.getVariableNames());
+  }
 
-    Object processVariableValue = execution.getVariable(processVariableForMessageBody);
-    if (processVariableValue == null) {
-      throw new IllegalAccessError("Process variable '" + processVariableForMessageBody + "' no found!");
+  @Override
+  public Object sendTo(String endpointUri, String processVariables) {
+
+    List<String> vars = Arrays.asList(processVariables.split("\\s*,\\s*"));
+    return sendTo(endpointUri, vars);
+  }
+
+  private Object sendTo(String endpointUri, Collection<String> variables) {
+    ActivityExecution execution = (ActivityExecution) Context.getExecutionContext().getExecution();
+    Map<String, Object> variablesToSend = new HashMap<String, Object>();
+    for (String var: variables) {
+      Object value = execution.getVariable(var);
+      if (value == null) {
+        throw new IllegalArgumentException("Process variable '" + var + "' no found!");
+      }
+      variablesToSend.put(var, value);
     }
-    log.debug("Sending process variable '{}' in body of message to Camel endpoint '{}'", processVariableForMessageBody, uri);
 
+    log.debug("Sending process variables '{}' as a map to Camel endpoint '{}'", variablesToSend, endpointUri);
     ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
-
-    Map<String, Object> processVariables = new HashMap<String, Object>();
-    processVariables.put(processVariableForMessageBody, processVariableValue);
-
-    Object routeResult = producerTemplate.sendBodyAndProperty(uri,
-                                              ExchangePattern.InOut, processVariables,
-                                              CAMUNDA_BPM_PROCESS_INSTANCE_ID, execution.getProcessInstanceId());
-
+    Object routeResult = producerTemplate.sendBodyAndProperty(endpointUri, ExchangePattern.InOut,
+                                                              variablesToSend, CAMUNDA_BPM_PROCESS_INSTANCE_ID,
+                                                              execution.getProcessInstanceId());
     return routeResult;
   }
 
