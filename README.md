@@ -6,19 +6,18 @@ Having started as a fork of [Activiti's Apache Camel module](https://github.com/
 
 # Supported features
 ## camunda BPM --> Apache Camel
-A service is provided that allows you to send data to Camel in a ServiceTask using the following expression:
+Use the following expression in a ServiceTask to send all the process instance variables as a map to Camel endpoint:
 
 ```
 ${camel.sendTo('<camel endpoint>')}
 ``` 
-where all the process instance variables will be sent as a map in the body of the Camel message.
 Alternatively you can specify which process instance variables you want to send to Camel with:
 
 ```
 ${camel.sendTo('<camel endpoint>', '<list of process variables>')}
 ``` 
 
-The properties `CamundaBpmProcessInstanceId` will be available to any downstream processesors in the Camel route.
+The property `CamundaBpmProcessInstanceId` will be available to any downstream processesors in the Camel route.
 
 ## Apache Camel --> camunda BPM
 The following use cases are currently supported by the camunda BPM Camel component.
@@ -111,9 +110,7 @@ The CDI configuration needs a bit more work. Make sure you read [Apache Camel's 
 
 # Feedback and further development
 
-This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation) and still needs some work to bring it up to version 1.0.
-
-Brutal honest (and constructive) feedback, pull requests, ... you name it... are very welcome! Meet us on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev) list.
+This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation). Feedback, pull requests, ... you name it... are very welcome! Meet us on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev) list.
 
 Out landry list of development TODOs (in no special order):
 
@@ -125,10 +122,7 @@ Out landry list of development TODOs (in no special order):
 
 # Credits
 
-This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and the following people have contributed to its further develoment in the context of camunda BPM:
-
-* [Rafael Cordones](http://rafael.cordones.me/)
-* [Bernd Rücker](http://camunda.org/community/team.html)
+This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and the following people have contributed to its further develoment in the context of camunda BPM: [contributors](https://github.com/camunda/camunda-bpm-camel/graphs/contributors).
 
 # License
 
