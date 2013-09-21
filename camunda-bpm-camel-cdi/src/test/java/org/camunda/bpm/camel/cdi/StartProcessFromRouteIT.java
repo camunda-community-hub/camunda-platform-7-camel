@@ -4,6 +4,7 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.Mock;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.camunda.bpm.engine.delegate.BpmnError;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -49,7 +50,7 @@ public class StartProcessFromRouteIT extends BaseArquillianIntegrationTest {
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")
           .to(mockEndpoint)
         ;
-        
+
         from("direct:processVariable")
           .routeId("processVariableRoute")
           .to("log:org.camunda.bpm.camel.cdi?level=INFO&showAll=true&multiline=true")

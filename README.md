@@ -9,12 +9,19 @@ Having started as a fork of [Activiti's Apache Camel module](https://github.com/
 A service is provided that allows you to send data to Camel in a ServiceTask using the following expression:
 
 ```
-${camel.sendTo(execution, '<camel endpoint>', '<process variable for the message body>')}
+${camel.sendTo('<camel endpoint>')}
 ``` 
-The message body will be a Map containing the process variable as a key. The property `CamundaBpmProcessInstanceId` will be available to any downstream processesors in the Camel route.
+where all the process instance variables will be sent as a map in the body of the Camel message.
+Alternatively you can specify which process instance variables you want to send to Camel with:
+
+```
+${camel.sendTo('<camel endpoint>', '<list of process variables>')}
+``` 
+
+The properties `CamundaBpmProcessInstanceId` will be available to any downstream processesors in the Camel route.
 
 ## Apache Camel --> camunda BPM
-The following use cases are currently the camunda BPM Camel component.
+The following use cases are currently supported by the camunda BPM Camel component.
 
 ### `camunda-bpm://start`: Start a process instance
 A direct consumer to start process instances. 
@@ -33,7 +40,7 @@ If the Camel message body is a map, then all the keys will be copied as process 
 The properties `CamundaBpmProcessInstanceId` and `CamundaBpmProcessDefinitionId` are available to the downstream processors in the Camel route as Camel exchange properties.
 
 Example: `camunda-bpm://start?processDefinitionKey=startProcessFromRoute&copyBodyAsVariable=var1`
-Starts a process instance of the process definition `startProcessFromRoute` with the body of the message as process variable `var1`.
+Starts a process instance of the process definition `startProcessFromRoute` with the body of the message as a map with process variable `var1` as a key.
 
 ### `camunda-bpm://signal`: Signal a process instance
 A direct consumer to signal process instances.
