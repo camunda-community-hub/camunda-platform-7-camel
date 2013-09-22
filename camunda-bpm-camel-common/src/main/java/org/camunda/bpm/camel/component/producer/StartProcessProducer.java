@@ -18,6 +18,7 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,10 +69,23 @@ public class StartProcessProducer extends CamundaBpmProducer {
       String processVariable = (String) parameters.get(COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER);
       processVariables.put(processVariable, exchange.getIn().getBody());
     }
-    ProcessInstance instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, processVariables);
-    exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, instance.getProcessInstanceId());
+
+    /*
+     * If the exchange contains the CAMUNDA_BPM_BUSINESS_KEY then we pass it to the engine
+     */
+    ProcessInstance instance = null;
+    if (exchange.getProperties().containsKey(CAMUNDA_BPM_BUSINESS_KEY)) {
+      instance = runtimeService.startProcessInstanceByKey(processDefinitionKey,
+                                                          exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY, String.class),
+                                                          processVariables);
+      exchange.setProperty(CAMUNDA_BPM_BUSINESS_KEY, instance.getBusinessKey());
+    } else {
+      instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, processVariables);
+    }
+
     exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID, instance.getProcessDefinitionId());
-    exchange.getOut().setBody(instance.getId());
+    exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, instance.getProcessInstanceId());
+    exchange.getOut().setBody(instance.getProcessInstanceId());
   }
 
   protected Map<String, Object> bodyToMap(Object body) {
