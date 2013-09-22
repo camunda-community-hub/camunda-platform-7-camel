@@ -47,4 +47,24 @@ public class StartProcessProducerTest extends BaseCamelTest {
     assertThat(exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID)).isEqualTo("theProcessDefinitionId");
     assertThat(exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo("theProcessInstanceId");
   }
+
+  @Test
+  public void startProcessInstanceByKeyWithBusinessKeyShouldBeCalled() throws Exception {
+    ProcessInstance processInstance = mock(ProcessInstance.class);
+    when(processInstance.getProcessInstanceId()).thenReturn("theProcessInstanceId");
+    when(processInstance.getProcessDefinitionId()).thenReturn("theProcessDefinitionId");
+    when(processInstance.getBusinessKey()).thenReturn("aBusinessKey");
+    when(runtimeService.startProcessInstanceByKey(eq("aProcessDefinitionKey"), eq("aBusinessKey"), anyMap())).thenReturn(processInstance);
+
+    CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(camundaBpmUri("start?" + PROCESS_DEFINITION_KEY_PARAMETER + "=" + "aProcessDefinitionKey"));
+    StartProcessProducer producer = (StartProcessProducer) endpoint.createProducer();
+    Exchange exchange = new DefaultExchange(camelContext);
+    exchange.setProperty(CAMUNDA_BPM_BUSINESS_KEY, "aBusinessKey");
+    producer.process(exchange);
+
+    verify(runtimeService, times(1)).startProcessInstanceByKey(eq("aProcessDefinitionKey"), eq("aBusinessKey"), anyMap());
+    assertThat(exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID)).isEqualTo("theProcessDefinitionId");
+    assertThat(exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo("theProcessInstanceId");
+    assertThat(exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY)).isEqualTo("aBusinessKey");
+  }
 }

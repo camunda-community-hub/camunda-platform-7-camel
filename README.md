@@ -36,7 +36,9 @@ Paremeter | Description
 
 If the Camel message body is a map, then all the keys will be copied as process variables of the started instance.
 
-The properties `CamundaBpmProcessInstanceId` and `CamundaBpmProcessDefinitionId` are available to the downstream processors in the Camel route as Camel exchange properties.
+If the property `CamundaBpmBusinessKey` is available on the incoming message then it will be associated with the started process instance and can be later followed to look it up.
+
+The properties `CamundaBpmProcessInstanceId`, `CamundaBpmProcessDefinitionId` and `CamundaBpmBusinessKey` are available to the downstream processors in the Camel route as Camel exchange properties.
 
 Example: `camunda-bpm://start?processDefinitionKey=startProcessFromRoute&copyBodyAsVariable=var1`
 Starts a process instance of the process definition `startProcessFromRoute` with the body of the message as a map with process variable `var1` as a key.
@@ -51,7 +53,7 @@ Paremeter | Description
 `processDefinitionKey` | the [process definition key](http://docs.camunda.org/api-references/java/org/camunda/bpm/engine/RuntimeService.html) of the process to start an instance of 
 `activityId`| the id of the ReceiveTask 
  
-Note that the property `CamundaBpmProcessInstanceId` needs to be present in the message in order to be able to correlate the signal to the appropriate `ReceiveTask`.
+Note that either the property `CamundaBpmProcessInstanceId` or `CamundaBpmBusinessKey` need to be present in the message in order to be able to correlate the signal to the appropriate `ReceiveTask`.
 
 ## Examples
 Check the existing integration tests for guidance on how to use the current supported features in your projects: [Spring](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring) or [CDI](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/). To run the CDI integration tests do `mvn -DskipITs=false`.

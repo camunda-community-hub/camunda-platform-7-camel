@@ -68,12 +68,12 @@ public class SignalProcessProducer extends CamundaBpmProducer {
     if (processInstanceId != null) {
       return processInstanceId;
     }
-    String processInstanceKey = exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, String.class);
+    String businessKey = exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY, String.class);
     ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
-      .processInstanceBusinessKey(processInstanceKey).singleResult();
+                                                    .processInstanceBusinessKey(businessKey).singleResult();
 
     if (processInstance == null) {
-      throw new RuntimeException("Could not find activity with key " + processInstanceKey);
+      throw new RuntimeException("Could not find the process instance via the provided business key '" + businessKey + "'");
     }
     return processInstance.getId();
   }
