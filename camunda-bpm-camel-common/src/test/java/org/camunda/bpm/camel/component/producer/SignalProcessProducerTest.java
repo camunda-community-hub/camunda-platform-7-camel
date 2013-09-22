@@ -51,4 +51,19 @@ public class SignalProcessProducerTest extends BaseCamelTest {
     Producer producer = endpoint.createProducer();
     assertThat(producer).isInstanceOf(SignalProcessProducer.class);
   }
+
+  @Test
+  public void signalWithBusinessKeyShouldBeCalled() throws Exception {
+    ProcessInstance processInstance = mock(ProcessInstance.class);
+    when(processInstance.getProcessInstanceId()).thenReturn("theProcessInstanceId");
+    when(processInstance.getProcessDefinitionId()).thenReturn("theProcessDefinitionId");
+    when(runtimeService.startProcessInstanceByKey(eq("aProcessDefinitionKey"), anyMap())).thenReturn(processInstance);
+
+    CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(camundaBpmUri("signal?" +
+      PROCESS_DEFINITION_KEY_PARAMETER + "=" + "aProcessDefinitionKey" + "&" +
+      ACTIVITY_ID_PARAMETER + "=" + "anActivityId" ));
+    Producer producer = endpoint.createProducer();
+    assertThat(producer).isInstanceOf(SignalProcessProducer.class);
+  }
+
 }
