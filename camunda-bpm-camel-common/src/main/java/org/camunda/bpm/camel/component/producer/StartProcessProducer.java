@@ -18,7 +18,6 @@ import org.camunda.bpm.engine.runtime.ProcessInstance;
 
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 

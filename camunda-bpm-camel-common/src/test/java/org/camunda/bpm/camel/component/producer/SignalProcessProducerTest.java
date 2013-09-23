@@ -22,7 +22,7 @@ public class SignalProcessProducerTest extends BaseCamelTest {
                                     PROCESS_DEFINITION_KEY_PARAMETER + "=" + "aProcessDefinitionKey" + "&" +
                                     ACTIVITY_ID_PARAMETER + "=" + "anActivityId" ));
     Producer producer = endpoint.createProducer();
-    assertThat(producer).isInstanceOf(SignalProcessProducer.class);
+    assertThat(producer).isInstanceOf(MessageProducer.class);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -49,7 +49,7 @@ public class SignalProcessProducerTest extends BaseCamelTest {
       PROCESS_DEFINITION_KEY_PARAMETER + "=" + "aProcessDefinitionKey" + "&" +
       ACTIVITY_ID_PARAMETER + "=" + "anActivityId" ));
     Producer producer = endpoint.createProducer();
-    assertThat(producer).isInstanceOf(SignalProcessProducer.class);
+    assertThat(producer).isInstanceOf(MessageProducer.class);
   }
 
   @Test
@@ -63,7 +63,7 @@ public class SignalProcessProducerTest extends BaseCamelTest {
       PROCESS_DEFINITION_KEY_PARAMETER + "=" + "aProcessDefinitionKey" + "&" +
       ACTIVITY_ID_PARAMETER + "=" + "anActivityId" ));
     Producer producer = endpoint.createProducer();
-    assertThat(producer).isInstanceOf(SignalProcessProducer.class);
+    assertThat(producer).isInstanceOf(MessageProducer.class);
   }
 
 }

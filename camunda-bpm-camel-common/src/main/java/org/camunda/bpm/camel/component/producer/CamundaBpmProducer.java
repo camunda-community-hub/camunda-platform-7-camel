@@ -38,23 +38,7 @@ public abstract class CamundaBpmProducer extends DefaultProducer {
     this.parameters = parameters;
   }
   
-  protected String findProcessInstanceId(Exchange exchange, String processDefinitionKey) {
-    String processInstanceId = exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, String.class);
-    if (processInstanceId != null) {
-      return processInstanceId;
-    }
-    String businessKey = exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY, String.class);
 
-    ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey);
-    if (processDefinitionKey!=null) {
-      query.processDefinitionKey(processDefinitionKey);
-    }
-    ProcessInstance processInstance = query.singleResult();
-    if (processInstance == null) {
-      throw new RuntimeException("Could not find the process instance via the provided business key '" + businessKey + "'");
-    }
-    return processInstance.getId();
-  }
   
   protected CamundaBpmEndpoint getCamundaBpmEndpoint() {
     return (CamundaBpmEndpoint) getEndpoint();

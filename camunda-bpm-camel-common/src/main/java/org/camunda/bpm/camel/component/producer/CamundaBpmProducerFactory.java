@@ -1,23 +1,20 @@
-package org.camunda.bpm.camel.component;
+package org.camunda.bpm.camel.component.producer;
 
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CAMEL_URI_SCHEME;
 
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.camunda.bpm.camel.component.producer.CamundaBpmProducer;
-import org.camunda.bpm.camel.component.producer.MessageEventProducer;
-import org.camunda.bpm.camel.component.producer.SignalProcessProducer;
-import org.camunda.bpm.camel.component.producer.StartProcessProducer;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 
 /**
  * Creates producers according to the URI passed
  */
-public final class CamundaBpmFactory {
+public final class CamundaBpmProducerFactory {
 
 //  private static final Logger log = LoggerFactory.getLogger(CamundaBpmFactory.class);
 
-  private CamundaBpmFactory() { } // Prevent instantiation of helper class
+  private CamundaBpmProducerFactory() { } // Prevent instantiation of helper class
 
   public static CamundaBpmProducer createProducer(CamundaBpmEndpoint endpoint, String uri, Map<String, Object> parameters) throws IllegalArgumentException {
     String[] uriTokens = parseUri(uri);
@@ -26,9 +23,9 @@ public final class CamundaBpmFactory {
       if ("start".equals(uriTokens[0])) {
         return new StartProcessProducer(endpoint, parameters);
       } else if ("signal".equals(uriTokens[0])) {
-        return new SignalProcessProducer(endpoint, parameters);
+        return new MessageProducer(endpoint, parameters);
       } else if ("message".equals(uriTokens[0])) {
-        return new MessageEventProducer(endpoint, parameters);
+        return new MessageProducer(endpoint, parameters);
       }
     }
 

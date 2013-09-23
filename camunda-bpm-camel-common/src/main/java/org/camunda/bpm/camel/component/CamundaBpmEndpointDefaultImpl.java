@@ -14,6 +14,7 @@
 package org.camunda.bpm.camel.component;
 
 import org.camunda.bpm.camel.common.CamundaBpmConsumer;
+import org.camunda.bpm.camel.component.producer.CamundaBpmProducerFactory;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.apache.camel.*;
 import org.apache.camel.impl.DefaultEndpoint;
@@ -61,7 +62,7 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
   }
 
   public Producer createProducer() throws Exception {
-    return CamundaBpmFactory.createProducer(this, getEndpointUri(), this.parameters);
+    return CamundaBpmProducerFactory.createProducer(this, getEndpointUri(), this.parameters);
   }
 
   public Consumer createConsumer(Processor processor) throws Exception {
