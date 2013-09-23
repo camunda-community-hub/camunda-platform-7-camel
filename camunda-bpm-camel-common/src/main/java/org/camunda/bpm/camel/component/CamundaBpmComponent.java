@@ -14,12 +14,11 @@ package org.camunda.bpm.camel.component;
 
 import java.util.Map;
 
-import org.camunda.bpm.engine.ProcessEngine;
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
+import org.camunda.bpm.engine.ProcessEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * camunda BPM Apache Camel component
@@ -32,7 +31,6 @@ public class CamundaBpmComponent extends DefaultComponent {
 
   final Logger log = LoggerFactory.getLogger(CamundaBpmComponent.class);
 
-  @Autowired(required = true)
   protected ProcessEngine processEngine;
 
   public CamundaBpmComponent(ProcessEngine processEngine) {

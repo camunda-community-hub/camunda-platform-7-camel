@@ -13,6 +13,7 @@ public final class CamundaBpmConstants {
 
   /* Apache Camel URI parameters */
   public final static String PROCESS_DEFINITION_KEY_PARAMETER = "processDefinitionKey";
+  public final static String MESSAGE_NAME_PARAMETER = "messageName";
   public final static String ACTIVITY_ID_PARAMETER = "activityId";
   public final static String COPY_MESSAGE_PROPERTIES_PARAMETER = "copyProperties";
   public final static String COPY_MESSAGE_HEADERS_PARAMETER = "copyHeaders";

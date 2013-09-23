@@ -12,12 +12,18 @@
  */
 package org.camunda.bpm.camel.component.producer;
 
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+
+import java.util.Map;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.impl.DefaultProducer;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
-import org.apache.camel.impl.DefaultProducer;
-
-import java.util.Map;
+import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
 
 public abstract class CamundaBpmProducer extends DefaultProducer {
 
@@ -31,4 +37,26 @@ public abstract class CamundaBpmProducer extends DefaultProducer {
     this.runtimeService = processEngine.getRuntimeService();
     this.parameters = parameters;
   }
+  
+  protected String findProcessInstanceId(Exchange exchange, String processDefinitionKey) {
+    String processInstanceId = exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, String.class);
+    if (processInstanceId != null) {
+      return processInstanceId;
+    }
+    String businessKey = exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY, String.class);
+
+    ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey);
+    if (processDefinitionKey!=null) {
+      query.processDefinitionKey(processDefinitionKey);
+    }
+    ProcessInstance processInstance = query.singleResult();
+    if (processInstance == null) {
+      throw new RuntimeException("Could not find the process instance via the provided business key '" + businessKey + "'");
+    }
+    return processInstance.getId();
+  }
+  
+  protected CamundaBpmEndpoint getCamundaBpmEndpoint() {
+    return (CamundaBpmEndpoint) getEndpoint();
+  }  
 }

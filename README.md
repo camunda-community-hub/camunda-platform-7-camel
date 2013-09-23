@@ -27,7 +27,7 @@ A direct consumer to start process instances.
 
 The following URI parameters are supported: 
 
-Paremeter | Description
+Parameter | Description
 --- | --- 
 `processDefinitionKey` | the [process definition key](http://docs.camunda.org/api-references/java/org/camunda/bpm/engine/RuntimeService.html) of the process to start an instance of 
 `copyBodyAsVariable` | name of the process variable to which the body of the Camel should be copied. You *must* provide this parameter if the Camel message body is a String.
