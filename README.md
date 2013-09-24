@@ -1,4 +1,4 @@
-![camunda BPM + Apache Camel][http://rafael.cordones.me/assets/camunda-bpm-camel.png]
+![camunda BPM + Apache Camel][1]
 
 This project focuses on bringing two great Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.apache.org).
 
@@ -6,7 +6,7 @@ Having started as a fork of [Activiti's Apache Camel module](https://github.com/
 
 # Supported features
 
-![Use Cases supported by camunda BPM Camel Component][https://raw.github.com/camunda/camunda-bpm-camel/master/use-cases.png]
+![Use Cases supported by camunda BPM Camel Component][2]
 
 ## camunda BPM --> Apache Camel
 
@@ -183,3 +183,6 @@ This library started as a fork of [Activiti's Apache Camel module](https://githu
 # License
 
 This software is licensed under the terms you  find in the file named `LICENSE.txt` in the root directory.
+
+[1]: http://rafael.cordones.me/assets/camunda-bpm-camel.png
+[2]: https://raw.github.com/camunda/camunda-bpm-camel/master/use-cases.png
