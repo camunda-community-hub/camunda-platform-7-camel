@@ -16,7 +16,7 @@ See [example project 'camel use cases'](https://github.com/camunda/camunda-bpm-e
 
 ## camunda BPM --> Apache Camel 
 
-### Calling a Camel Endpoint (Service) (2)
+### Calling a Camel Endpoint (Service)
 
 Use the following expression in a ServiceTask to send all the process instance variables as a map to Camel endpoint:
 
@@ -37,7 +37,7 @@ The property `CamundaBpmProcessInstanceId` will be available to any downstream p
 ## Apache Camel --> camunda BPM
 The following use cases are supported by the camunda BPM Camel component (see [Camel Components](http://camel.apache.org/components.html)).
 
-### `camunda-bpm://start` Start a process instance (1)
+### `camunda-bpm://start` Start a process instance
 
 A direct consumer to start process instances. 
 
@@ -62,7 +62,7 @@ Starts a process instance of the process definition `startProcessFromRoute` with
 
 
 
-### `camunda-bpm://message` Send a message to the process engine (1 & 3)
+### `camunda-bpm://message` Send a message to the process engine
 
 A direct consumer to send a message to the process engine. This can either:
 * trigger the start of a new process instance, see [Start Message Event](http://docs.camunda.org/latest/api-references/bpmn20/#events-message-events)
