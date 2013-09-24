@@ -56,9 +56,7 @@ public class StartProcessProducer extends CamundaBpmProducer {
       processVariables.putAll(exchange.getIn().getHeaders());
     }
 
-//    if (exchange.getIn().getBody() instanceof Map<?, ?>) {
-      processVariables.putAll(ExchangeUtils.prepareVariables(exchange, parameters));
-//    }
+    processVariables.putAll(ExchangeUtils.prepareVariables(exchange, parameters));
 
     /*
      * If the exchange contains the CAMUNDA_BPM_BUSINESS_KEY then we pass it to the engine
