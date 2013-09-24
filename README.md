@@ -8,7 +8,15 @@ Having started as a fork of [Activiti's Apache Camel module](https://github.com/
 
 ![Use Cases supported by camunda BPM Camel Component][2]
 
-## camunda BPM --> Apache Camel
+See [example project 'camel use cases'](https://github.com/camunda/camunda-bpm-examples/tree/master/camel-use-cases) for code for all of the use cases shown in the above model.
+
+[Discuss this process model on camunda share](http://camunda.org/share/#/process/f54a4ff9-4cc1-428c-829b-a4002dcdd81f) if you have questions or feedback.
+
+
+
+## camunda BPM --> Apache Camel 
+
+### Calling a Camel Endpoint (Service) (2)
 
 Use the following expression in a ServiceTask to send all the process instance variables as a map to Camel endpoint:
 
@@ -29,7 +37,7 @@ The property `CamundaBpmProcessInstanceId` will be available to any downstream p
 ## Apache Camel --> camunda BPM
 The following use cases are supported by the camunda BPM Camel component (see [Camel Components](http://camel.apache.org/components.html)).
 
-### `camunda-bpm://start`: Start a process instance
+### `camunda-bpm://start` Start a process instance (1)
 
 A direct consumer to start process instances. 
 
@@ -52,7 +60,9 @@ Example: `camunda-bpm://start?processDefinitionKey=startProcessFromRoute&copyBod
 
 Starts a process instance of the process definition `startProcessFromRoute` with the body of the message as a map with process variable `var1` as a key.
 
-### `camunda-bpm://message`: Send a message to the process engine
+
+
+### `camunda-bpm://message` Send a message to the process engine (1 & 3)
 
 A direct consumer to send a message to the process engine. This can either:
 * trigger the start of a new process instance, see [Start Message Event](http://docs.camunda.org/latest/api-references/bpmn20/#events-message-events)
@@ -69,12 +79,17 @@ Paremeter | Description
  
 Note that either the property `CamundaBpmProcessInstanceId` or `CamundaBpmBusinessKey` need to be present in the message if it is correlated to a waiting process instance.
 
-## Examples
+
+
+
+# Examples
 Check the existing integration tests for guidance on how to use the current supported features in your projects: [Spring](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring) or [CDI](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/). To run the CDI integration tests do `mvn -DskipITs=false`.
 
 Further there exist two example projects showing camunda-bpm-camel in Action (on JBoss AS 7 though):
 * [camel use cases](https://github.com/camunda/camunda-bpm-examples/tree/master/camel-use-cases)
 * [Bank Account Opening Process using Camel](https://github.com/camunda/camunda-bpm-examples/tree/master/bank-account-opening-camel)
+
+
 
 # Using it in your project
 This project is at the moment in incubation phase. This means that changes are bound to happen that will break backwards compatibility. Be warned!
@@ -160,6 +175,8 @@ public class CamelBootStrap {
 ```
 
 Best read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html) and have a look at the CDI integration tests [here](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/) for guidance. 
+
+
 
 # Feedback and further development
 
