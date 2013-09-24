@@ -14,17 +14,23 @@ package org.camunda.bpm.camel.common;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.camel.Exchange;
+import org.camunda.bpm.camel.component.CamundaBpmConstants;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 
 /**
  * This class contains one method - prepareVariables - that is used to copy
  * variables from Camel into camunda BPM.
  * 
- * @author Ryan Johnston (@rjfsu), Tijs Rademakers, Bernd Ruecker
+ * @author Ryan Johnston (@rjfsu), Tijs Rademakers
+ * @author Bernd Ruecker
  */
 public class ExchangeUtils {
+  
+  private static final Logger log = Logger.getLogger(ExchangeUtils.class.getName());
 
   /**
    * Copies variables from Camel into the process engine.
@@ -37,26 +43,38 @@ public class ExchangeUtils {
    * 
    * @param exchange
    *          The Camel Exchange object
-   * @param camundaBpmEndpoint
-   *          The CamundaBpmEndpoint implementation
+   * @param parameters 
    * @return A Map<String,Object> containing all of the variables to be used in the process engine
    */
-
-  public static Map<String, Object> prepareVariables(Exchange exchange, CamundaBpmEndpoint camundaBpmEndpoint) {
-    Map<String, Object> camelVarMap = new HashMap<String, Object>();
+  @SuppressWarnings("rawtypes")
+  public static Map<String, Object> prepareVariables(Exchange exchange, Map<String, Object> parameters) {
+    Map<String, Object> processVariables = new HashMap<String, Object>();
+           
     Object camelBody = exchange.getIn().getBody();
     if (camelBody instanceof String) {
-      camelVarMap.put("camelBody", camelBody);
+
+      // If the COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER was passed the value of it
+      // is taken as variable to store the (string) body in
+      String processVariableName = "camelBody";
+      if (parameters.containsKey(CamundaBpmConstants.COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER)) {
+        processVariableName = (String) parameters.get(CamundaBpmConstants.COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER);
+      }
+      
+      processVariables.put(processVariableName, camelBody);
+      
     } else if (camelBody instanceof Map<?, ?>) {
+      
       Map<?, ?> camelBodyMap = (Map<?, ?>) camelBody;
-      for (@SuppressWarnings("rawtypes")
-      Map.Entry e : camelBodyMap.entrySet()) {
+      for (Map.Entry e : camelBodyMap.entrySet()) {
         if (e.getKey() instanceof String) {
-          camelVarMap.put((String) e.getKey(), e.getValue());
+          processVariables.put((String) e.getKey(), e.getValue());
         }
       }
+      
+    } else if (camelBody!=null) {
+      log.log(Level.WARNING, "unkown type of camel body - not handed over to process engine: " + camelBody.getClass());
     }
 
-    return camelVarMap;
+    return processVariables;
   }
 }

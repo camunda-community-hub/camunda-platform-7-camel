@@ -13,6 +13,7 @@
 package org.camunda.bpm.camel.component.producer;
 
 import org.apache.camel.Exchange;
+import org.camunda.bpm.camel.common.ExchangeUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
@@ -29,6 +30,7 @@ import java.util.Map;
  * @author Ryan Johnston (@rjfsu)
  * @author Tijs Rademakers (@tijsrademakers)
  * @author Rafael Cordones (@rafacm)
+ * @author Bernd Ruecker
  */
 public class StartProcessProducer extends CamundaBpmProducer {
 
@@ -53,21 +55,10 @@ public class StartProcessProducer extends CamundaBpmProducer {
     if (parameters.containsKey(COPY_MESSAGE_HEADERS_PARAMETER)) {
       processVariables.putAll(exchange.getIn().getHeaders());
     }
-    /*
-     * If the Camel message body is a Map then we copy each key as a process variable
-     */
-    if (exchange.getIn().getBody() instanceof Map<?, ?>) {
-      processVariables.putAll(bodyToMap(exchange.getIn().getBody()));
-    }
-    /*
-     * If the Camel message body is a String then we need to pass the
-     * COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER to give a name to the process variable
-     */
-    else if ((exchange.getIn().getBody() instanceof String) &&
-               parameters.containsKey(COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER)) {
-      String processVariable = (String) parameters.get(COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER);
-      processVariables.put(processVariable, exchange.getIn().getBody());
-    }
+
+//    if (exchange.getIn().getBody() instanceof Map<?, ?>) {
+      processVariables.putAll(ExchangeUtils.prepareVariables(exchange, parameters));
+//    }
 
     /*
      * If the exchange contains the CAMUNDA_BPM_BUSINESS_KEY then we pass it to the engine
@@ -87,18 +78,4 @@ public class StartProcessProducer extends CamundaBpmProducer {
     exchange.getOut().setBody(instance.getProcessInstanceId());
   }
 
-  protected Map<String, Object> bodyToMap(Object body) {
-    Map<String, Object> vars = new HashMap<String, Object>();
-    if (body instanceof Map<?, ?>) {
-      Map<?, ?> camelBodyMap = (Map<?, ?>) body;
-      for (@SuppressWarnings("rawtypes") Map.Entry e : camelBodyMap.entrySet()) {
-        if (e.getKey() instanceof String) {
-          vars.put((String) e.getKey(), e.getValue());
-        }
-      }
-
-      return vars;
-    }
-    throw new IllegalArgumentException("Cannot convert '" + body + "' to a map");
-  }
 }

@@ -80,7 +80,7 @@ public class MessageProducer extends CamundaBpmProducer {
       }
     }
             
-    Map<String, Object> processVariables = ExchangeUtils.prepareVariables(exchange, getCamundaBpmEndpoint());
+    Map<String, Object> processVariables = ExchangeUtils.prepareVariables(exchange, parameters);
     
     if (messageName!=null) {
       // if we have process instance we try to send the message to this one:
