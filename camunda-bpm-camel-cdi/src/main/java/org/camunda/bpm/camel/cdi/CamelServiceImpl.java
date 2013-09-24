@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 @Named("camel")
-@Stateless
+//@Stateless
 public class CamelServiceImpl extends CamelServiceCommonImpl {
 
   @Inject
