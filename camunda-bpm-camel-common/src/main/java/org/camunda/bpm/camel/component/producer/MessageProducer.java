@@ -108,7 +108,12 @@ public class MessageProducer extends CamundaBpmProducer {
         // workaround for https://app.camunda.com/jira/browse/CAM-1316 - at the moment we just start process instances
         // and skip correlation!
         //runtimeService.correlateMessage(messageName, correlationKeys, processVariables);
-        runtimeService.startProcessInstanceByMessage(messageName, processVariables);
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByMessage(messageName, processVariables);
+
+        //set the processId of the newly created instance
+        if (processInstance != null) {
+          exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, processInstance.getProcessInstanceId());
+        }
       }
     }
     else {
