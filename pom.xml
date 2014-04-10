@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <name>camunda BPM - Apache Camel Integration</name>
-  <groupId>org.camunda.bpm.incubation</groupId>
+  <groupId>org.camunda.bpm.extension.camel</groupId>
   <artifactId>camunda-bpm-camel</artifactId>
   <version>0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -33,18 +33,18 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.camunda.bpm.incubation</groupId>
+        <groupId>org.camunda.bpm.extension.camel</groupId>
         <artifactId>camunda-bpm-camel-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.camunda.bpm.incubation</groupId>
+        <groupId>org.camunda.bpm.extension.camel</groupId>
         <artifactId>camunda-bpm-camel-common-tests</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.camunda.bpm.incubation</groupId>
+        <groupId>org.camunda.bpm.extension.camel</groupId>
         <artifactId>camunda-bpm-camel-spring</artifactId>
         <version>${project.version}</version>
       </dependency>

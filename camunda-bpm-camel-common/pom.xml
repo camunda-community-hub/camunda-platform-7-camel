@@ -6,7 +6,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>camunda-bpm-camel</artifactId>
-    <groupId>org.camunda.bpm.incubation</groupId>
+    <groupId>org.camunda.bpm.extension.camel</groupId>
     <version>0.1-SNAPSHOT</version>
   </parent>
 
