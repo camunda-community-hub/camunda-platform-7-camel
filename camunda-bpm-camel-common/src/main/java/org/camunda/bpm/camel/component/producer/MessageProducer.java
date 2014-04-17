@@ -105,14 +105,12 @@ public class MessageProducer extends CamundaBpmProducer {
         HashMap<String, Object> correlationKeys = new HashMap<String, Object>();
         // TODO: How to retrieve correlation keys?
         
-        // workaround for https://app.camunda.com/jira/browse/CAM-1316 - at the moment we just start process instances
-        // and skip correlation!
-        //runtimeService.correlateMessage(messageName, correlationKeys, processVariables);
-        runtimeService.startProcessInstanceByMessage(messageName, processVariables);
+        runtimeService.correlateMessage(messageName, correlationKeys, processVariables);
       }
     }
     else {
       // signal a ReceiveTask needs a processInstance to be addressed
+      // (hint: this should be best done by a message in the ReceiveTask as this is possible from 7.1 on - this was introduced with 7.0 where this was not yet possible)
       if (processInstanceId==null) {
         throw new RuntimeException("Could not find the process instance via the provided properties (" + CAMUNDA_BPM_PROCESS_INSTANCE_ID + "= '" + processInstanceId + "', " + CAMUNDA_BPM_BUSINESS_KEY + "= '" + businessKey + "'");      
       }      
