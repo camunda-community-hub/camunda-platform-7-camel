@@ -7,14 +7,14 @@
   <artifactId>camunda-bpm-camel-spring</artifactId>
 
   <parent>
-    <groupId>org.camunda.bpm.incubation</groupId>
+    <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>org.camunda.bpm.incubation</groupId>
+      <groupId>org.camunda.bpm.extension.camel</groupId>
       <artifactId>camunda-bpm-camel-common</artifactId>
     </dependency>
     <dependency>
@@ -40,7 +40,7 @@
 
     <!-- Test dependencies -->
     <dependency>
-      <groupId>org.camunda.bpm.incubation</groupId>
+      <groupId>org.camunda.bpm.extension.camel</groupId>
       <artifactId>camunda-bpm-camel-common-tests</artifactId>
     </dependency>
     <dependency>
