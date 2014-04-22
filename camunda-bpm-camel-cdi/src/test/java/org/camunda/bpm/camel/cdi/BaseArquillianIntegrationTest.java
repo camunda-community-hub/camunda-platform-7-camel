@@ -42,12 +42,12 @@ public abstract class BaseArquillianIntegrationTest {
 
     WebArchive war = ShrinkWrap.create(WebArchive.class, deploymentArchiveName + ".war")
       .addAsLibraries(resolver.artifact("org.camunda.bpm:camunda-engine-cdi").resolveAsFiles())
-      .addAsLibraries(resolver.artifact("org.camunda.bpm.incubation:camunda-bpm-camel-common").resolveAsFiles())
+      .addAsLibraries(resolver.artifact("org.camunda.bpm.extension.camel:camunda-bpm-camel-common").resolveAsFiles())
       .addAsLibraries(resolver.artifact("org.apache.camel:camel-core").resolveAsFiles())
       .addAsLibraries(resolver.artifact("org.apache.camel:camel-cdi").resolveAsFiles())
       .addAsLibraries(resolver.artifact("org.easytesting:fest-assert-core").resolveAsFiles())
       // FIXME: this does not work we need to add this project's resources one by one
-      //.addAsLibraries(resolver.artifact("org.camunda.bpm.incubation:camunda-bpm-camel-cdi").resolveAsFiles())
+      //.addAsLibraries(resolver.artifact("org.camunda.bpm.extension.camel:camunda-bpm-camel-cdi").resolveAsFiles())
       .addClass(CamelServiceImpl.class)
       .addClass(BaseArquillianIntegrationTest.class)
       .addClass(ArquillianTestsProcessApplication.class)
