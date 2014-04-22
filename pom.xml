@@ -67,7 +67,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.4.1</version>
+        <version>2.5</version>
         <configuration>
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <tagNameFormat>@{project.version}</tagNameFormat>
@@ -88,11 +88,6 @@
   </build>
 
   <repositories>
-    <repository>
-      <id>camunda-bpm-nexus</id>
-      <name>camunda-bpm-nexus</name>
-      <url>https://app.camunda.com/nexus/content/groups/public</url>
-    </repository>
     <repository>
       <id>jboss-public-repository</id>
       <name>JBoss Repository</name>
@@ -126,7 +121,7 @@
     <repository>
       <id>camunda-nexus</id>
       <name>camunda BPM Maven Repository</name>
-      <url>https://app.camunda.com/nexus/content/repositories/camunda-bpm</url>
+      <url>https://app.camunda.com/nexus/content/repositories/camunda-bpm-community-extensions</url>
     </repository>
   </distributionManagement>
 </project>
