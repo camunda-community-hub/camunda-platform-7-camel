@@ -27,6 +27,7 @@
     <module>camunda-bpm-camel-common-tests</module>
     <module>camunda-bpm-camel-spring</module>
     <module>camunda-bpm-camel-cdi</module>
+    <module>camunda-bpm-camel-blueprint</module>
   </modules>
 
   <dependencyManagement>
