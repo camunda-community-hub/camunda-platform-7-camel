@@ -177,6 +177,24 @@ public class CamelBootStrap {
 Best read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html) and have a look at the CDI integration tests [here](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/) for guidance. 
 
 
+### Blueprint
+```
+<dependency>
+    <groupId>org.camunda.bpm.incubation</groupId>
+    <artifactId>camunda-bpm-camel-blueprint</artifactId>
+    <version>0.1</version>
+</dependency>
+```
+The OSGi Framework is used to retrieve the `ProcessEngine` and a `DefaultCamelContext` therefore the bean definition of the `CamelServiceImpl` is obsolete.
+
+The camunda-bpm-osgi project is used with the blueprint-wrapper `context.xml`. The `BlueprintELResolver` was extended by the `CamelBlueprintELResolver`. You need to replace the class of the ‘blueprintELResolver’ bean in the context.xml:
+
+```
+...
+<bean id="blueprintELResolver" class=" org.camunda.bpm.camel.blueprint.CamelBlueprintELResolver" />
+...
+```
+
 
 # Feedback and further development
 
