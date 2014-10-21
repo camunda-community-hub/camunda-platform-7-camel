@@ -8,7 +8,7 @@ Having started as a fork of [Activiti's Apache Camel module](https://github.com/
 
 ![Use Cases supported by camunda BPM Camel Component][2]
 
-See [example project 'camel use cases'](https://github.com/camunda/camunda-bpm-examples/tree/master/camel-use-cases) for code for all of the use cases shown in the above model.
+See [example project 'camel use cases'](https://github.com/camunda/camunda-consulting/tree/master/showcases/camel-use-cases) for code for all of the use cases shown in the above model.
 
 [Discuss this process model on camunda share](http://camunda.org/share/#/process/f54a4ff9-4cc1-428c-829b-a4002dcdd81f) if you have questions or feedback.
 
