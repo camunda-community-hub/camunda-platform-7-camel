@@ -14,7 +14,7 @@ See [example project 'camel use cases'](https://github.com/camunda/camunda-consu
 
 
 
-## camunda BPM --> Apache Camel 
+## camunda BPM --> Apache Camel
 
 ### Calling a Camel Endpoint (Service)
 
@@ -22,13 +22,13 @@ Use the following expression in a ServiceTask to send all the process instance v
 
 ```
 ${camel.sendTo('<camel endpoint>')}
-``` 
+```
 
 Alternatively you can specify which process instance variables you want to send to Camel with:
 
 ```
 ${camel.sendTo('<camel endpoint>', '<list of process variables>')}
-``` 
+```
 
 The property `CamundaBpmProcessInstanceId` will be available to any downstream processesors in the Camel route.
 
@@ -39,13 +39,13 @@ The following use cases are supported by the camunda BPM Camel component (see [C
 
 ### `camunda-bpm://start` Start a process instance
 
-A direct consumer to start process instances. 
+A direct consumer to start process instances.
 
-The following URI parameters are supported: 
+The following URI parameters are supported:
 
 Parameter | Description
---- | --- 
-`processDefinitionKey` | the [process definition key](http://docs.camunda.org/api-references/java/org/camunda/bpm/engine/RuntimeService.html) of the process to start an instance of 
+--- | ---
+`processDefinitionKey` | the [process definition key](http://docs.camunda.org/api-references/java/org/camunda/bpm/engine/RuntimeService.html) of the process to start an instance of
 `copyBodyAsVariable` | name of the process variable to which the body of the Camel should be copied. Default is `camelBody`
 `copyHeaders` | whether the [Camel message headers](http://camel.apache.org/header.html) should be copied as process variables
 `copyProperties` | whether the [Camel exchange](http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Exchange.html) properties should be copied as process variables
@@ -66,17 +66,17 @@ Starts a process instance of the process definition `startProcessFromRoute` with
 
 A direct consumer to send a message to the process engine. This can either:
 * trigger the start of a new process instance, see [Start Message Event](http://docs.camunda.org/latest/api-references/bpmn20/#events-message-events)
-* send a message to a waiting process instances. The process instance might either wait in a [ReceiveTask](http://docs.camunda.org/latest/api-references/bpmn20/#tasks-receive-task) or an [Intermediate Message Event](http://docs.camunda.org/latest/api-references/bpmn20/#events-message-events). 
+* send a message to a waiting process instances. The process instance might either wait in a [ReceiveTask](http://docs.camunda.org/latest/api-references/bpmn20/#tasks-receive-task) or an [Intermediate Message Event](http://docs.camunda.org/latest/api-references/bpmn20/#events-message-events).
 
 The following URI parameters are supported:
 
 Paremeter | Description
---- | --- 
+--- | ---
 `activityId`| the id of the ReceiveTask in the BPMN 2.0 XML (mandatory if the process instance waits in a ReceiveTask)
 `messageName`| the name of the message in the BPMN 2.0 XML (mandatory if you do not correlate to a ReceiveTask)
 `copyBodyAsVariable` | name of the process variable to which the body of the Camel should be copied. Default is `camelBody`.
 `processDefinitionKey` | the [process definition key](http://docs.camunda.org/api-references/java/org/camunda/bpm/engine/RuntimeService.html) of the process definition this operation is related to. Sometimes this can help to make correlation unique, it is always an optional parameter.
- 
+
 Note that either the property `CamundaBpmProcessInstanceId` or `CamundaBpmBusinessKey` need to be present in the message if it is correlated to a waiting process instance.
 
 
@@ -96,7 +96,7 @@ This project is at the moment in incubation phase. This means that changes are b
 
 ## Maven coordinates
 
-Declare the camunda BPM repository in your project's `pom.xml` and make sure you also add the `<updatePolicy>` element so Maven always downloads the latest SNAPSHOT: 
+Declare the camunda BPM repository in your project's `pom.xml` and make sure you also add the `<updatePolicy>` element so Maven always downloads the latest SNAPSHOT:
 
 ```
 <repositories>
@@ -116,7 +116,7 @@ Choose a dependency depending on your target environment:
 ### Spring
 ```
 <dependency>
-    <groupId>org.camunda.bpm.incubation</groupId>
+    <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-spring</artifactId>
     <version>0.1</version>
 </dependency>
@@ -136,7 +136,7 @@ The Spring bean id `camel` will be then available to expressions used in Service
 
 ```
 <dependency>
-    <groupId>org.camunda.bpm.incubation</groupId>
+    <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-cdi</artifactId>
     <version>0.1</version>
 </dependency>
@@ -148,12 +148,12 @@ The CDI configuration needs a bit more work - especially for bootstrapping Camel
 @Singleton
 @Startup
 public class CamelBootStrap {
-  
+
   @Inject
   private CdiCamelContext cdiCamelContext;
 
   @Inject
-  private ProcessEngine processEngine;	
+  private ProcessEngine processEngine;
 
   @Inject
   private MyCamelRouteBuilder routeBuilder; // your own route declaration
@@ -174,13 +174,13 @@ public class CamelBootStrap {
 }
 ```
 
-Best read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html) and have a look at the CDI integration tests [here](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/) for guidance. 
+Best read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html) and have a look at the CDI integration tests [here](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/) for guidance.
 
 
 ### Blueprint
 ```
 <dependency>
-    <groupId>org.camunda.bpm.incubation</groupId>
+    <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-blueprint</artifactId>
     <version>0.1</version>
 </dependency>
@@ -204,7 +204,7 @@ Out landry list of development TODOs (in no special order):
 
 - Create JBoss Distribution with Camel (including Bootstrapping) as a JBoss Module and Routes to be defined within Process Applications [CIS-19](https://app.camunda.com/jira/browse/CIS-19)
 - Exception handling, i.e. Apache Camel exceptions to BPMNErrors mapping
-- Implement asynchronous support  
+- Implement asynchronous support
 - Refactor Camel to camunda BPM signalling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
 
 These use cases are considered not interessting - tell us if you think different!
