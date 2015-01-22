@@ -2,8 +2,6 @@
 
 This project focuses on bringing two great Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.apache.org).
 
-Having started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel), we have in the meantime refactored the whole codebase and we will steadily adding features. Watch this space!
-
 # Supported features
 
 ![Use Cases supported by camunda BPM Camel Component][2]
