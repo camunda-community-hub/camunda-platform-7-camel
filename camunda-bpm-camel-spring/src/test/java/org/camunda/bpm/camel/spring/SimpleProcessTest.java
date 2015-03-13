@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Map;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
-@ContextConfiguration("classpath:camel-activiti-context.xml")
+@ContextConfiguration("classpath:camel-camunda-context.xml")
 public class SimpleProcessTest extends ProcessEngineTestCase {
 
   MockEndpoint service1;

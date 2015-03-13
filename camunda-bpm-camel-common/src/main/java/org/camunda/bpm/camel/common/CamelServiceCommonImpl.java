@@ -34,7 +34,7 @@ public abstract class CamelServiceCommonImpl implements CamelService {
   }
 
   private Object sendTo(String endpointUri, Collection<String> variables) {
-    ActivityExecution execution = (ActivityExecution) Context.getExecutionContext().getExecution();
+    ActivityExecution execution = (ActivityExecution) Context.getBpmnExecutionContext().getExecution();
     Map<String, Object> variablesToSend = new HashMap<String, Object>();
     for (String var: variables) {
       Object value = execution.getVariable(var);

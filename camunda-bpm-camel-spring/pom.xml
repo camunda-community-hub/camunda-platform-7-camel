@@ -15,17 +15,89 @@
     <dependency>
       <groupId>org.camunda.bpm.extension.camel</groupId>
       <artifactId>camunda-bpm-camel-common</artifactId>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>spring-beans</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.camunda.bpm</groupId>
       <artifactId>camunda-engine-spring</artifactId>
       <version>${camunda-bpm.version}</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>spring-beans</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>spring-jdbc</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>spring-tx</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>spring-orm</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>spring-context</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-spring</artifactId>
       <version>${camel.version}</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>spring-beans</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>spring-tx</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>spring-context</artifactId>
+      		<groupId>org.springframework</groupId>
+      	</exclusion>
+      </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${spring.framework.version}</version>
+      <scope>compile</scope>
+    </dependency>    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${spring.framework.version}</version>
+      <scope>compile</scope>
+    </dependency>    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>${spring.framework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>${spring.framework.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>${spring.framework.version}</version>
+      <scope>compile</scope>
+    </dependency>  
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>

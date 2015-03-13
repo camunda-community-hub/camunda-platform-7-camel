@@ -1,3 +1,5 @@
+'''Warning: Untested and instable component!
+
 This component uses OSGi and blueprint to interact with Camel. 
 
 It uses the OSGi Framework to retrieve the `ProcessEngine` and a `DefaultCamelContext` therefore the bean definition of the `CamelServiceImpl` is obsolete.

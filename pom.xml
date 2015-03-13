@@ -16,9 +16,9 @@
   <packaging>pom</packaging>
 
   <properties>
-    <camunda-bpm.version>7.1.0-Final</camunda-bpm.version>
-    <camel.version>2.12.0</camel.version>
-    <spring.framework.version>3.1.2.RELEASE</spring.framework.version>
+    <camunda-bpm.version>7.2.0</camunda-bpm.version>
+    <camel.version>2.14.1</camel.version>
+    <spring.framework.version>4.0.7.RELEASE</spring.framework.version>
     <fest.assert.version>2.0M10</fest.assert.version>
     <sl4j.version>1.6.1</sl4j.version>
     <junit.version>4.11</junit.version>
