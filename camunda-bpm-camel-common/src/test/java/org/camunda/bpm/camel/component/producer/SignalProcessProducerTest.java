@@ -25,11 +25,12 @@ public class SignalProcessProducerTest extends BaseCamelTest {
     assertThat(producer).isInstanceOf(MessageProducer.class);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void noProcessDefinitionKeyParameterShouldThrowException() throws Exception {
-    Endpoint endpoint = camelContext.getEndpoint(camundaBpmUri("signal"));
-    endpoint.createProducer();
-  }
+// No longer valid - The process definition key may be past at execution of the route
+//  @Test(expected = IllegalArgumentException.class)
+//  public void noProcessDefinitionKeyParameterShouldThrowException() throws Exception {
+//    Endpoint endpoint = camelContext.getEndpoint(camundaBpmUri("signal"));
+//    endpoint.createProducer();
+//  }
 
   @Test(expected = IllegalArgumentException.class)
   public void noActivityIdParameterShouldThrowException() throws Exception {

@@ -12,18 +12,12 @@
  */
 package org.camunda.bpm.camel.component.producer;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
-
-import java.util.Map;
-
-import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
+
+import java.util.Map;
 
 public abstract class CamundaBpmProducer extends DefaultProducer {
 
@@ -34,7 +28,9 @@ public abstract class CamundaBpmProducer extends DefaultProducer {
   public CamundaBpmProducer(CamundaBpmEndpoint endpoint, Map<String, Object> parameters) {
     super(endpoint);
     this.processEngine = endpoint.getProcessEngine();
-    this.runtimeService = processEngine.getRuntimeService();
+      if (this.processEngine != null) {
+          this.runtimeService = processEngine.getRuntimeService();
+      }
     this.parameters = parameters;
   }
   
