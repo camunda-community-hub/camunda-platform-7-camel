@@ -22,7 +22,7 @@ public abstract class CamelServiceCommonImpl implements CamelService {
 
   @Override
   public Object sendTo(String endpointUri) {
-    ActivityExecution execution = Context.getExecutionContext().getExecution();
+    ActivityExecution execution = Context.getBpmnExecutionContext().getExecution();
     return sendTo(endpointUri, execution.getVariableNames());
   }
 
