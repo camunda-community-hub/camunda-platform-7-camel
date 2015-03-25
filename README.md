@@ -28,7 +28,7 @@ Alternatively you can specify which process instance variables you want to send 
 ${camel.sendTo('<camel endpoint>', '<list of process variables>')}
 ```
 
-The property `CamundaBpmProcessInstanceId` will be available to any downstream processesors in the Camel route.
+The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if available) and `CamundaBpmCorrelationKey` (if set) will be available to any downstream processesors in the Camel route.
 
 
 
@@ -68,14 +68,15 @@ A direct consumer to send a message to the process engine. This can either:
 
 The following URI parameters are supported:
 
-Paremeter | Description
+Parameter | Description
 --- | ---
 `activityId`| the id of the ReceiveTask in the BPMN 2.0 XML (mandatory if the process instance waits in a ReceiveTask)
 `messageName`| the name of the message in the BPMN 2.0 XML (mandatory if you do not correlate to a ReceiveTask)
+`correlationKeyName`| the name of a process variable to which the property `CamundaBpmCorrelationKey` will be correlated
 `copyBodyAsVariable` | name of the process variable to which the body of the Camel should be copied. Default is `camelBody`.
 `processDefinitionKey` | the [process definition key](http://docs.camunda.org/api-references/java/org/camunda/bpm/engine/RuntimeService.html) of the process definition this operation is related to. Sometimes this can help to make correlation unique, it is always an optional parameter.
 
-Note that either the property `CamundaBpmProcessInstanceId` or `CamundaBpmBusinessKey` need to be present in the message if it is correlated to a waiting process instance.
+Note that either one of the properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` or `CamundaBpmCorrelationKey` need to be present in the message if it is correlated to a waiting process instance.
 
 
 
