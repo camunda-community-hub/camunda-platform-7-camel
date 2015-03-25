@@ -41,6 +41,7 @@ public class MessageProducer extends CamundaBpmProducer {
   private final String messageName;
   private final String activityId;
   private final String processDefinitionKey;
+  private final String correlationKeyName;
 
   public MessageProducer(CamundaBpmEndpoint endpoint, Map<String, Object> parameters) {
     super(endpoint, parameters);
@@ -53,9 +54,11 @@ public class MessageProducer extends CamundaBpmProducer {
         this.messageName = null;
         this.activityId = (String) parameters.get(ACTIVITY_ID_PARAMETER);
       } else {
-          this.messageName = null;
-          this.activityId = null;
-        // throw new IllegalArgumentException("You need to pass the '" + MESSAGE_NAME_PARAMETER + "' parameter! Parameters received: " + parameters);
+        this.messageName = null;
+        this.activityId = null;
+        // throw new IllegalArgumentException("You need to pass the '" +
+        // MESSAGE_NAME_PARAMETER + "' parameter! Parameters received: " +
+        // parameters);
       }
     }
     if (parameters.containsKey(PROCESS_DEFINITION_KEY_PARAMETER)) {
@@ -63,64 +66,78 @@ public class MessageProducer extends CamundaBpmProducer {
     } else {
       this.processDefinitionKey = null;
     }
+    if (parameters.containsKey(CORRELATION_KEY_NAME_PARAMETER)) {
+      this.correlationKeyName = (String) parameters.get(CORRELATION_KEY_NAME_PARAMETER);
+    } else {
+      this.correlationKeyName = null;
+    }
   }
 
   @Override
-  public void process(Exchange exchange) throws Exception {    
+  public void process(Exchange exchange) throws Exception {
     String processInstanceId = exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, String.class);
     String businessKey = exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY, String.class);
-    
-    if (processInstanceId == null && businessKey!=null) {
-      ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery() //
-          .processInstanceBusinessKey(businessKey);
-      if (processDefinitionKey!=null) {
-        query.processDefinitionKey(processDefinitionKey);
-      }
-      ProcessInstance processInstance = query.singleResult();
-      if (processInstance != null) {
-        processInstanceId = processInstance.getId();
-      }
-    }
-            
+
     Map<String, Object> processVariables = ExchangeUtils.prepareVariables(exchange, parameters);
-    
-    if (messageName!=null) {
+
+    if (messageName != null) {
+      HashMap<String, Object> correlationKeys = new HashMap<String, Object>();
+      if (correlationKeyName != null) {
+        String correlationKey = exchange.getProperty(CAMUNDA_BPM_CORRELATION_KEY, String.class);
+        if (correlationKey == null) {
+          throw new RuntimeException("Missing value for correlation key for message '" + messageName + "'");
+        }
+        correlationKeys.put(correlationKeyName, correlationKey);
+      }
+
       // if we have process instance we try to send the message to this one:
-      if (processInstanceId!=null) {
+      if (processInstanceId != null) {
         ExecutionQuery query = runtimeService.createExecutionQuery() //
-          .processInstanceId(processInstanceId) //
-          .messageEventSubscriptionName(messageName); 
-        if (processDefinitionKey!=null) {
+            .processInstanceId(processInstanceId) //
+            .messageEventSubscriptionName(messageName);
+        if (processDefinitionKey != null) {
           query.processDefinitionKey(processDefinitionKey);
         }
         Execution execution = query.singleResult();
-  
+
         if (execution == null) {
           throw new RuntimeException("Couldn't find waiting process instance with id '" + processInstanceId + "' for message '" + messageName + "'");
         }
-  
+
         runtimeService.messageEventReceived(messageName, execution.getId(), processVariables);
+      } else if (businessKey != null) {
+        // if we have businessKey, use it to correlate
+        runtimeService.correlateMessage(messageName, businessKey, correlationKeys, processVariables);
       } else {
         // otherwise we just send the message to the engine to let the engine decide what to do
         // this can either correlate to a waiting instance or start a new process Instance
-        
-        HashMap<String, Object> correlationKeys = new HashMap<String, Object>();
-        // TODO: How to retrieve correlation keys?
-        
+
         runtimeService.correlateMessage(messageName, correlationKeys, processVariables);
       }
-    }
-    else {
+    } else {
       // signal a ReceiveTask needs a processInstance to be addressed
-      // (hint: this should be best done by a message in the ReceiveTask as this is possible from 7.1 on - this was introduced with 7.0 where this was not yet possible)
-      if (processInstanceId==null) {
-        throw new RuntimeException("Could not find the process instance via the provided properties (" + CAMUNDA_BPM_PROCESS_INSTANCE_ID + "= '" + processInstanceId + "', " + CAMUNDA_BPM_BUSINESS_KEY + "= '" + businessKey + "'");      
-      }      
-      
-      ExecutionQuery query = runtimeService.createExecutionQuery() //
-          .processInstanceId(processInstanceId) //
-          .activityId(activityId); //
-      if (processDefinitionKey!=null) {
+      // (hint: this should be best done by a message in the ReceiveTask
+      // as this is possible from 7.1 on - this was introduced with 7.0
+      // where this was not yet possible)
+      if (processInstanceId == null && businessKey != null) {
+        ProcessInstanceQuery query = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey(businessKey);
+        if (processDefinitionKey != null) {
+          query.processDefinitionKey(processDefinitionKey);
+        }
+        ProcessInstance processInstance = query.singleResult();
+        if (processInstance != null) {
+          processInstanceId = processInstance.getId();
+        }
+      }
+
+      if (processInstanceId == null) {
+        throw new RuntimeException("Could not find the process instance via the provided properties (" + CAMUNDA_BPM_PROCESS_INSTANCE_ID + "= '"
+            + processInstanceId + "', " + CAMUNDA_BPM_BUSINESS_KEY + "= '" + businessKey + "'");
+      }
+
+      ExecutionQuery query = runtimeService.createExecutionQuery().processInstanceId(processInstanceId).activityId(activityId);
+
+      if (processDefinitionKey != null) {
         query.processDefinitionKey(processDefinitionKey);
       }
       Execution execution = query.singleResult();
@@ -128,8 +145,8 @@ public class MessageProducer extends CamundaBpmProducer {
       if (execution == null) {
         throw new RuntimeException("Couldn't find process instance with id '" + processInstanceId + "' waiting in activity '" + activityId + "'");
       }
-      
-      runtimeService.signal(execution.getId(), processVariables);      
+
+      runtimeService.signal(execution.getId(), processVariables);
     }
   }
 }
