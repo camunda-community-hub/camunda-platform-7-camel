@@ -1,17 +1,21 @@
 package org.camunda.bpm.camel.common;
 
-import java.util.*;
-
 import org.apache.camel.CamelContext;
+import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.impl.DefaultExchange;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
+
+import java.util.*;
+
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
 
 public abstract class CamelServiceCommonImpl implements CamelService {
 
@@ -46,10 +50,17 @@ public abstract class CamelServiceCommonImpl implements CamelService {
 
     log.debug("Sending process variables '{}' as a map to Camel endpoint '{}'", variablesToSend, endpointUri);
     ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
-    Object routeResult = producerTemplate.sendBodyAndProperty(endpointUri, ExchangePattern.InOut,
-                                                              variablesToSend, CAMUNDA_BPM_PROCESS_INSTANCE_ID,
-                                                              execution.getProcessInstanceId());
-    return routeResult;
+      String businessKey = execution.getBusinessKey();
+
+      Exchange exchange = new DefaultExchange(camelContext);
+      exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, execution.getProcessInstanceId());
+      if (businessKey != null) {
+          exchange.setProperty(CAMUNDA_BPM_BUSINESS_KEY, businessKey);
+      }
+      exchange.getIn().setBody(variablesToSend);
+      exchange.setPattern(ExchangePattern.InOut);
+      Exchange send = producerTemplate.send(endpointUri, exchange);
+      return send.getIn().getBody();
   }
 
   @Required
