@@ -12,11 +12,6 @@
  */
 package org.camunda.bpm.camel.component.producer;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.camel.Exchange;
 import org.camunda.bpm.camel.common.ExchangeUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
@@ -24,6 +19,11 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ExecutionQuery;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 /**
  * Sends a message (or signals a ReceiveTask) to a waiting process instance or
@@ -53,7 +53,9 @@ public class MessageProducer extends CamundaBpmProducer {
         this.messageName = null;
         this.activityId = (String) parameters.get(ACTIVITY_ID_PARAMETER);
       } else {
-        throw new IllegalArgumentException("You need to pass the '" + MESSAGE_NAME_PARAMETER + "' parameter! Parameters received: " + parameters);
+          this.messageName = null;
+          this.activityId = null;
+        // throw new IllegalArgumentException("You need to pass the '" + MESSAGE_NAME_PARAMETER + "' parameter! Parameters received: " + parameters);
       }
     }
     if (parameters.containsKey(PROCESS_DEFINITION_KEY_PARAMETER)) {

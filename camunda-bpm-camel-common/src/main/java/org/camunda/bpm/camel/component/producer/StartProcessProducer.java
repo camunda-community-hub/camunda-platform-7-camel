@@ -17,10 +17,10 @@ import org.camunda.bpm.camel.common.ExchangeUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 /**
  * Starts a process instance given a process definition key.
@@ -42,7 +42,8 @@ public class StartProcessProducer extends CamundaBpmProducer {
     if (parameters.containsKey(PROCESS_DEFINITION_KEY_PARAMETER)) {
       this.processDefinitionKey = (String) parameters.get(PROCESS_DEFINITION_KEY_PARAMETER);
     } else {
-      throw new IllegalArgumentException("You need to pass the '" + PROCESS_DEFINITION_KEY_PARAMETER + "' parameter! Parameters received: " + parameters);
+        processDefinitionKey = null;
+      // throw new IllegalArgumentException("You need to pass the '" + PROCESS_DEFINITION_KEY_PARAMETER + "' parameter! Parameters received: " + parameters);
     }
   }
 
@@ -61,6 +62,8 @@ public class StartProcessProducer extends CamundaBpmProducer {
     /*
      * If the exchange contains the CAMUNDA_BPM_BUSINESS_KEY then we pass it to the engine
      */
+    String processDefinitionKey = this.processDefinitionKey != null ? this.processDefinitionKey : exchange.getIn().getHeader(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, String.class);
+
     ProcessInstance instance = null;
     if (exchange.getProperties().containsKey(CAMUNDA_BPM_BUSINESS_KEY)) {
       instance = runtimeService.startProcessInstanceByKey(processDefinitionKey,

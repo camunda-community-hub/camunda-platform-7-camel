@@ -1,6 +1,5 @@
 package org.camunda.bpm.camel.component.producer;
 
-import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultExchange;
@@ -9,11 +8,8 @@ import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.junit.Test;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_ID;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.camundaBpmUri;
-import static org.fest.assertions.api.Assertions.assertThat;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
+import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class StartProcessProducerTest extends BaseCamelTest {
@@ -25,11 +21,12 @@ public class StartProcessProducerTest extends BaseCamelTest {
     assertThat(producer).isInstanceOf(StartProcessProducer.class);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void noProcessDefinitionKeyParameterShouldThrowException() throws Exception {
-    Endpoint endpoint = camelContext.getEndpoint(camundaBpmUri("start"));
-    endpoint.createProducer(); // This triggers the exception
-  }
+// No longer valid - The process definition key may be past at execution of the route
+//  @Test(expected = IllegalArgumentException.class)
+//  public void noProcessDefinitionKeyParameterShouldThrowException() throws Exception {
+//    Endpoint endpoint = camelContext.getEndpoint(camundaBpmUri("start"));
+//    endpoint.createProducer(); // This triggers the exception
+//  }
 
   @Test
   public void startProcessInstanceByKeyShouldBeCalled() throws Exception {
