@@ -31,9 +31,7 @@ public abstract class CamelServiceCommonImpl implements CamelService {
 
   @Override
   public Object sendTo(String endpointUri) {
-    ActivityExecution execution = Context.getBpmnExecutionContext()
-        .getExecution();
-    return sendTo(endpointUri, execution.getVariableNames(), null);
+    return sendTo(endpointUri, null, null);
   }
 
   @Override
@@ -50,15 +48,15 @@ public abstract class CamelServiceCommonImpl implements CamelService {
           .getExecution();
       vars = execution.getVariableNames();
     } else if ("".equals(processVariables)) {
-      vars = Collections.EMPTY_LIST;
+      vars = Collections.emptyList();
     } else {
       vars = Arrays.asList(processVariables.split("\\s*,\\s*"));
     }
-    return sendTo(endpointUri, vars, correlationId);
+    return sendToInternal(endpointUri, vars, correlationId);
   }
 
-  private Object sendTo(String endpointUri, Collection<String> variables,
-      String correlationKey) {
+  private Object sendToInternal(String endpointUri,
+      Collection<String> variables, String correlationKey) {
     ActivityExecution execution = (ActivityExecution) Context
         .getBpmnExecutionContext().getExecution();
     Map<String, Object> variablesToSend = new HashMap<String, Object>();

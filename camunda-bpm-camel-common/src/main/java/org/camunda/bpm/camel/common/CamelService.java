@@ -55,8 +55,8 @@ public interface CamelService {
    *          null value sends all
    * @param correlationKey
    *          value for correlation of Response. Route for response must contain
-   *          parameter correlationKeyName with the name of the process variable
-   *          which is used for correlation
+   *          a parameter correlationKeyName with the name of the process
+   *          variable which is used for correlation
    *
    * @return the result of the execution of the Camel route
    */
