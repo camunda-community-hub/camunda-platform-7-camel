@@ -1,5 +1,15 @@
 package org.camunda.bpm.camel.common;
 
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
@@ -12,11 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.*;
-
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
-
 public abstract class CamelServiceCommonImpl implements CamelService {
 
   final Logger log = LoggerFactory.getLogger(this.getClass());
@@ -26,41 +31,64 @@ public abstract class CamelServiceCommonImpl implements CamelService {
 
   @Override
   public Object sendTo(String endpointUri) {
-    ActivityExecution execution = Context.getBpmnExecutionContext().getExecution();
-    return sendTo(endpointUri, execution.getVariableNames());
+    ActivityExecution execution = Context.getBpmnExecutionContext()
+        .getExecution();
+    return sendTo(endpointUri, execution.getVariableNames(), null);
   }
 
   @Override
   public Object sendTo(String endpointUri, String processVariables) {
-
-    List<String> vars = Arrays.asList(processVariables.split("\\s*,\\s*"));
-    return sendTo(endpointUri, vars);
+    return sendTo(endpointUri, processVariables, null);
   }
 
-  private Object sendTo(String endpointUri, Collection<String> variables) {
-    ActivityExecution execution = (ActivityExecution) Context.getBpmnExecutionContext().getExecution();
+  @Override
+  public Object sendTo(String endpointUri, String processVariables,
+      String correlationId) {
+    Collection<String> vars;
+    if (processVariables == null) {
+      ActivityExecution execution = Context.getBpmnExecutionContext()
+          .getExecution();
+      vars = execution.getVariableNames();
+    } else if ("".equals(processVariables)) {
+      vars = Collections.EMPTY_LIST;
+    } else {
+      vars = Arrays.asList(processVariables.split("\\s*,\\s*"));
+    }
+    return sendTo(endpointUri, vars, correlationId);
+  }
+
+  private Object sendTo(String endpointUri, Collection<String> variables,
+      String correlationKey) {
+    ActivityExecution execution = (ActivityExecution) Context
+        .getBpmnExecutionContext().getExecution();
     Map<String, Object> variablesToSend = new HashMap<String, Object>();
-    for (String var: variables) {
+    for (String var : variables) {
       Object value = execution.getVariable(var);
       if (value == null) {
-        throw new IllegalArgumentException("Process variable '" + var + "' no found!");
+        throw new IllegalArgumentException("Process variable '" + var
+            + "' no found!");
       }
       variablesToSend.put(var, value);
     }
 
-    log.debug("Sending process variables '{}' as a map to Camel endpoint '{}'", variablesToSend, endpointUri);
+    log.debug("Sending process variables '{}' as a map to Camel endpoint '{}'",
+        variablesToSend, endpointUri);
     ProducerTemplate producerTemplate = camelContext.createProducerTemplate();
-      String businessKey = execution.getBusinessKey();
+    String businessKey = execution.getBusinessKey();
 
-      Exchange exchange = new DefaultExchange(camelContext);
-      exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, execution.getProcessInstanceId());
-      if (businessKey != null) {
-          exchange.setProperty(CAMUNDA_BPM_BUSINESS_KEY, businessKey);
-      }
-      exchange.getIn().setBody(variablesToSend);
-      exchange.setPattern(ExchangePattern.InOut);
-      Exchange send = producerTemplate.send(endpointUri, exchange);
-      return send.getIn().getBody();
+    Exchange exchange = new DefaultExchange(camelContext);
+    exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID,
+        execution.getProcessInstanceId());
+    if (businessKey != null) {
+      exchange.setProperty(CAMUNDA_BPM_BUSINESS_KEY, businessKey);
+    }
+    if (correlationKey != null) {
+      exchange.setProperty(CAMUNDA_BPM_CORRELATION_KEY, correlationKey);
+    }
+    exchange.getIn().setBody(variablesToSend);
+    exchange.setPattern(ExchangePattern.InOut);
+    Exchange send = producerTemplate.send(endpointUri, exchange);
+    return send.getIn().getBody();
   }
 
   @Required
