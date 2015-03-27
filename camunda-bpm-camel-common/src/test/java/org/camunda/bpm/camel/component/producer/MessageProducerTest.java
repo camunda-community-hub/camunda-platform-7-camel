@@ -266,4 +266,11 @@ public class MessageProducerTest extends BaseCamelTest {
     assertTrue(correlationCaptor.getValue().values()
         .contains("theCorrelationKey"));
   }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void shouldFailWithoutMessageActivityId() throws Exception {
+    CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext
+        .getEndpoint(camundaBpmUri("message"));
+    endpoint.createProducer();
+  }
 }

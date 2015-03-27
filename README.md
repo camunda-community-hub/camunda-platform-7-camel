@@ -28,6 +28,12 @@ Alternatively you can specify which process instance variables you want to send 
 ${camel.sendTo('<camel endpoint>', '<list of process variables>')}
 ```
 
+Additionally you can specify a correlationKey to send to Camel. It can be used to correlate a response message. The route for the response must contain a parameter correlationKeyName with the name of the process variable which is used for correlation:
+
+```
+${camel.sendTo('<camel endpoint>', '<list of process variables>', 'correlationKey')}
+```
+
 The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if available) and `CamundaBpmCorrelationKey` (if set) will be available to any downstream processesors in the Camel route.
 
 
@@ -70,15 +76,13 @@ The following URI parameters are supported:
 
 Parameter | Description
 --- | ---
-`activityId`| the id of the ReceiveTask in the BPMN 2.0 XML (mandatory if the process instance waits in a ReceiveTask)
-`messageName`| the name of the message in the BPMN 2.0 XML (mandatory if you do not correlate to a ReceiveTask)
+`messageName`| the name of the message in the BPMN 2.0 XML (mandatory if you correlate to a Intermediate Message Event or a ReceiveTask with a message reference)
+`activityId`| the id of the ReceiveTask in the BPMN 2.0 XML (mandatory if the process instance waits in a ReceiveTask without a message reference - considered as deprecated)
 `correlationKeyName`| the name of a process variable to which the property `CamundaBpmCorrelationKey` will be correlated
 `copyBodyAsVariable` | name of the process variable to which the body of the Camel should be copied. Default is `camelBody`.
-`processDefinitionKey` | the [process definition key](http://docs.camunda.org/api-references/java/org/camunda/bpm/engine/RuntimeService.html) of the process definition this operation is related to. Sometimes this can help to make correlation unique, it is always an optional parameter.
+`processDefinitionKey` | the [process definition key](http://docs.camunda.org/api-references/java/org/camunda/bpm/engine/RuntimeService.html) of the process definition this operation is related to. In case of working without a message this can help to make correlation unique, it is always an optional parameter.
 
-Note that either one of the properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` or `CamundaBpmCorrelationKey` need to be present in the message if it is correlated to a waiting process instance.
-
-
+Note that either one of the properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` or `CamundaBpmCorrelationKey` need to be present in the message if it is correlated to a waiting process instance. Usage of `CamundaBpmCorrelationKey` and / or `CamundaBpmBusinessKey` is preferred.
 
 
 # Examples
