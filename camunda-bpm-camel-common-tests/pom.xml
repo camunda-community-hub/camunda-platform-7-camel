@@ -4,7 +4,7 @@
   <parent>
     <artifactId>camunda-bpm-camel</artifactId>
     <groupId>org.camunda.bpm.extension.camel</groupId>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.4</version>
   </parent>
 
   <name>camunda BPM - Apache Camel Integration (Common Test Resources)</name>
