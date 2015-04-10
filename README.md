@@ -97,9 +97,14 @@ Further there exist two example projects showing camunda-bpm-camel in Action (on
 # Using it in your project
 This project is at the moment in incubation phase. This means that changes are bound to happen that will break backwards compatibility. Be warned!
 
+## Environment
+
+From version 0.3 on JDK 1.7 or better is required (by Camel, see http://camel.apache.org/what-are-the-dependencies.html - Camel 2.14 onwards requires JDK 1.7 or better).
+
+
 ## Maven coordinates
 
-Declare the camunda BPM repository in your project's `pom.xml` and make sure you also add the `<updatePolicy>` element so Maven always downloads the latest SNAPSHOT:
+You might have to add v the camunda BPM repository in your project's `pom.xml`:
 
 ```
 <repositories>
@@ -107,9 +112,6 @@ Declare the camunda BPM repository in your project's `pom.xml` and make sure you
 		<id>camunda-bpm-nexus</id>
 		<name>camunda-bpm-nexus</name>
 		<url>https://app.camunda.com/nexus/content/groups/public</url>
-		<snapshots>
-			<updatePolicy>always</updatePolicy>
-		</snapshots>
 	</repository>
 </repositories>
 ```
@@ -121,7 +123,7 @@ Choose a dependency depending on your target environment:
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-spring</artifactId>
-    <version>0.1</version>
+    <version>0.4</version>
 </dependency>
 ```
 In your Spring configuration you need to configure the `CamelService` like this:
@@ -141,7 +143,7 @@ The Spring bean id `camel` will be then available to expressions used in Service
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-cdi</artifactId>
-    <version>0.1</version>
+    <version>0.4</version>
 </dependency>
 ```
 
@@ -185,7 +187,7 @@ Best read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html) a
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-blueprint</artifactId>
-    <version>0.1</version>
+    <version>0.4</version>
 </dependency>
 ```
 The OSGi Framework is used to retrieve the `ProcessEngine` and a `DefaultCamelContext` therefore the bean definition of the `CamelServiceImpl` is obsolete.
