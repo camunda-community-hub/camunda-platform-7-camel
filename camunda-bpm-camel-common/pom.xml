@@ -85,12 +85,12 @@
                     </instructions>
                 </configuration>
                 <executions>
-                    <execution>
+                    <!-- execution>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>cleanVersions</goal>
                         </goals>
-                    </execution>
+                    </execution-->
                     <execution>
                         <id>bundle-manifest</id>
                         <phase>process-classes</phase>
@@ -102,6 +102,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>
