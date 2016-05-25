@@ -1,10 +1,8 @@
 package org.camunda.bpm.camel.component.producer;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CAMEL_URI_SCHEME;
-
 import java.util.Map;
-import java.util.regex.Pattern;
 
+import org.camunda.bpm.camel.common.UriUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 
 /**
@@ -17,7 +15,7 @@ public final class CamundaBpmProducerFactory {
   private CamundaBpmProducerFactory() { } // Prevent instantiation of helper class
 
   public static CamundaBpmProducer createProducer(CamundaBpmEndpoint endpoint, String uri, Map<String, Object> parameters) throws IllegalArgumentException {
-    String[] uriTokens = parseUri(uri);
+    String[] uriTokens = UriUtils.parseUri(uri);
 
     if (uriTokens.length > 0) {
       if ("start".equals(uriTokens[0])) {
@@ -30,16 +28,6 @@ public final class CamundaBpmProducerFactory {
     }
 
     throw new IllegalArgumentException("Cannot create a producer for URI '" + uri);
-  }
-
-  private static String[] parseUri(String uri) {
-    Pattern p1 = Pattern.compile(CAMUNDA_BPM_CAMEL_URI_SCHEME + ":(//)*");
-    Pattern p2 = Pattern.compile("\\?.*");
-
-    uri = p1.matcher(uri).replaceAll("");
-    uri = p2.matcher(uri).replaceAll("");
-
-    return uri.split("/");
   }
 
 }

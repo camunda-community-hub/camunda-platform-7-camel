@@ -13,7 +13,9 @@
 
 package org.camunda.bpm.camel.component;
 
-import org.camunda.bpm.camel.common.CamundaBpmConsumer;
+import org.camunda.bpm.camel.component.consumer.CamundaBpmConsumer;
+import org.camunda.bpm.camel.component.consumer.CamundaBpmConsumerFactory;
+import org.camunda.bpm.camel.component.consumer.ExternalTaskConsumer;
 import org.camunda.bpm.camel.component.producer.CamundaBpmProducerFactory;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.apache.camel.*;
@@ -47,6 +49,7 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
     return this.component.getProcessEngine();
   }
 
+  @Override
   public void addConsumer(CamundaBpmConsumer consumer) {
     if (camundaBpmConsumer != null) {
       throw new RuntimeException("camunda BPM consumer already defined for " + getEndpointUri() + "!");
@@ -66,8 +69,17 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
   }
 
   public Consumer createConsumer(Processor processor) throws Exception {
-    return new CamundaBpmConsumer(this, processor);
+	  return CamundaBpmConsumerFactory.createConsumer(this, getEndpointUri(), processor, this.parameters);
   }
+  
+  @Override
+	public PollingConsumer createPollingConsumer() throws Exception {
+		if (camundaBpmConsumer instanceof ExternalTaskConsumer) {
+			return (ExternalTaskConsumer) camundaBpmConsumer;
+		} else {
+			return super.createPollingConsumer();
+		}
+	}
 
   public boolean isSingleton() {
     return true;

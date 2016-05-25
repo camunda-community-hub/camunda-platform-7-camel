@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 import org.apache.camel.Exchange;
 import org.camunda.bpm.camel.component.CamundaBpmConstants;
-import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 
 /**
  * This class contains one method - prepareVariables - that is used to copy
