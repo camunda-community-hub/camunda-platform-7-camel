@@ -36,11 +36,14 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
   private CamundaBpmComponent component;
   private CamundaBpmConsumer camundaBpmConsumer;
   private Map<String, Object> parameters;
+    private final ParsedUri uri;
 
-  public CamundaBpmEndpointDefaultImpl(String uri, CamundaBpmComponent component, Map<String, Object> parameters) {
+    public CamundaBpmEndpointDefaultImpl(String uri, ParsedUri parsedUri, CamundaBpmComponent component,
+            Map<String, Object> parameters) {
     super();
     setCamelContext(component.getCamelContext());
     setEndpointUri(uri);
+        this.uri = parsedUri;
     this.component = component;
     this.parameters = parameters;
   }
@@ -65,7 +68,7 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
   }
 
   public Producer createProducer() throws Exception {
-    return CamundaBpmProducerFactory.createProducer(this, getEndpointUri(), this.parameters);
+    return CamundaBpmProducerFactory.createProducer(this, this.uri, this.parameters);
   }
 
   public Consumer createConsumer(Processor processor) throws Exception {
