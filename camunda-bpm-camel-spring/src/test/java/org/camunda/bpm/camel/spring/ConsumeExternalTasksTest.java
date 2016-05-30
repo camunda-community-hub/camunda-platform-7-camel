@@ -13,6 +13,7 @@ package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Versi
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.model.language.ConstantExpression;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -59,12 +60,14 @@ public class ConsumeExternalTasksTest {
   public void setUp() {
     mockEndpoint = (MockEndpoint) camelContext.getEndpoint("mock:endpoint");
     mockEndpoint.reset();
+    mockEndpoint.returnReplyBody(new ConstantExpression("ReplyBody"));
+    mockEndpoint.returnReplyHeader("H1", new ConstantExpression("ReplyHeaderH1"));
   }
   
   @Test
   public void doTest() throws Exception {
 	  
-	  Thread.sleep(10000);
+	  Thread.sleep(2000);
 	  
   }
 

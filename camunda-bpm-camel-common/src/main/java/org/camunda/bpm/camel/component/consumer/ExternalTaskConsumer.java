@@ -25,7 +25,6 @@ import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.impl.DefaultScheduledPollConsumer;
-import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 
 /**
  * Consumes external tasks of the configured topic
@@ -37,7 +36,7 @@ import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 public class ExternalTaskConsumer extends DefaultScheduledPollConsumer implements CamundaBpmConsumer, PollingConsumer {
 
 	private final String topic;
-
+	
     public ExternalTaskConsumer(DefaultEndpoint defaultEndpoint, Processor processor, Map<String, Object> parameters) {
         super(defaultEndpoint, processor);
 
@@ -51,20 +50,30 @@ public class ExternalTaskConsumer extends DefaultScheduledPollConsumer implement
     }
 
     public ExternalTaskConsumer(Endpoint endpoint, Processor processor, ScheduledExecutorService executor, Map<String, Object> parameters) {
-        super(endpoint, processor, executor);
+        super(endpoint,processor, executor);
 
 		if (parameters.containsKey(TOPIC_PARAMETER)) {
-			this.topic = (String) parameters.get(TOPIC_PARAMETER);
+			this.topic = (String) parameters.remove(TOPIC_PARAMETER);
 		} else {
 			throw new IllegalArgumentException("You need to pass the '"
 					+ TOPIC_PARAMETER + "' parameter! Parameters received: "
 					+ parameters);
 		}
     }
-	
+
+    public ExternalTaskConsumer(DefaultEndpoint endpoint, Processor processor, String topic) {
+        super(endpoint, processor);
+        this.topic = topic;
+    }
+
+    public ExternalTaskConsumer(Endpoint endpoint, Processor processor, ScheduledExecutorService executor, String topic) {
+        super(endpoint, processor, executor);
+        this.topic = topic;
+    }
+    
     @Override
     protected void doStart() throws Exception {
-      ((CamundaBpmEndpoint) getEndpoint()).addConsumer(this);
+      //((CamundaBpmExternalTaskEndpoint) getEndpoint()).addConsumer(this);
       super.doStart();
     }
 

@@ -13,6 +13,7 @@
 
 package org.camunda.bpm.camel.component;
 
+import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
 import org.camunda.bpm.camel.component.consumer.CamundaBpmConsumer;
 import org.camunda.bpm.camel.component.consumer.CamundaBpmConsumerFactory;
 import org.camunda.bpm.camel.component.consumer.ExternalTaskConsumer;
