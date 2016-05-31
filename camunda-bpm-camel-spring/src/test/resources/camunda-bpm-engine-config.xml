@@ -23,6 +23,7 @@
     <property name="transactionManager" ref="transactionManager"/>
     <property name="databaseSchemaUpdate" value="true"/>
     <property name="jobExecutorActivate" value="false"/>
+    <property name="metricsEnabled" value="false" /><!-- see https://github.com/camunda/camunda-bpm-spring-boot-starter/issues/55 -->
   </bean>
 
   <bean id="processEngine" class="org.camunda.bpm.engine.spring.ProcessEngineFactoryBean">

@@ -12,7 +12,9 @@
     <route id="firstRoute">
       <from uri="camunda-bpm:externalTask?topic=topic1"/>
       <to uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true"/>
-      <to uri="mock:endpoint"/>
+      <threads poolSize="2">
+	      <to uri="mock:endpoint"/>
+      </threads>
     </route>
 
     <route id="secondRoute">
