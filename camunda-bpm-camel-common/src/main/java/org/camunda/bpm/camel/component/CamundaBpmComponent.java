@@ -48,7 +48,7 @@ public class CamundaBpmComponent extends DefaultComponent {
         final ParsedUri parsedUri = new ParsedUri(remaining);
         switch (parsedUri.getType()) {
         case ExternalTask:
-        	return new CamundaBpmExternalTaskEndpoint(uri, this, parameters);
+        	return new CamundaBpmExternalTaskEndpointImpl(uri, this, parameters);
         default:
             return new CamundaBpmEndpointDefaultImpl(uri, parsedUri, this, parameters);
         }

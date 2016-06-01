@@ -1,0 +1,91 @@
+package org.camunda.bpm.camel.component;
+
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.TOPIC_PARAMETER;
+
+import java.util.Map;
+
+import org.apache.camel.Consumer;
+import org.apache.camel.PollingConsumer;
+import org.apache.camel.Processor;
+import org.apache.camel.Producer;
+import org.apache.camel.impl.DefaultPollingEndpoint;
+import org.camunda.bpm.camel.component.externaltasks.BatchConsumer;
+import org.camunda.bpm.engine.ProcessEngine;
+
+public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
+
+    public static final String EXCHANGE_HEADER_TASK = "camundaBpmExternalTask";
+
+    private CamundaBpmComponent component;
+
+    private String topic;
+
+    private int retryTimeout;
+
+    public CamundaBpmExternalTaskEndpointImpl(final String endpointUri, final CamundaBpmComponent component,
+            final Map<String, Object> parameters) {
+
+        super(endpointUri, component);
+
+        this.component = component;
+
+        if (parameters.containsKey(TOPIC_PARAMETER)) {
+            this.topic = (String) parameters.remove(TOPIC_PARAMETER);
+        } else {
+            throw new IllegalArgumentException(
+                    "You need to pass the '" + TOPIC_PARAMETER + "' parameter! Parameters received: " + parameters);
+        }
+
+        if (parameters.containsKey(RETRYTIMEOUT_PARAMETER)) {
+            this.retryTimeout = Integer.parseInt((String) parameters.get(RETRYTIMEOUT_PARAMETER));
+        } else {
+            this.retryTimeout = 0;
+        }
+
+    }
+
+    @Override
+    public Consumer createConsumer(Processor processor) throws Exception {
+
+        final BatchConsumer consumer;
+        if (getScheduledExecutorService() != null) {
+            consumer = new BatchConsumer(this, processor, getScheduledExecutorService(), retryTimeout);
+        } else {
+            consumer = new BatchConsumer(this, processor, retryTimeout);
+        }
+        configureConsumer(consumer);
+
+        return consumer;
+
+    }
+
+    @Override
+    public PollingConsumer createPollingConsumer() throws Exception {
+
+        return new org.camunda.bpm.camel.component.externaltasks.PollingConsumer(this, topic);
+
+    }
+
+    @Override
+    public Producer createProducer() throws Exception {
+
+        return null;
+
+    }
+
+    @Override
+    public boolean isSingleton() {
+
+        return true;
+
+    }
+
+    @Override
+    public ProcessEngine getProcessEngine() {
+
+        return component.getProcessEngine();
+
+    }
+
+}

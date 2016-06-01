@@ -1,67 +1,66 @@
 package org.camunda.bpm.camel.component.externaltasks;
 
-import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
-import org.apache.camel.ExchangePattern;
 import org.apache.camel.Message;
 import org.apache.camel.impl.PollingConsumerSupport;
-import org.apache.camel.spi.Synchronization;
+import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
+import org.camunda.bpm.camel.component.CamundaBpmExternalTaskEndpointImpl;
+import org.camunda.bpm.engine.ExternalTaskService;
+import org.camunda.bpm.engine.externaltask.ExternalTask;
 
 public class PollingConsumer extends PollingConsumerSupport {
 
+    private final CamundaBpmEndpoint camundaEndpoint;
+
     private final String topic;
 
-    private int done = 0;
+    public PollingConsumer(final CamundaBpmEndpoint endpoint, final String topic) {
 
-    public PollingConsumer(final Endpoint endpoint, final String topic) {
         super(endpoint);
+
         this.topic = topic;
+        this.camundaEndpoint = endpoint;
+
+    }
+
+    private ExternalTaskService getExternalTaskService() {
+
+        return camundaEndpoint.getProcessEngine().getExternalTaskService();
+
     }
 
     @Override
     public Exchange receive() {
+
         return receive(-1);
+
     }
 
     @Override
     public Exchange receiveNoWait() {
+
         return receive(0);
+
     }
 
     @Override
     public Exchange receive(long timeout) {
 
-        if (done == 2)
+        final ExternalTaskService externalTaskService = getExternalTaskService();
+
+        final ExternalTask task = externalTaskService.createExternalTaskQuery().topicName(
+                topic).active().withRetriesLeft().orderById().asc().singleResult();
+        if (task == null) {
             return null;
+        }
 
-        System.err.println("receive (" + topic + "): " + Thread.currentThread().toString());
-
-        final Exchange result = getEndpoint().createExchange(ExchangePattern.InOnly);
-        result.setExchangeId(Long.toString(System.currentTimeMillis()));
+        final Exchange result = getEndpoint().createExchange();
         result.setFromEndpoint(getEndpoint());
+        result.setExchangeId(task.getWorkerId() + "/" + task.getId());
+        // result.setProperty(BatchConsumer.PROPERTY_PRIORITY, ???);
+
         final Message in = result.getIn();
-        in.setBody(topic);
-
-        result.addOnCompletion(new Synchronization() {
-
-            @Override
-            public void onFailure(Exchange exchange) {
-                System.err.println("failure");
-            }
-
-            @Override
-            public void onComplete(Exchange exchange) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                System.err.println("done (" + topic + "): " + Thread.currentThread().toString());
-            }
-        });
-
-        done++;
+        in.setHeader(CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK, task);
 
         return result;
 
@@ -70,15 +69,14 @@ public class PollingConsumer extends PollingConsumerSupport {
     @Override
     protected void doStart() throws Exception {
 
-        // TODO Auto-generated method stub
-        System.err.println("doStart();");
+        // nothing to do
 
     }
 
     @Override
     protected void doStop() throws Exception {
 
-        // TODO Auto-generated method stub
+        // nothing to do
 
     }
 
