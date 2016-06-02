@@ -1,5 +1,9 @@
 package org.camunda.bpm.camel.component.externaltasks;
 
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_KEY;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.impl.PollingConsumerSupport;
@@ -47,7 +51,7 @@ public class PollingConsumer extends PollingConsumerSupport {
     public Exchange receive(long timeout) {
 
         final ExternalTaskService externalTaskService = getExternalTaskService();
-
+System.err.println(externalTaskService);
         final ExternalTask task = externalTaskService.createExternalTaskQuery().topicName(
                 topic).active().withRetriesLeft().orderById().asc().singleResult();
         if (task == null) {
@@ -57,6 +61,10 @@ public class PollingConsumer extends PollingConsumerSupport {
         final Exchange result = getEndpoint().createExchange();
         result.setFromEndpoint(getEndpoint());
         result.setExchangeId(task.getWorkerId() + "/" + task.getId());
+        result.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, task.getProcessInstanceId());
+        result.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, task.getProcessDefinitionKey());
+        result.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID, task.getProcessDefinitionId());
+        
         // result.setProperty(BatchConsumer.PROPERTY_PRIORITY, ???);
 
         final Message in = result.getIn();

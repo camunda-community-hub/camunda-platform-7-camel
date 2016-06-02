@@ -15,6 +15,8 @@ public final class CamundaBpmConstants {
     /* Apache Camel URI parameters */
     public final static String PROCESS_DEFINITION_KEY_PARAMETER = "processDefinitionKey";
     public final static String TOPIC_PARAMETER = "topic";
+    public final static String MAXMESSAGESPERPOLL_PARAMETER = "maxMessagesPerPoll";
+    public final static int MAXMESSAGESPERPOLL_DEFAULT = 5;
     public final static String RETRYTIMEOUT_PARAMETER = "retryTimeout";
     public final static String MESSAGE_NAME_PARAMETER = "messageName";
     public final static String CORRELATION_KEY_NAME_PARAMETER = "correlationKeyName";

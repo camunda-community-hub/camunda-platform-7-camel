@@ -58,47 +58,52 @@ public class ConsumeExternalTasksTest {
 
     @Before
     public void setUp() {
+    	
         mockEndpoint = (MockEndpoint) camelContext.getEndpoint("mock:endpoint");
         mockEndpoint.reset();
         mockEndpoint.returnReplyBody(new ConstantExpression("ReplyBody"));
         mockEndpoint.returnReplyHeader("H1", new ConstantExpression("ReplyHeaderH1"));
+        
     }
 
     @Test
+    @Deployment(resources = {"process/StartExternalTask.bpmn20.xml"})
     public void doTest() throws Exception {
 
-        Thread.sleep(3000);
+    	// start process
+    	final Map<String, Object> processVariables = new HashMap<String, Object>();
+    	processVariables.put("var1", "foo");
+    	processVariables.put("var2", "bar");
+    	
+    	final ProcessInstance processInstance = 
+    			runtimeService.startProcessInstanceByKey("startExternalTaskProcess", processVariables);
+    	assertThat(processInstance).isNotNull();
+    	
+    	Thread.sleep(5000);
 
+    	// Assert that the camunda BPM process instance ID has been added as a property to the message
+    	assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(
+    			CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+    	
+        /* Assert that the body of the message received by the endpoint contains
+         * a hash map with the value of the process variable 'var1' sent from
+         * camunda BPM
+         */
+        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class))
+        		.isEqualTo("{var1=foo}");
+    	
+    	// wait for the process to stop
+    	int counter = 0;
+    	do {
+	    	Thread.sleep(500);
+	    	++counter;
+	    	if (counter >= 10) {
+	    		break;
+	    	}
+    	} while (historyService.createHistoricProcessInstanceQuery().processInstanceId(
+	    			processInstance.getId()).singleResult().getEndTime() != null);
+    	assertThat(counter).isLessThan(10);
+    	
     }
 
-    /*
-     * @Test
-     * 
-     * @Deployment(resources = {"process/SendToCamel.bpmn20.xml"}) public void
-     * doTest() throws Exception { Map<String, Object> processVariables = new
-     * HashMap<String, Object>(); processVariables.put("var1", "foo");
-     * processVariables.put("var2", "bar"); ProcessInstance processInstance =
-     * runtimeService.startProcessInstanceByKey("sendToCamelProcess",
-     * processVariables);
-     * 
-     * // Verify that a process instance was executed and there are no instances
-     * executing now
-     * assertThat(historyService.createHistoricProcessInstanceQuery().
-     * processDefinitionKey("sendToCamelProcess").count()).isEqualTo(1);
-     * assertThat(runtimeService.createProcessInstanceQuery().
-     * processDefinitionKey("sendToCamelProcess").count()).isEqualTo(0);
-     * 
-     * // Assert that the camunda BPM process instance ID has been added as a
-     * property to the message
-     * assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(
-     * CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
-     * 
-     * // Assert that the body of the message received by the endpoint contains
-     * a hash map with the value of the process variable 'var1' sent from
-     * camunda BPM
-     * assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.
-     * class)).isEqualTo("{var1=foo}");
-     * 
-     * // FIXME: check that var2 is also present as a property! }
-     */
 }

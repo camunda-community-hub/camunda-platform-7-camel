@@ -2,6 +2,8 @@ package org.camunda.bpm.camel.component;
 
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.TOPIC_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXMESSAGESPERPOLL_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXMESSAGESPERPOLL_DEFAULT;
 
 import java.util.Map;
 
@@ -22,6 +24,8 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
     private String topic;
 
     private int retryTimeout;
+    
+    private int maxMessagesPerPoll;
 
     public CamundaBpmExternalTaskEndpointImpl(final String endpointUri, final CamundaBpmComponent component,
             final Map<String, Object> parameters) {
@@ -38,11 +42,17 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
         }
 
         if (parameters.containsKey(RETRYTIMEOUT_PARAMETER)) {
-            this.retryTimeout = Integer.parseInt((String) parameters.get(RETRYTIMEOUT_PARAMETER));
+            this.retryTimeout = Integer.parseInt((String) parameters.remove(RETRYTIMEOUT_PARAMETER));
         } else {
             this.retryTimeout = 0;
         }
 
+        if (parameters.containsKey(MAXMESSAGESPERPOLL_PARAMETER)) {
+            this.maxMessagesPerPoll = Integer.parseInt((String) parameters.remove(MAXMESSAGESPERPOLL_PARAMETER));
+        } else {
+            this.maxMessagesPerPoll = MAXMESSAGESPERPOLL_DEFAULT;
+        }
+        
     }
 
     @Override
@@ -55,6 +65,7 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
             consumer = new BatchConsumer(this, processor, retryTimeout);
         }
         configureConsumer(consumer);
+        consumer.setMaxMessagesPerPoll(maxMessagesPerPoll);
 
         return consumer;
 
@@ -62,7 +73,7 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
 
     @Override
     public PollingConsumer createPollingConsumer() throws Exception {
-
+    	
         return new org.camunda.bpm.camel.component.externaltasks.PollingConsumer(this, topic);
 
     }

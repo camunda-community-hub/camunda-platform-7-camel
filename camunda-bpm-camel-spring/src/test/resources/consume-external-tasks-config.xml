@@ -9,8 +9,9 @@
   <import resource="classpath:/common-test-config.xml"/>
 
   <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
+    
     <route id="firstRoute">
-      <from uri="camunda-bpm:externalTask?topic=topic1"/>
+      <from uri="camunda-bpm:externalTask?topic=topic1&amp;maxMessagesPerPoll=5"/>
       <to uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true"/>
       <threads poolSize="2">
 	      <to uri="mock:endpoint"/>
@@ -18,8 +19,9 @@
     </route>
 
     <route id="secondRoute">
-      <from uri="camunda-bpm:externalTask?topic=topic2"/>
+      <from uri="camunda-bpm:externalTask?topic=topic2&amp;maxMessagesPerPoll=1"/>
       <to uri="mock:endpoint"/>
     </route>
+    
   </camelContext>
 </beans>
