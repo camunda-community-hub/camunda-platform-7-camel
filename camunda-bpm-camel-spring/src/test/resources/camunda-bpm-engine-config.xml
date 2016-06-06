@@ -35,6 +35,7 @@
   <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
   <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
   <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+  <bean id="externalTaskService" factory-bean="processEngine" factory-method="getExternalTaskService" />
 
   <bean id="activitiRule" class="org.camunda.bpm.engine.test.ProcessEngineRule">
     <property name="processEngine" ref="processEngine" />

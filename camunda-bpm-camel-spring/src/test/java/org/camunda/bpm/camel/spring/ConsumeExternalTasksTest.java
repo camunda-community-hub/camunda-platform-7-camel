@@ -11,11 +11,19 @@ package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Versi
                                      * limitations under the License.
                                      */
 
+import org.apache.camel.BatchConsumer;
 import org.apache.camel.CamelContext;
+import org.apache.camel.Route;
+import org.apache.camel.Suspendable;
+import org.apache.camel.SuspendableService;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.model.language.ConstantExpression;
+import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.externaltask.ExternalTask;
+import org.camunda.bpm.engine.history.HistoricProcessInstance;
+import org.camunda.bpm.engine.impl.history.event.HistoricScopeInstanceEvent;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
@@ -29,6 +37,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -53,6 +62,9 @@ public class ConsumeExternalTasksTest {
     HistoryService historyService;
 
     @Autowired(required = true)
+    ExternalTaskService externalTaskService;
+
+    @Autowired(required = true)
     @Rule
     public ProcessEngineRule processEngineRule;
 
@@ -66,9 +78,10 @@ public class ConsumeExternalTasksTest {
         
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     @Deployment(resources = {"process/StartExternalTask.bpmn20.xml"})
-    public void doTest() throws Exception {
+    public void testBaseFunctionality() throws Exception {
 
     	// start process
     	final Map<String, Object> processVariables = new HashMap<String, Object>();
@@ -79,8 +92,12 @@ public class ConsumeExternalTasksTest {
     			runtimeService.startProcessInstanceByKey("startExternalTaskProcess", processVariables);
     	assertThat(processInstance).isNotNull();
     	
-    	Thread.sleep(5000);
+    	Thread.sleep(50000);
 
+    	final List<ExternalTask> externalTasks = externalTaskService.createExternalTaskQuery().list();
+    	assertThat(externalTasks).isNotNull();
+    	assertThat(externalTasks.size()).isEqualTo(0);
+    	
     	// Assert that the camunda BPM process instance ID has been added as a property to the message
     	assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(
     			CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
@@ -89,20 +106,13 @@ public class ConsumeExternalTasksTest {
          * a hash map with the value of the process variable 'var1' sent from
          * camunda BPM
          */
-        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class))
-        		.isEqualTo("{var1=foo}");
+		@SuppressWarnings("rawtypes")
+		final Map variablesToBeSet = mockEndpoint.assertExchangeReceived(0).getOut().getBody(Map.class);
+        assertThat(variablesToBeSet).isNull();
     	
-    	// wait for the process to stop
-    	int counter = 0;
-    	do {
-	    	Thread.sleep(500);
-	    	++counter;
-	    	if (counter >= 10) {
-	    		break;
-	    	}
-    	} while (historyService.createHistoricProcessInstanceQuery().processInstanceId(
-	    			processInstance.getId()).singleResult().getEndTime() != null);
-    	assertThat(counter).isLessThan(10);
+        final HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(
+    			processInstance.getId()).singleResult();
+        assertThat(historicProcessInstance.getEndTime()).isNotNull();
     	
     }
 

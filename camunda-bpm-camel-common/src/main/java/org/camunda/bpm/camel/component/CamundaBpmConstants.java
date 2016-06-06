@@ -9,6 +9,7 @@ public final class CamundaBpmConstants {
     public static final String CAMUNDA_BPM_PROCESS_DEFINITION_KEY = "CamundaBpmProcessDefinitionKey";
     public static final String CAMUNDA_BPM_PROCESS_DEFINITION_ID = "CamundaBpmProcessDefinitionId";
     public static final String CAMUNDA_BPM_PROCESS_INSTANCE_ID = "CamundaBpmProcessInstanceId";
+    public static final String CAMUNDA_BPM_PROCESS_PRIO = "CamundaBpmProcessInstancePrio";
     public static final String CAMUNDA_BPM_BUSINESS_KEY = "CamundaBpmBusinessKey";
     public static final String CAMUNDA_BPM_CORRELATION_KEY = "CamundaBpmCorrelationKey";
 
@@ -17,6 +18,8 @@ public final class CamundaBpmConstants {
     public final static String TOPIC_PARAMETER = "topic";
     public final static String MAXMESSAGESPERPOLL_PARAMETER = "maxMessagesPerPoll";
     public final static int MAXMESSAGESPERPOLL_DEFAULT = 5;
+    public final static String LOCKDURATION_PARAMETER = "lockDuration";
+    public final static long LOCKDURATION_DEFAULT = 60000;
     public final static String RETRYTIMEOUT_PARAMETER = "retryTimeout";
     public final static String MESSAGE_NAME_PARAMETER = "messageName";
     public final static String CORRELATION_KEY_NAME_PARAMETER = "correlationKeyName";

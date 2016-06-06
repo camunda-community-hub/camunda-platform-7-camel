@@ -4,6 +4,8 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_P
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.TOPIC_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXMESSAGESPERPOLL_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXMESSAGESPERPOLL_DEFAULT;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.LOCKDURATION_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.LOCKDURATION_DEFAULT;
 
 import java.util.Map;
 
@@ -26,7 +28,9 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
     private int retryTimeout;
     
     private int maxMessagesPerPoll;
-
+    
+    private long lockDuration;
+    
     public CamundaBpmExternalTaskEndpointImpl(final String endpointUri, final CamundaBpmComponent component,
             final Map<String, Object> parameters) {
 
@@ -52,6 +56,12 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
         } else {
             this.maxMessagesPerPoll = MAXMESSAGESPERPOLL_DEFAULT;
         }
+
+        if (parameters.containsKey(LOCKDURATION_PARAMETER)) {
+            this.lockDuration = Integer.parseInt((String) parameters.remove(LOCKDURATION_PARAMETER));
+        } else {
+            this.lockDuration = LOCKDURATION_DEFAULT;
+        }
         
     }
 
@@ -60,9 +70,10 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
 
         final BatchConsumer consumer;
         if (getScheduledExecutorService() != null) {
-            consumer = new BatchConsumer(this, processor, getScheduledExecutorService(), retryTimeout);
+            consumer = new BatchConsumer(this, processor, getScheduledExecutorService(), 
+            		retryTimeout, lockDuration, topic);
         } else {
-            consumer = new BatchConsumer(this, processor, retryTimeout);
+            consumer = new BatchConsumer(this, processor, retryTimeout, lockDuration, topic);
         }
         configureConsumer(consumer);
         consumer.setMaxMessagesPerPoll(maxMessagesPerPoll);
@@ -74,7 +85,8 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
     @Override
     public PollingConsumer createPollingConsumer() throws Exception {
     	
-        return new org.camunda.bpm.camel.component.externaltasks.PollingConsumer(this, topic);
+    	return null;
+        //return new org.camunda.bpm.camel.component.externaltasks.PollingConsumer(this, topic);
 
     }
 
