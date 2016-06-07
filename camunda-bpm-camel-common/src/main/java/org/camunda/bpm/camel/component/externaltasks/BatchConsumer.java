@@ -6,6 +6,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PR
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_PRIO;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -32,13 +33,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     private int timeout;
 
     private final int retryTimeout;
-    
+
     private final long lockDuration;
 
     private final String topic;
 
-    public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
-    		final int retryTimeout, final long lockDuration, final String topic) {
+    public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retryTimeout,
+            final long lockDuration, final String topic) {
 
         super(endpoint, processor);
 
@@ -50,8 +51,8 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     }
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
-            final ScheduledExecutorService executor, final int retryTimeout,
-            final long lockDuration, final String topic) {
+            final ScheduledExecutorService executor, final int retryTimeout, final long lockDuration,
+            final String topic) {
 
         super(endpoint, processor, executor);
 
@@ -98,35 +99,21 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     private boolean processExchange(final Exchange exchange) throws Exception {
 
-    	exchange.addOnCompletion(new Synchronization() {
-			
-			@Override
-			public void onFailure(Exchange exchange) {
-				completeTask(exchange);
-			}
-			
-			@Override
-			public void onComplete(Exchange exchange) {
-				completeTask(exchange);
-			}
-		});
-    	
-    	getProcessor().process(exchange);
-    	return true;
+        exchange.addOnCompletion(new Synchronization() {
 
-        /*
-         * 
-         * result.addOnCompletion(new Synchronization() {
-         * 
-         * @Override public void onFailure(Exchange exchange) {
-         * System.err.println("failure"); }
-         * 
-         * @Override public void onComplete(Exchange exchange) { try {
-         * Thread.sleep(1000); } catch (InterruptedException e) { // TODO
-         * Auto-generated catch block e.printStackTrace(); } System.err.println(
-         * "done (" + topic + "): " + Thread.currentThread().toString()); } });
-         * 
-         */
+            @Override
+            public void onFailure(Exchange exchange) {
+                completeTask(exchange);
+            }
+
+            @Override
+            public void onComplete(Exchange exchange) {
+                completeTask(exchange);
+            }
+        });
+
+        getProcessor().process(exchange);
+        return true;
 
     }
 
@@ -162,7 +149,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     }
 
     @SuppressWarnings("unchecked")
-	private void completeTask(final Exchange exchange) {
+    private void completeTask(final Exchange exchange) {
 
         final Message in = exchange.getIn();
         if (in == null) {
@@ -170,7 +157,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         }
 
         final LockedExternalTask task = in.getHeader(CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK,
-        		LockedExternalTask.class);
+                LockedExternalTask.class);
         if (task == null) {
             throw new RuntimeCamelException("Unexpected exchange: in-header '"
                     + CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK + "' is null!");
@@ -198,15 +185,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         // success
         {
 
-        	final Message out = exchange.getOut();
-        	
+            final Message out = exchange.getOut();
+
             final Map<String, Object> variablesToBeSet;
-            if ((out != null)
-            		&& (out.getBody() != null)
-            		&& (out.getBody() instanceof Map)) {
+            if ((out != null) && (out.getBody() != null) && (out.getBody() instanceof Map)) {
                 variablesToBeSet = out.getBody(Map.class);
             } else {
-            	variablesToBeSet = null;
+                variablesToBeSet = null;
             }
 
             if (variablesToBeSet != null) {
@@ -218,32 +203,44 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         }
 
     }
-static int pollCounter = 0;
+
+    private static HashMap<String, Integer> pollCounter = new HashMap<String, Integer>() {
+        public Integer get(Object key) {
+            Integer result = super.get(key);
+            if (result == null) {
+                result = new Integer(0);
+                super.put((String) key, result);
+            }
+            return result;
+        };
+    };
+
     protected int poll() throws Exception {
 
         int messagesPolled = 0;
-        pollCounter++;
-        System.err.println("polled: " + pollCounter);
+        int pc = pollCounter.get(camundaEndpoint.getEndpointUri());
+        pc++;
+        System.err.println("polled for '" + camundaEndpoint.getEndpointUri() + "': " + pc);
+        pollCounter.put(camundaEndpoint.getEndpointUri(), pc);
 
         PriorityQueue<Exchange> exchanges = new PriorityQueue<Exchange>(new Comparator<Exchange>() {
             @Override
             public int compare(Exchange o1, Exchange o2) {
-            	Long prio1 = (Long) o1.getProperty(CAMUNDA_BPM_PROCESS_PRIO, 0);
-            	Long prio2 = (Long) o2.getProperty(CAMUNDA_BPM_PROCESS_PRIO, 0);
+                Long prio1 = (Long) o1.getProperty(CAMUNDA_BPM_PROCESS_PRIO, 0);
+                Long prio2 = (Long) o2.getProperty(CAMUNDA_BPM_PROCESS_PRIO, 0);
                 return prio1.compareTo(prio2);
             }
         });
 
         if (isPollAllowed()) {
-        	
-	        final List<LockedExternalTask> tasks = getExternalTaskService()
-	        		.fetchAndLock(maxMessagesPerPoll, camundaEndpoint.getEndpointUri(), true)
-	        		.topic(topic, lockDuration)
-	        		.execute();
-        
+
+            final List<LockedExternalTask> tasks = getExternalTaskService().fetchAndLock(maxMessagesPerPoll,
+                    camundaEndpoint.getEndpointUri(),
+                    true).topic(topic, lockDuration).execute();
+
             messagesPolled = tasks.size();
 
-            for (final LockedExternalTask task : tasks) { 
+            for (final LockedExternalTask task : tasks) {
 
                 Exchange exchange = getEndpoint().createExchange();
                 exchange.setFromEndpoint(getEndpoint());
@@ -252,24 +249,25 @@ static int pollCounter = 0;
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, task.getProcessDefinitionKey());
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID, task.getProcessDefinitionId());
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_PRIO, task.getPriority());
-                
+
                 // result.setProperty(BatchConsumer.PROPERTY_PRIORITY, ???);
 
                 final Message in = exchange.getIn();
                 in.setHeader(CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK, task);
-            	
-            	// if the result of the polled exchange has output we should create
-	            // a new exchange and
-	            // use the output as input to the next processor
-	            if (exchange.hasOut()) {
-	                // lets create a new exchange
-	                Exchange newExchange = getEndpoint().createExchange();
-	                newExchange.getIn().copyFrom(exchange.getOut());
-	                exchange = newExchange;
-	            }
-	
-	            exchanges.add(exchange);
-	            
+
+                // if the result of the polled exchange has output we should
+                // create
+                // a new exchange and
+                // use the output as input to the next processor
+                if (exchange.hasOut()) {
+                    // lets create a new exchange
+                    Exchange newExchange = getEndpoint().createExchange();
+                    newExchange.getIn().copyFrom(exchange.getOut());
+                    exchange = newExchange;
+                }
+
+                exchanges.add(exchange);
+
             }
 
         }
