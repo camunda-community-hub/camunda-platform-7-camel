@@ -22,14 +22,18 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Expression;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.camunda.bpm.camel.component.externaltasks.BatchConsumer;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
+import org.camunda.bpm.engine.history.HistoricActivityInstance;
+import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,17 +69,28 @@ public class ConsumeExternalTasksTest {
     public ProcessEngineRule processEngineRule;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
     	
         mockEndpoint = (MockEndpoint) camelContext.getEndpoint("mock:endpoint");
         mockEndpoint.reset();
         
+        // start consumer if stopped by previous test (see "tearDown()")
+        //((BatchConsumer) camelContext.getRoute("firstRoute").getConsumer()).start();
+        
     }
-
+    
+    @After
+    public void tearDown() throws Exception {
+    	
+    	// avoid accessing during shutdown of Camunda engine
+    	//((BatchConsumer) camelContext.getRoute("firstRoute").getConsumer()).stop();
+    	
+    }
+    
     @SuppressWarnings("unchecked")
 	@Test
     @Deployment(resources = {"process/StartExternalTask.bpmn20.xml"})
-    public void testBaseFunctionality() throws Exception {
+    public void testSetProcessVariables() throws Exception {
 
     	// variables to be set by the Camel-endpoint processing the external task
         mockEndpoint.returnReplyBody(new Expression() {
@@ -99,7 +114,9 @@ public class ConsumeExternalTasksTest {
     	// wait for the external task to be completed
     	Thread.sleep(1000);
 
-    	final List<ExternalTask> externalTasks = externalTaskService.createExternalTaskQuery().list();
+    	final List<ExternalTask> externalTasks = externalTaskService.createExternalTaskQuery()
+    			.processInstanceId(processInstance.getId())
+    			.list();
     	assertThat(externalTasks).isNotNull();
     	assertThat(externalTasks.size()).isEqualTo(0);
     	
@@ -123,7 +140,101 @@ public class ConsumeExternalTasksTest {
         assertThat(variablesAsMap.get("var2")).isEqualTo("bar2");
         assertThat(variablesAsMap.containsKey("var3")).isTrue();
         assertThat(variablesAsMap.get("var3")).isEqualTo("bar3");
+     
+        // assert that process in end event "HappyEnd"
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("HappyEnd")
+				.singleResult()).isNotNull();
+
+        // assert that process ended not due to error boundary event 4711
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("End4711")
+				.singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 0815
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("End0815")
+				.singleResult()).isNull();
         
     }
 
+    @SuppressWarnings("unchecked")
+	@Test
+    @Deployment(resources = {"process/StartExternalTask.bpmn20.xml"})
+    public void testBpmnError() throws Exception {
+
+    	// variables to be set by the Camel-endpoint processing the external task
+        mockEndpoint.returnReplyBody(new Expression() {
+			@Override
+			public <T> T evaluate(Exchange exchange, Class<T> type) {
+				return (T) "4711";
+			}
+		});
+    	
+    	// start process
+    	final Map<String, Object> processVariables = new HashMap<String, Object>();
+    	processVariables.put("var1", "foo");
+    	processVariables.put("var2", "bar");
+    	final ProcessInstance processInstance = 
+    			runtimeService.startProcessInstanceByKey("startExternalTaskProcess", processVariables);
+    	assertThat(processInstance).isNotNull();
+    	
+    	// wait for the external task to be completed
+    	Thread.sleep(1000);
+
+    	final List<ExternalTask> externalTasks = externalTaskService.createExternalTaskQuery()
+    			.processInstanceId(processInstance.getId())
+    			.list();
+    	assertThat(externalTasks).isNotNull();
+    	assertThat(externalTasks.size()).isEqualTo(0);
+    	
+    	// assert that the camunda BPM process instance ID has been added as a property to the message
+    	assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(
+    			CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+    	
+    	// assert that the variables sent in the response-message has been set into the process
+        final List<HistoricVariableInstance> variables = historyService
+        		.createHistoricVariableInstanceQuery()
+        		.processInstanceId(processInstance.getId())
+        		.list();
+        assertThat(variables.size()).isEqualTo(2);
+        final HashMap<String, Object> variablesAsMap = new HashMap<String, Object>();
+        for (final HistoricVariableInstance variable : variables) {
+        	variablesAsMap.put(variable.getName(), variable.getValue());
+        }
+        assertThat(variablesAsMap.containsKey("var1")).isTrue();
+        assertThat(variablesAsMap.get("var1")).isEqualTo("foo");
+        assertThat(variablesAsMap.containsKey("var2")).isTrue();
+        assertThat(variablesAsMap.get("var2")).isEqualTo("bar");
+        
+        // assert that process ended
+        final HistoricProcessInstance historicProcessInstance = historyService
+        		.createHistoricProcessInstanceQuery()
+        		.processInstanceId(processInstance.getId())
+        		.singleResult();
+        assertThat(historicProcessInstance.getEndTime()).isNotNull();
+        
+        // assert that process ended due to error boundary event 4711
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("End4711")
+				.singleResult()).isNotNull();
+
+        // assert that process not in end event "HappyEnd"
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("HappyEnd")
+				.singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 0815
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("End0815")
+				.singleResult()).isNull();
+        
+    }
+    
 }

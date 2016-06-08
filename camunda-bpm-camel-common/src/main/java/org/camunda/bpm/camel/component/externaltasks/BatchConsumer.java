@@ -182,6 +182,14 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
                     retryTimeout);
 
         } else
+    	// bpmn error
+    	if ((in != null) && (in.getBody() != null) && (in.getBody() instanceof String)) {
+    		
+    		final String errorCode = in.getBody(String.class);
+    		
+    		externalTaskService.handleBpmnError(task.getId(), task.getWorkerId(), errorCode);
+    		
+    	} else
         // success
         {
 
@@ -191,7 +199,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
             } else {
                 variablesToBeSet = null;
             }
-
+            
             if (variablesToBeSet != null) {
                 externalTaskService.complete(task.getId(), task.getWorkerId(), variablesToBeSet);
             } else {
