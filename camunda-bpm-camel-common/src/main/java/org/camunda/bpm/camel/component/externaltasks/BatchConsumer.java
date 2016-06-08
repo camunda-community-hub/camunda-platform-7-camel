@@ -6,7 +6,6 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PR
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_PRIO;
 
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -14,6 +13,7 @@ import java.util.Queue;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.Message;
 import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
@@ -102,12 +102,12 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         exchange.addOnCompletion(new Synchronization() {
 
             @Override
-            public void onFailure(Exchange exchange) {
+            public void onFailure(final Exchange exchange) {
                 completeTask(exchange);
             }
 
             @Override
-            public void onComplete(Exchange exchange) {
+            public void onComplete(final Exchange exchange) {
                 completeTask(exchange);
             }
         });
@@ -185,11 +185,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         // success
         {
 
-            final Message out = exchange.getOut();
-
             final Map<String, Object> variablesToBeSet;
-            if ((out != null) && (out.getBody() != null) && (out.getBody() instanceof Map)) {
-                variablesToBeSet = out.getBody(Map.class);
+            if ((in != null) && (in.getBody() != null) && (in.getBody() instanceof Map)) {
+                variablesToBeSet = in.getBody(Map.class);
             } else {
                 variablesToBeSet = null;
             }
@@ -204,24 +202,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     }
 
-    private static HashMap<String, Integer> pollCounter = new HashMap<String, Integer>() {
-        public Integer get(Object key) {
-            Integer result = super.get(key);
-            if (result == null) {
-                result = new Integer(0);
-                super.put((String) key, result);
-            }
-            return result;
-        };
-    };
-
     protected int poll() throws Exception {
 
         int messagesPolled = 0;
-        int pc = pollCounter.get(camundaEndpoint.getEndpointUri());
-        pc++;
-        System.err.println("polled for '" + camundaEndpoint.getEndpointUri() + "': " + pc);
-        pollCounter.put(camundaEndpoint.getEndpointUri(), pc);
 
         PriorityQueue<Exchange> exchanges = new PriorityQueue<Exchange>(new Comparator<Exchange>() {
             @Override
@@ -242,7 +225,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
             for (final LockedExternalTask task : tasks) {
 
-                Exchange exchange = getEndpoint().createExchange();
+                Exchange exchange = getEndpoint().createExchange(ExchangePattern.InOut);
                 exchange.setFromEndpoint(getEndpoint());
                 exchange.setExchangeId(task.getWorkerId() + "/" + task.getId());
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, task.getProcessInstanceId());
@@ -254,18 +237,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
                 final Message in = exchange.getIn();
                 in.setHeader(CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK, task);
-
-                // if the result of the polled exchange has output we should
-                // create
-                // a new exchange and
-                // use the output as input to the next processor
-                if (exchange.hasOut()) {
-                    // lets create a new exchange
-                    Exchange newExchange = getEndpoint().createExchange();
-                    newExchange.getIn().copyFrom(exchange.getOut());
-                    exchange = newExchange;
-                }
-
+                
                 exchanges.add(exchange);
 
             }

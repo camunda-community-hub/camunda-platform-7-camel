@@ -18,10 +18,12 @@
       </threads>
     </route>
 
+<!-- 
     <route id="secondRoute">
       <from uri="camunda-bpm:externalTask?topic=topic2&amp;maxMessagesPerPoll=1"/>
       <to uri="mock:endpoint"/>
     </route>
-    
+-->
+     
   </camelContext>
 </beans>
