@@ -22,12 +22,10 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Expression;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.camunda.bpm.camel.component.externaltasks.BatchConsumer;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
-import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -161,6 +159,78 @@ public class ConsumeExternalTasksTest {
         
     }
 
+    @SuppressWarnings("unchecked")
+	@Test
+    @Deployment(resources = {"process/StartExternalTask2.bpmn20.xml"})
+    public void testNotCompleteTask() throws Exception {
+
+    	// variables returned but must not be set since task will not be completed
+        mockEndpoint.returnReplyBody(new Expression() {
+			@Override
+			public <T> T evaluate(Exchange exchange, Class<T> type) {
+				final HashMap<String, Object> result = new HashMap<String, Object>();
+				result.put("var2", "bar2");
+				result.put("var3", "bar3");
+				return (T) result;
+			}
+		});
+    	
+    	// start process
+    	final Map<String, Object> processVariables = new HashMap<String, Object>();
+    	processVariables.put("var1", "foo");
+    	processVariables.put("var2", "bar");
+    	final ProcessInstance processInstance = 
+    			runtimeService.startProcessInstanceByKey("startExternalTaskProcess2", processVariables);
+    	assertThat(processInstance).isNotNull();
+    	
+    	// wait for the external task to be completed
+    	Thread.sleep(1000);
+
+    	final List<ExternalTask> externalTasks = externalTaskService.createExternalTaskQuery()
+    			.processInstanceId(processInstance.getId())
+    			.list();
+    	assertThat(externalTasks).isNotNull();
+    	assertThat(externalTasks.size()).isEqualTo(1);
+    	
+    	// assert that the camunda BPM process instance ID has been added as a property to the message
+    	assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(
+    			CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+    	
+    	// assert that the variables sent in the response-message has NOT been set into the process
+        final List<HistoricVariableInstance> variables = historyService
+        		.createHistoricVariableInstanceQuery()
+        		.processInstanceId(processInstance.getId())
+        		.list();
+        assertThat(variables.size()).isEqualTo(2);
+        final HashMap<String, Object> variablesAsMap = new HashMap<String, Object>();
+        for (final HistoricVariableInstance variable : variables) {
+        	variablesAsMap.put(variable.getName(), variable.getValue());
+        }
+        assertThat(variablesAsMap.containsKey("var1")).isTrue();
+        assertThat(variablesAsMap.get("var1")).isEqualTo("foo");
+        assertThat(variablesAsMap.containsKey("var2")).isTrue();
+        assertThat(variablesAsMap.get("var2")).isEqualTo("bar");
+     
+        // assert that process NOT in end event "HappyEnd"
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("HappyEnd")
+				.singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 4711
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("End4711")
+				.singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 0815
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("End0815")
+				.singleResult()).isNull();
+        
+    }
+    
     @SuppressWarnings("unchecked")
 	@Test
     @Deployment(resources = {"process/StartExternalTask.bpmn20.xml"})

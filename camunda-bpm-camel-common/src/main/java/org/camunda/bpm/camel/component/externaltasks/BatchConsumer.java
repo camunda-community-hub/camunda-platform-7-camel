@@ -37,9 +37,11 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     private final long lockDuration;
 
     private final String topic;
+    
+    private final boolean completeTask;
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retryTimeout,
-            final long lockDuration, final String topic) {
+            final long lockDuration, final String topic, final boolean completeTask) {
 
         super(endpoint, processor);
 
@@ -47,12 +49,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.retryTimeout = retryTimeout;
         this.lockDuration = lockDuration;
         this.topic = topic;
+        this.completeTask = completeTask;
 
     }
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
             final ScheduledExecutorService executor, final int retryTimeout, final long lockDuration,
-            final String topic) {
+            final String topic, final boolean completeTask) {
 
         super(endpoint, processor, executor);
 
@@ -60,6 +63,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.retryTimeout = retryTimeout;
         this.lockDuration = lockDuration;
         this.topic = topic;
+        this.completeTask = completeTask;
 
     }
 
@@ -108,8 +112,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
             @Override
             public void onComplete(final Exchange exchange) {
-                completeTask(exchange);
+        		completeTask(exchange);
             }
+            
         });
 
         getProcessor().process(exchange);
@@ -191,7 +196,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     		
     	} else
         // success
-        {
+    	if (completeTask) {
 
             final Map<String, Object> variablesToBeSet;
             if ((in != null) && (in.getBody() != null) && (in.getBody() instanceof Map)) {

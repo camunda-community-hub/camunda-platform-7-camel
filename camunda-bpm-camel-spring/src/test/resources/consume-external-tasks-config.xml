@@ -1,29 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
 
-  <import resource="classpath:/common-test-config.xml"/>
+	<import resource="classpath:/common-test-config.xml" />
 
-  <camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
-    
-    <route id="firstRoute">
-      <from uri="camunda-bpm:externalTask?topic=topic1&amp;maxMessagesPerPoll=5&amp;delay=250"/><!-- &amp;backoffIdleThreshold=5&amp;backoffMultiplier=6 -->
-      <to uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true"/>
-      <threads poolSize="2">
-	      <to uri="mock:endpoint"/>
-      </threads>
-    </route>
+	<camelContext id="camelContext" xmlns="http://camel.apache.org/schema/spring">
 
-<!-- 
-    <route id="secondRoute">
-      <from uri="camunda-bpm:externalTask?topic=topic2&amp;maxMessagesPerPoll=1"/>
-      <to uri="mock:endpoint"/>
-    </route>
--->
-     
-  </camelContext>
+		<route id="firstRoute">
+			<from
+				uri="camunda-bpm:externalTask?topic=topic1&amp;maxTasksPerPoll=5&amp;delay=250" /><!-- 
+				&amp;backoffIdleThreshold=5&amp;backoffMultiplier=6 -->
+			<to
+				uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true" />
+			<threads poolSize="2">
+				<to uri="mock:endpoint" />
+			</threads>
+		</route>
+
+		<route id="secondRoute">
+			<from
+				uri="camunda-bpm:externalTask?topic=topic2&amp;completeTask=false&amp;delay=250" /><!-- 
+				&amp;backoffIdleThreshold=5&amp;backoffMultiplier=6 -->
+			<to
+				uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true" />
+			<to uri="mock:endpoint" />
+		</route>
+
+	</camelContext>
+	
 </beans>
