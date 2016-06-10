@@ -40,8 +40,11 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     private final boolean completeTask;
 
+    private final List<String> variablesToFetch;
+
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retryTimeout,
-            final long lockDuration, final String topic, final boolean completeTask) {
+            final long lockDuration, final String topic, final boolean completeTask,
+            final List<String> variablesToFetch) {
 
         super(endpoint, processor);
 
@@ -50,12 +53,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.lockDuration = lockDuration;
         this.topic = topic;
         this.completeTask = completeTask;
+        this.variablesToFetch = variablesToFetch;
 
     }
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
             final ScheduledExecutorService executor, final int retryTimeout, final long lockDuration,
-            final String topic, final boolean completeTask) {
+            final String topic, final boolean completeTask, final List<String> variablesToFetch) {
 
         super(endpoint, processor, executor);
 
@@ -64,6 +68,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.lockDuration = lockDuration;
         this.topic = topic;
         this.completeTask = completeTask;
+        this.variablesToFetch = variablesToFetch;
 
     }
 
@@ -232,7 +237,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
             final List<LockedExternalTask> tasks = getExternalTaskService().fetchAndLock(maxMessagesPerPoll,
                     camundaEndpoint.getEndpointUri(),
-                    true).topic(topic, lockDuration).execute();
+                    true).topic(topic, lockDuration).variables(variablesToFetch).execute();
 
             messagesPolled = tasks.size();
 
@@ -250,6 +255,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
                 final Message in = exchange.getIn();
                 in.setHeader(CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK, task);
+                in.setBody(task.getVariables());
 
                 exchanges.add(exchange);
 
