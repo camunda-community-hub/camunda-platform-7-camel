@@ -1,25 +1,26 @@
 package org.camunda.bpm.camel.common;
 
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CAMEL_URI_SCHEME;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.camundaBpmUri;
+import static org.fest.assertions.api.Assertions.assertThat;
+
 import org.apache.camel.Component;
 import org.apache.camel.Endpoint;
+import org.apache.camel.ResolveEndpointFailedException;
 import org.camunda.bpm.camel.BaseCamelTest;
 import org.camunda.bpm.camel.component.CamundaBpmComponent;
-import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.junit.Test;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
-import static org.fest.assertions.api.Assertions.assertThat;
 
 public class UriParsingTest extends BaseCamelTest {
 
-  @Test
-  public void testThatCamelContextIsInitialized() throws Exception {
-    Component component = camelContext.getComponent(CAMUNDA_BPM_CAMEL_URI_SCHEME);
-    assertThat(component).isInstanceOf(CamundaBpmComponent.class);
-  }
+    @Test
+    public void testThatCamelContextIsInitialized() throws Exception {
+        Component component = camelContext.getComponent(CAMUNDA_BPM_CAMEL_URI_SCHEME);
+        assertThat(component).isInstanceOf(CamundaBpmComponent.class);
+    }
 
-  @Test
-  public void testGetCamundaEndpoint() throws Exception {
-    Endpoint endpoint = camelContext.getEndpoint(camundaBpmUri("what/ever"));
-    assertThat(endpoint).isInstanceOf(CamundaBpmEndpoint.class);
-  }
+    @Test(expected = ResolveEndpointFailedException.class)
+    public void testGetCamundaEndpointWithUnknownUriExtension() throws Exception {
+        Endpoint endpoint = camelContext.getEndpoint(camundaBpmUri("what/ever"));
+    }
 }

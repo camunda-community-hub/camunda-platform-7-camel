@@ -49,7 +49,7 @@ public class UriUtils {
 
     public static enum UriType {
 
-        StartProcess("start"), SendSignal("send"), SendMessage("message"), ExternalTask("externalTask");
+        StartProcess("start"), SendSignal("signal"), SendMessage("message"), ExternalTask("externalTask");
 
         private String identifier;
 
