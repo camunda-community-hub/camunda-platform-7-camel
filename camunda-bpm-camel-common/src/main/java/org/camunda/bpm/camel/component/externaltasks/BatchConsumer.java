@@ -37,7 +37,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     private final long lockDuration;
 
     private final String topic;
-    
+
     private final boolean completeTask;
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retryTimeout,
@@ -112,9 +112,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
             @Override
             public void onComplete(final Exchange exchange) {
-        		completeTask(exchange);
+                completeTask(exchange);
             }
-            
+
         });
 
         getProcessor().process(exchange);
@@ -187,16 +187,16 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
                     retryTimeout);
 
         } else
-    	// bpmn error
-    	if ((in != null) && (in.getBody() != null) && (in.getBody() instanceof String)) {
-    		
-    		final String errorCode = in.getBody(String.class);
-    		
-    		externalTaskService.handleBpmnError(task.getId(), task.getWorkerId(), errorCode);
-    		
-    	} else
+        // bpmn error
+        if ((in != null) && (in.getBody() != null) && (in.getBody() instanceof String)) {
+
+            final String errorCode = in.getBody(String.class);
+
+            externalTaskService.handleBpmnError(task.getId(), task.getWorkerId(), errorCode);
+
+        } else
         // success
-    	if (completeTask) {
+        if (completeTask) {
 
             final Map<String, Object> variablesToBeSet;
             if ((in != null) && (in.getBody() != null) && (in.getBody() instanceof Map)) {
@@ -204,7 +204,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
             } else {
                 variablesToBeSet = null;
             }
-            
+
             if (variablesToBeSet != null) {
                 externalTaskService.complete(task.getId(), task.getWorkerId(), variablesToBeSet);
             } else {
@@ -238,7 +238,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
             for (final LockedExternalTask task : tasks) {
 
-                Exchange exchange = getEndpoint().createExchange(ExchangePattern.InOut);
+                final ExchangePattern pattern = completeTask ? ExchangePattern.InOut : ExchangePattern.InOnly;
+                Exchange exchange = getEndpoint().createExchange(pattern);
+
                 exchange.setFromEndpoint(getEndpoint());
                 exchange.setExchangeId(task.getWorkerId() + "/" + task.getId());
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, task.getProcessInstanceId());
@@ -246,11 +248,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID, task.getProcessDefinitionId());
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_PRIO, task.getPriority());
 
-                // result.setProperty(BatchConsumer.PROPERTY_PRIORITY, ???);
-
                 final Message in = exchange.getIn();
                 in.setHeader(CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK, task);
-                
+
                 exchanges.add(exchange);
 
             }
