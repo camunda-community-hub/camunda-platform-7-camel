@@ -184,11 +184,18 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         // failure
         if (exchange.isFailed()) {
 
+        	Integer retries = task.getRetries();
+        	if (retries != null) {
+        		retries = retries - 1;
+        	} else {
+        		retries = 0;
+        	}
+        	
             final Exception exception = exchange.getException();
             externalTaskService.handleFailure(task.getId(),
                     task.getWorkerId(),
                     exception.getMessage(),
-                    task.getRetries(),
+                    retries,
                     retryTimeout);
 
         } else
