@@ -30,26 +30,27 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     private final CamundaBpmEndpoint camundaEndpoint;
 
+    // parameters
     private int timeout;
-
-    private final int retryTimeout;
-
+    private final int retries;
+    private final long retryTimeout;
+    private final long[] retryTimeouts;
     private final long lockDuration;
-
     private final String topic;
-
     private final boolean completeTask;
-
     private final List<String> variablesToFetch;
 
-    public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retryTimeout,
+    public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
+    		final int retries, final long retryTimeout, final long[] retryTimeouts,
             final long lockDuration, final String topic, final boolean completeTask,
             final List<String> variablesToFetch) {
 
         super(endpoint, processor);
 
         this.camundaEndpoint = endpoint;
+        this.retries = retries;
         this.retryTimeout = retryTimeout;
+        this.retryTimeouts = retryTimeouts;
         this.lockDuration = lockDuration;
         this.topic = topic;
         this.completeTask = completeTask;
@@ -58,13 +59,16 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     }
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
-            final ScheduledExecutorService executor, final int retryTimeout, final long lockDuration,
-            final String topic, final boolean completeTask, final List<String> variablesToFetch) {
+            final ScheduledExecutorService executor, final int retries, final long retryTimeout,
+            final long[] retryTimeouts, final long lockDuration, final String topic,
+            final boolean completeTask, final List<String> variablesToFetch) {
 
         super(endpoint, processor, executor);
 
         this.camundaEndpoint = endpoint;
+        this.retries = retries;
         this.retryTimeout = retryTimeout;
+        this.retryTimeouts = retryTimeouts;
         this.lockDuration = lockDuration;
         this.topic = topic;
         this.completeTask = completeTask;
@@ -178,19 +182,21 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         // failure
         if (exchange.isFailed()) {
 
-        	Integer retries = task.getRetries();
-        	if (retries != null) {
-        		retries = retries - 1;
+        	final int retries;
+        	if (task.getRetries() == null) {
+        		retries = this.retries;
         	} else {
-        		retries = 0;
+        		retries = task.getRetries() - 1;
         	}
+        	
+        	final long calculatedTimeout = calculateTimeout(retries);
         	
             final Exception exception = exchange.getException();
             externalTaskService.handleFailure(task.getId(),
                     task.getWorkerId(),
                     exception.getMessage(),
                     retries,
-                    retryTimeout);
+                    calculatedTimeout);
 
         } else
         // bpmn error
@@ -221,6 +227,18 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     }
 
+    private long calculateTimeout(final int retries) {
+    	
+    	if (retries < 1) {
+    		return 0;
+    	} else if ((retryTimeouts != null) && (retries <= retryTimeouts.length)) {
+    		return retryTimeouts[retries - 1];
+    	} else {
+    		return retryTimeout;
+    	}
+    	
+    }
+    
     protected int poll() throws Exception {
 
         int messagesPolled = 0;

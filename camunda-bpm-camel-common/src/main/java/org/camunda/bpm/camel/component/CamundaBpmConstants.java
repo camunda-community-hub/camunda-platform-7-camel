@@ -23,7 +23,10 @@ public final class CamundaBpmConstants {
     public final static boolean COMPLETETASK_DEFAULT = true;
     public final static String LOCKDURATION_PARAMETER = "lockDuration";
     public final static long LOCKDURATION_DEFAULT = 60000;
+    public final static String RETRIES_PARAMETER = "retries";
     public final static String RETRYTIMEOUT_PARAMETER = "retryTimeout";
+    public final static long RETRYTIMEOUT_DEFAULT = 500;
+    public final static String RETRYTIMEOUTS_PARAMETER = "retryTimeouts";
     public final static String MESSAGE_NAME_PARAMETER = "messageName";
     public final static String CORRELATION_KEY_NAME_PARAMETER = "correlationKeyName";
     public final static String ACTIVITY_ID_PARAMETER = "activityId";
