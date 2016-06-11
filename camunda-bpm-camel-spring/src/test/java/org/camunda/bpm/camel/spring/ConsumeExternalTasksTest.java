@@ -117,7 +117,7 @@ public class ConsumeExternalTasksTest {
 
     	// external task is not open any more
     	final long externalTasksCount = externalTaskService.createExternalTaskQuery()
-    			.processInstanceId(processInstance.getId()).count();
+    			.processInstanceId(processInstance.getId()).active().count();
     	assertThat(externalTasksCount).isEqualTo(0);
     	
     	// assert that the camunda BPM process instance ID has been added as a property to the message
@@ -190,7 +190,7 @@ public class ConsumeExternalTasksTest {
 
     	// external task is still not resolved
     	final long externalTasksCount = externalTaskService.createExternalTaskQuery()
-    			.processInstanceId(processInstance.getId()).count();
+    			.processInstanceId(processInstance.getId()).active().count();
     	assertThat(externalTasksCount).isEqualTo(1);
     	
     	// assert that the camunda BPM process instance ID has been added as a property to the message
@@ -258,7 +258,7 @@ public class ConsumeExternalTasksTest {
 
     	// external task is still not resolved
     	final long externalTasksCount = externalTaskService.createExternalTaskQuery()
-    			.processInstanceId(processInstance.getId()).count();
+    			.processInstanceId(processInstance.getId()).active().count();
     	assertThat(externalTasksCount).isEqualTo(0);
     	
     	// assert that the camunda BPM process instance ID has been added as a property to the message
@@ -314,7 +314,7 @@ public class ConsumeExternalTasksTest {
     	// variables to be set by the Camel-endpoint processing the external task
         mockEndpoint.whenAnyExchangeReceived(new Processor() {
             @Override
-            public void process(Exchange exchange) throws Exception {
+            public void process(final Exchange exchange) throws Exception {
                 throw new RuntimeException("fail!");
             }
         });
@@ -370,5 +370,5 @@ public class ConsumeExternalTasksTest {
         		.count()).isEqualTo(incidentCount + 1);
         
     }
-    
+	
 }

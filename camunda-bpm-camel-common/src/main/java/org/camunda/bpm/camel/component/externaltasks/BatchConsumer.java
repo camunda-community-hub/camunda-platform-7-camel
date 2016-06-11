@@ -175,12 +175,6 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
         final ExternalTaskService externalTaskService = getExternalTaskService();
 
-        // rollback
-        if (exchange.isRollbackOnly()) {
-
-            externalTaskService.unlock(task.getId());
-
-        } else
         // failure
         if (exchange.isFailed()) {
 
