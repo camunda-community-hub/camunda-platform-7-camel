@@ -172,6 +172,7 @@
             <include>org/camunda/bpm/camel/spring/SmokeTest.java</include>
             <include>org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java</include>
             <include>org/camunda/bpm/camel/spring/SendToCamelTest.java</include>
+            <include>org/camunda/bpm/camel/spring/ConsumeExternalTasksTest.java</include>
             <include>org/camunda/bpm/camel/spring/ReceiveFromCamelTest.java</include>
           </includes>
         </configuration>
