@@ -53,18 +53,18 @@ Parameter | Description
 `topic` | (mandatory) The name of the topic as configured for the external task in BPMN. The endpoint will only consume tasks of this topic.
 `maxTasksPerPoll` | (optional, default: 5) The endpoint is a polling consumer. This parameter defines the number of tasks fetched by each poll. Further configuration concerning scheduling of polling can be found at the description of [Camel's scheduler component](http://camel.apache.org/scheduler.html).
 `lockDuration` | (optional, default: 60s) Once a task is fetched it is locked for other consumers. This parameter defines how long it is locked if there is no further interaction.
-`retries` | The number of times the external task will be tried to resolved before an incident is raised.
+`retries` | The number of times the external task will be tried to resolve before an incident is raised.
 `retryTimeout` | (optional, default: 500ms) The timeout between subsequent retries.
-`retryTimeouts` | (optional, no default) A comma separated list of timeouts used for retries. This is useful when calling external services which might be down or simply busy. Using `retryTimeouts=5s,30s,5m` in combination with will `retryTimeout=30m&retries=5` will use the retry timeout sequence 5, 30 seconds, 5, 30 and 30 minutes.
+`retryTimeouts` | (optional, no default) A comma separated list of timeouts used for retries. This is useful when calling an external services which might be down or simply busy. Using `retryTimeouts=5s,30s,5m` in combination with will `retryTimeout=30m&retries=5` will use the retry timeout sequence 5, 30 seconds, 5, 30 and 30 minutes.
 `variablesToFetch` | (optional, no default) A list of process instance variables which will be fetched for every external task consumed.
-`completeTask` | (optional, default: true) Usually you want to complete the task once the exchange is processed. If you want to do asynchronous communication than you can use `completeTask=false` to not complete the tasks consumed by the endpoint. Therefore it is up to your responsibility to complete the task once you processed the asynchronous response.
+`completeTask` | (optional, default: true) Usually you want to complete the task once the exchange is processed. If you want to do asynchronous communication then you can use `completeTask=false` to not complete the tasks consumed by the endpoint. Therefore it is up to your responsibility to complete the task once you processed the asynchronous response.
  
 The exchange produced by the endpoint got several properties:
 * `CamundaBpmProcessInstanceId`
 * `CamundaBpmProcessDefinitionId`
 * `CamundaBpmProcessDefinitionKey`
 * `CamundaBpmProcessInstancePrio`
-Additionally the in-header `CamundaBpmExternalTask` contains the entire [LockedExternalTask](https://docs.camunda.org/javadoc/camunda-bpm-platform/7.5/org/camunda/bpm/engine/externaltask/LockedExternalTask.html) object and the in-body a map containing the process instance variables requested (Map<String, Object>). If the reply-body contains a map (Map<String, Object>) this map is treaded as process instance map and therefore used to update the process. If the reply-body is a string it is used a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries).
+Additionally the in-header `CamundaBpmExternalTask` contains the entire [LockedExternalTask](https://docs.camunda.org/javadoc/camunda-bpm-platform/7.5/org/camunda/bpm/engine/externaltask/LockedExternalTask.html) object and the in-body a map containing the process instance variables requested (Map< String, Object >). If the reply-body contains a map (Map< String, Object >) this map is treated as a list of process instance variables and therefore used to update the process. If the reply-body is a string it is used as a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries or an incident if the number of retries elapsed).
 
 ## Apache Camel --> camunda BPM
 The following use cases are supported by the camunda BPM Camel component (see [Camel Components](http://camel.apache.org/components.html)).
