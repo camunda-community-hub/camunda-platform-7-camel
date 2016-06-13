@@ -28,7 +28,7 @@ import org.camunda.bpm.model.xml.impl.util.StringUtil;
 
 public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
 
-    public static final String EXCHANGE_HEADER_TASK = "camundaBpmExternalTask";
+    public static final String EXCHANGE_HEADER_TASK = "CamundaBpmExternalTask";
 
     private CamundaBpmComponent component;
 
@@ -92,7 +92,7 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
         }
 
         if (parameters.containsKey(LOCKDURATION_PARAMETER)) {
-            this.lockDuration = Integer.parseInt((String) parameters.remove(LOCKDURATION_PARAMETER));
+            this.lockDuration = TimePatternConverter.toMilliSeconds((String) parameters.remove(LOCKDURATION_PARAMETER));
         } else {
             this.lockDuration = LOCKDURATION_DEFAULT;
         }
