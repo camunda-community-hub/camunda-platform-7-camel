@@ -43,7 +43,7 @@ With version 7.4.0 Camunda [introduced external tasks](https://blog.camunda.org/
 Since version 0.5.0 of camunda-bpm-camel it is possible to consume external tasks by Camel endpoints. There are advantages by doing so:
 * You don't have to place Camel instructions into your BPMN which is another level of technical decoupling.
 * External tasks are not processed by the thread processing the workflow and therefore they do not block the origin thread which may be part of Camunda's worker thread-pool.
-* If you have asynchronous communication external tasks are a great deal to split the service task into two transactions (one for sending the request and one for processing the response).
+* If you have asynchronous communication external tasks in combination with Camel are a great deal to split the service task into three transactions: The first is about the workflow currently processing (context: Camunda); the second is for sending the request (context: Camel) and the third for processing the response (context: Camel).
 * External tasks may be used as some sort of queue - especially if the service does some outbound network communication. In some installations it might be sufficient to use this aspect instead of using an ESB.
 
 The following URI parameters are supported:
