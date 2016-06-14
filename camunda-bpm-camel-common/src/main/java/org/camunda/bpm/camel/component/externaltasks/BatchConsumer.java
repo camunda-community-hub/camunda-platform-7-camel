@@ -190,7 +190,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         	}
         	
         	final long calculatedTimeout = calculateTimeout(retries);
-        	
+
             final Exception exception = exchange.getException();
             externalTaskService.handleFailure(task.getId(),
                     task.getWorkerId(),
@@ -229,10 +229,11 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     private long calculateTimeout(final int retries) {
     	
+    	final int currentTry = this.retries - retries;
     	if (retries < 1) {
     		return 0;
-    	} else if ((retryTimeouts != null) && (retries <= retryTimeouts.length)) {
-    		return retryTimeouts[retries - 1];
+    	} else if ((retryTimeouts != null) && (currentTry < retryTimeouts.length)) {
+    		return retryTimeouts[currentTry];
     	} else {
     		return retryTimeout;
     	}
@@ -253,7 +254,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         });
 
         if (isPollAllowed()) {
-
+        	
             final List<LockedExternalTask> tasks = getExternalTaskService().fetchAndLock(maxMessagesPerPoll,
                     camundaEndpoint.getEndpointUri(),
                     true).topic(topic, lockDuration).variables(variablesToFetch).execute();

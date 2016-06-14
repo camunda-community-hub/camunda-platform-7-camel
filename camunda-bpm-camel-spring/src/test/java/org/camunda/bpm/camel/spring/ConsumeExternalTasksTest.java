@@ -14,6 +14,7 @@ package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Versi
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -123,6 +125,22 @@ public class ConsumeExternalTasksTest {
     	// assert that the camunda BPM process instance ID has been added as a property to the message
     	assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(
     			CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+
+    	// all process instance variables are loaded since no "variablesToFetch" parameter was given
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody()).isNotNull();
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody()).isInstanceOf(Map.class);
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class).size()).isEqualTo(2);
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class)).containsKey("var1");
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class)).containsKey("var2");
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class)).containsValue("foo");
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class)).containsValue("bar");
     	
     	// assert that the variables sent in the response-message has been set into the process
         final List<HistoricVariableInstance> variables = historyService
@@ -163,8 +181,87 @@ public class ConsumeExternalTasksTest {
 
     @SuppressWarnings("unchecked")
 	@Test
+    @Deployment(resources = {"process/StartExternalTask3.bpmn20.xml"})
+    public void testLoadNoProcessVariablesAndCompleteTaskIsTrue() throws Exception {
+
+    	// variables to be set by the Camel-endpoint processing the external task
+        mockEndpoint.returnReplyBody(new Expression() {
+			@Override
+			public <T> T evaluate(Exchange exchange, Class<T> type) {
+				final HashMap<String, Object> result = new HashMap<String, Object>();
+				result.put("var1", "foo1");
+				result.put("var2", "bar2");
+				return (T) result;
+			}
+		});
+    	
+    	// start process
+    	final Map<String, Object> processVariables = new HashMap<String, Object>();
+    	processVariables.put("var1", "foo");
+    	processVariables.put("var2", "bar");
+    	final ProcessInstance processInstance = 
+    			runtimeService.startProcessInstanceByKey("startExternalTaskProcess3", processVariables);
+    	assertThat(processInstance).isNotNull();
+    	
+    	// wait for the external task to be completed
+    	Thread.sleep(1000);
+
+    	// external task is not open any more
+    	final long externalTasksCount = externalTaskService.createExternalTaskQuery()
+    			.processInstanceId(processInstance.getId()).active().count();
+    	assertThat(externalTasksCount).isEqualTo(0);
+    	
+    	// assert that the camunda BPM process instance ID has been added as a property to the message
+    	assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(
+    			CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+
+    	// no process instance variables are loaded since an empty "variablesToFetch" parameter was given
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody()).isNotNull();
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody()).isInstanceOf(Map.class);
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class).size()).isEqualTo(0);
+    	
+    	// assert that the variables sent in the response-message has been set into the process
+        final List<HistoricVariableInstance> variables = historyService
+        		.createHistoricVariableInstanceQuery()
+        		.processInstanceId(processInstance.getId())
+        		.list();
+        assertThat(variables.size()).isEqualTo(2);
+        final HashMap<String, Object> variablesAsMap = new HashMap<String, Object>();
+        for (final HistoricVariableInstance variable : variables) {
+        	variablesAsMap.put(variable.getName(), variable.getValue());
+        }
+        assertThat(variablesAsMap.containsKey("var1")).isTrue();
+        assertThat(variablesAsMap.get("var1")).isEqualTo("foo1");
+        assertThat(variablesAsMap.containsKey("var2")).isTrue();
+        assertThat(variablesAsMap.get("var2")).isEqualTo("bar2");
+     
+        // assert that process in end event "HappyEnd"
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("HappyEnd")
+				.singleResult()).isNotNull();
+
+        // assert that process ended not due to error boundary event 4711
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("End4711")
+				.singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 0815
+        assertThat(historyService.createHistoricActivityInstanceQuery()
+				.processInstanceId(processInstance.getId())
+				.activityId("End0815")
+				.singleResult()).isNull();
+        
+    }
+
+    @SuppressWarnings("unchecked")
+	@Test
     @Deployment(resources = {"process/StartExternalTask2.bpmn20.xml"})
-    public void testNotCompleteTask() throws Exception {
+    public void testCompleteTaskIsFalseAndLockDuration() throws Exception {
 
     	// variables returned but must not be set since task will not be completed
         mockEndpoint.returnReplyBody(new Expression() {
@@ -181,6 +278,7 @@ public class ConsumeExternalTasksTest {
     	final Map<String, Object> processVariables = new HashMap<String, Object>();
     	processVariables.put("var1", "foo");
     	processVariables.put("var2", "bar");
+    	processVariables.put("var3", "foobar");
     	final ProcessInstance processInstance = 
     			runtimeService.startProcessInstanceByKey("startExternalTaskProcess2", processVariables);
     	assertThat(processInstance).isNotNull();
@@ -188,21 +286,46 @@ public class ConsumeExternalTasksTest {
     	// wait for the external task to be completed
     	Thread.sleep(1000);
 
-    	// external task is still not resolved
-    	final long externalTasksCount = externalTaskService.createExternalTaskQuery()
-    			.processInstanceId(processInstance.getId()).active().count();
-    	assertThat(externalTasksCount).isEqualTo(1);
+    	// external task is still not resolved and locked
+    	final List<ExternalTask> externalTasks1 = externalTaskService.createExternalTaskQuery()
+    			.processInstanceId(processInstance.getId())
+    			.list();
+    	assertThat(externalTasks1).isNotNull();
+    	assertThat(externalTasks1.size()).isEqualTo(1);
+    	assertThat(externalTasks1.get(0).getLockExpirationTime()).isAfter(new Date());
     	
-    	// assert that the camunda BPM process instance ID has been added as a property to the message
+    	// wait for the task to unlock and refetch by Camel
+    	Thread.sleep(2000);
+
+    	// assert that the camunda BPM process instance ID has been added as a
+    	// property to the message for both exchanges received
     	assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(
     			CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+    	assertThat(mockEndpoint.assertExchangeReceived(1).getProperty(
+    			CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+
+    	// only two process instance variables are loaded according configured value of "variablesToFetch" parameter
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody()).isNotNull();
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody()).isInstanceOf(Map.class);
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class).size()).isEqualTo(2);
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class)).containsKey("var2");
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class)).containsKey("var3");
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class)).containsValue("bar");
+    	assertThat(mockEndpoint.assertExchangeReceived(0)
+    			.getIn().getBody(Map.class)).containsValue("foobar");
     	
     	// assert that the variables sent in the response-message has NOT been set into the process
         final List<HistoricVariableInstance> variables = historyService
         		.createHistoricVariableInstanceQuery()
         		.processInstanceId(processInstance.getId())
         		.list();
-        assertThat(variables.size()).isEqualTo(2);
+        assertThat(variables.size()).isEqualTo(3);
         final HashMap<String, Object> variablesAsMap = new HashMap<String, Object>();
         for (final HistoricVariableInstance variable : variables) {
         	variablesAsMap.put(variable.getName(), variable.getValue());
@@ -211,6 +334,8 @@ public class ConsumeExternalTasksTest {
         assertThat(variablesAsMap.get("var1")).isEqualTo("foo");
         assertThat(variablesAsMap.containsKey("var2")).isTrue();
         assertThat(variablesAsMap.get("var2")).isEqualTo("bar");
+        assertThat(variablesAsMap.containsKey("var3")).isTrue();
+        assertThat(variablesAsMap.get("var3")).isEqualTo("foobar");
      
         // assert that process NOT in end event "HappyEnd"
         assertThat(historyService.createHistoricActivityInstanceQuery()
@@ -309,7 +434,7 @@ public class ConsumeExternalTasksTest {
 
 	@Test
     @Deployment(resources = {"process/StartExternalTask.bpmn20.xml"})
-    public void testIncident() throws Exception {
+    public void testIncidentAndRetryTimeouts() throws Exception {
 
     	// variables to be set by the Camel-endpoint processing the external task
         mockEndpoint.whenAnyExchangeReceived(new Processor() {
@@ -334,10 +459,45 @@ public class ConsumeExternalTasksTest {
     	Thread.sleep(1000);
 
     	// external task is still not resolved
-    	final long externalTasksCount = externalTaskService.createExternalTaskQuery()
+    	final List<ExternalTask> externalTasks1 = externalTaskService.createExternalTaskQuery()
     			.processInstanceId(processInstance.getId())
-    			.count();
-    	assertThat(externalTasksCount).isEqualTo(1);
+    			.list();
+    	assertThat(externalTasks1).isNotNull();
+    	assertThat(externalTasks1.size()).isEqualTo(1);
+    	assertThat(externalTasks1.get(0).getRetries()).isEqualTo(2);
+    	
+    	// wait for the next try
+    	Thread.sleep(1000);
+
+    	// external task is still not resolved
+    	final List<ExternalTask> externalTasks2 = externalTaskService.createExternalTaskQuery()
+    			.processInstanceId(processInstance.getId())
+    			.list();
+    	assertThat(externalTasks2).isNotNull();
+    	assertThat(externalTasks2.size()).isEqualTo(1);
+    	assertThat(externalTasks2.get(0).getRetries()).isEqualTo(1);
+    	
+    	// next try is 2 seconds so after 1 second nothing changes
+    	Thread.sleep(1000);
+
+    	// external task is still not resolved
+    	final List<ExternalTask> externalTasks3 = externalTaskService.createExternalTaskQuery()
+    			.processInstanceId(processInstance.getId())
+    			.list();
+    	assertThat(externalTasks3).isNotNull();
+    	assertThat(externalTasks3.size()).isEqualTo(1);
+    	assertThat(externalTasks3.get(0).getRetries()).isEqualTo(1);
+
+    	// wait for the next try
+    	Thread.sleep(1000);
+
+    	// external task is still not resolved
+    	final List<ExternalTask> externalTasks4 = externalTaskService.createExternalTaskQuery()
+    			.processInstanceId(processInstance.getId())
+    			.list();
+    	assertThat(externalTasks4).isNotNull();
+    	assertThat(externalTasks4.size()).isEqualTo(1);
+    	assertThat(externalTasks4.get(0).getRetries()).isEqualTo(0);
     	
     	// assert that the camunda BPM process instance ID has been added as a property to the message
     	assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(

@@ -13,6 +13,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_D
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.TOPIC_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.VARIABLESTOFETCH_PARAMETER;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -98,8 +99,13 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
         }
 
         if (parameters.containsKey(VARIABLESTOFETCH_PARAMETER)) {
-            variablesToFetch = StringUtil.splitListBySeparator((String) parameters.get(VARIABLESTOFETCH_PARAMETER),
-                    ",");
+        	final String variables = (String) parameters.remove(VARIABLESTOFETCH_PARAMETER);
+        	if (variables.trim().isEmpty()) {
+        		variablesToFetch = new LinkedList<String>();
+        	} else {
+        		variablesToFetch = StringUtil.splitListBySeparator(variables,
+        				",");
+        	}
         } else {
             variablesToFetch = null;
         }
