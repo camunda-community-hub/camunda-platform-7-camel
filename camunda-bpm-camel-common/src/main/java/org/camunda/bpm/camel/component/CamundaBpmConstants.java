@@ -12,6 +12,7 @@ public final class CamundaBpmConstants {
     public static final String CAMUNDA_BPM_PROCESS_PRIO = "CamundaBpmProcessInstancePrio";
     public static final String CAMUNDA_BPM_BUSINESS_KEY = "CamundaBpmBusinessKey";
     public static final String CAMUNDA_BPM_CORRELATION_KEY = "CamundaBpmCorrelationKey";
+    public static final String CAMUNDA_BPM_CORRELATION_KEY_TYPE = "CamundaBpmCorrelationKeyType";
 
     /* Apache Camel URI parameters */
     public final static String PROCESS_DEFINITION_KEY_PARAMETER = "processDefinitionKey";
