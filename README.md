@@ -34,9 +34,37 @@ Additionally you can specify a correlationKey to send to Camel. It can be used t
 ${camel.sendTo('<camel endpoint>', '<list of process variables>', 'correlationKey')}
 ```
 
-The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if available) and `CamundaBpmCorrelationKey` (if set) will be available to any downstream processesors in the Camel route.
+The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if available) and `CamundaBpmCorrelationKey` (if set) will be available to any downstream processors in the Camel route.
 
+### `camunda-bpm://externalTask` Consuming external tasks
 
+With version 7.4.0 Camunda [introduced external tasks](https://blog.camunda.org/post/2015/11/camunda-bpm-740-released/). With version 7.5.0 [further improvements](https://blog.camunda.org/post/2016/05/camunda-bpm-750-released/) were added.
+
+Since version 0.5.0 of camunda-bpm-camel it is possible to consume external tasks by Camel endpoints. There are advantages by doing so:
+* You don't have to place Camel instructions into your BPMN which is another level of technical decoupling.
+* External tasks are not processed by the thread processing the workflow and therefore they do not block the origin thread which may be part of Camunda's worker thread-pool.
+* If you have asynchronous communication external tasks are a great deal to split the service task into two transactions (one for sending the request and one for processing the response).
+* External tasks may be used as some sort of queue - especially if the service does some outbound network communication. In some installations it might be sufficient to use this aspect instead of using an ESB.
+
+The following URI parameters are supported:
+
+Parameter | Description
+--- | ---
+`topic` | (mandatory) The name of the topic as configured for the external task in BPMN. The endpoint will only consume tasks of this topic.
+`maxTasksPerPoll` | (optional, default: 5) The endpoint is a polling consumer. This parameter defines the number of tasks fetched by each poll. Further configuration concerning scheduling of polling can be found at the description of [Camel's scheduler component](http://camel.apache.org/scheduler.html).
+`lockDuration` | (optional, default: 60s) Once a task is fetched it is locked for other consumers. This parameter defines how long it is locked if there is no further interaction.
+`retries` | The number of times the external task will be tried to resolve before an incident is raised.
+`retryTimeout` | (optional, default: 500ms) The timeout between subsequent retries.
+`retryTimeouts` | (optional, no default) A comma separated list of timeouts used for retries. This is useful when calling an external services which might be down or simply busy. Using `retryTimeouts=5s,30s,5m` in combination with will `retryTimeout=30m&retries=5` will use the retry timeout sequence 5, 30 seconds, 5, 30 and 30 minutes.
+`variablesToFetch` | (optional, no default) A list of process instance variables which will be fetched for every external task consumed.
+`completeTask` | (optional, default: true) Usually you want to complete the task once the exchange is processed. If you want to do asynchronous communication then you can use `completeTask=false` to not complete the tasks consumed by the endpoint. Therefore it is up to your responsibility to complete the task once you processed the asynchronous response.
+ 
+The exchange produced by the endpoint got several properties:
+* `CamundaBpmProcessInstanceId`
+* `CamundaBpmProcessDefinitionId`
+* `CamundaBpmProcessDefinitionKey`
+* `CamundaBpmProcessInstancePrio`
+Additionally the in-header `CamundaBpmExternalTask` contains the entire [LockedExternalTask](https://docs.camunda.org/javadoc/camunda-bpm-platform/7.5/org/camunda/bpm/engine/externaltask/LockedExternalTask.html) object and the in-body a map containing the process instance variables requested (Map< String, Object >). If the reply-body contains a map (Map< String, Object >) this map is treated as a list of process instance variables and therefore used to update the process. If the reply-body is a string it is used as a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries or an incident if the number of retries elapsed).
 
 ## Apache Camel --> camunda BPM
 The following use cases are supported by the camunda BPM Camel component (see [Camel Components](http://camel.apache.org/components.html)).

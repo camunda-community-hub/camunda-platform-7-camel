@@ -1,14 +1,17 @@
 package org.camunda.bpm.camel.component;
 
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.COMPLETETASK_DEFAULT;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.COMPLETETASK_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.LOCKDURATION_DEFAULT;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.LOCKDURATION_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXTASKSPERPOLL_DEFAULT;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXTASKSPERPOLL_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRIES_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUTS_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_DEFAULT;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.TOPIC_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.VARIABLESTOFETCH_PARAMETER;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXTASKSPERPOLL_PARAMETER;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXTASKSPERPOLL_DEFAULT;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.LOCKDURATION_PARAMETER;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.LOCKDURATION_DEFAULT;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.COMPLETETASK_PARAMETER;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.COMPLETETASK_DEFAULT;
 
 import java.util.List;
 import java.util.Map;
@@ -17,6 +20,7 @@ import org.apache.camel.Consumer;
 import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
+import org.apache.camel.converter.TimePatternConverter;
 import org.apache.camel.impl.DefaultPollingEndpoint;
 import org.camunda.bpm.camel.component.externaltasks.BatchConsumer;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -24,20 +28,18 @@ import org.camunda.bpm.model.xml.impl.util.StringUtil;
 
 public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
 
-    public static final String EXCHANGE_HEADER_TASK = "camundaBpmExternalTask";
+    public static final String EXCHANGE_HEADER_TASK = "CamundaBpmExternalTask";
 
     private CamundaBpmComponent component;
 
+    // parameters
     private final String topic;
-
     private final boolean completeTask;
-
-    private final int retryTimeout;
-
+    private final int retries;
+    private final long retryTimeout;
+    private final long[] retryTimeouts;
     private final int maxTasksPerPoll;
-
     private final long lockDuration;
-
     private final List<String> variablesToFetch;
 
     public CamundaBpmExternalTaskEndpointImpl(final String endpointUri, final CamundaBpmComponent component,
@@ -54,12 +56,29 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
                     "You need to pass the '" + TOPIC_PARAMETER + "' parameter! Parameters received: " + parameters);
         }
 
-        if (parameters.containsKey(RETRYTIMEOUT_PARAMETER)) {
-            this.retryTimeout = Integer.parseInt((String) parameters.remove(RETRYTIMEOUT_PARAMETER));
+        if (parameters.containsKey(RETRIES_PARAMETER)) {
+            this.retries = Integer.parseInt((String) parameters.remove(RETRIES_PARAMETER));
         } else {
-            this.retryTimeout = 0;
+            this.retries = 0;
+        }
+        
+        if (parameters.containsKey(RETRYTIMEOUT_PARAMETER)) {
+            this.retryTimeout = TimePatternConverter.toMilliSeconds((String) parameters.remove(RETRYTIMEOUT_PARAMETER));
+        } else {
+            this.retryTimeout = RETRYTIMEOUT_DEFAULT;
         }
 
+        if (parameters.containsKey(RETRYTIMEOUTS_PARAMETER)) {
+            final String retryTimeoutsString = (String) parameters.remove(RETRYTIMEOUTS_PARAMETER);
+            final String[] retryTimeoutsStrings = retryTimeoutsString.split(",");
+            retryTimeouts = new long[retryTimeoutsStrings.length];
+            for (int i = 0; i < retryTimeoutsStrings.length; ++i) {
+            	retryTimeouts[i] = TimePatternConverter.toMilliSeconds(retryTimeoutsStrings[i]);
+            }
+        } else {
+        	retryTimeouts = null;
+        }
+        
         if (parameters.containsKey(MAXTASKSPERPOLL_PARAMETER)) {
             this.maxTasksPerPoll = Integer.parseInt((String) parameters.remove(MAXTASKSPERPOLL_PARAMETER));
         } else {
@@ -73,7 +92,7 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
         }
 
         if (parameters.containsKey(LOCKDURATION_PARAMETER)) {
-            this.lockDuration = Integer.parseInt((String) parameters.remove(LOCKDURATION_PARAMETER));
+            this.lockDuration = TimePatternConverter.toMilliSeconds((String) parameters.remove(LOCKDURATION_PARAMETER));
         } else {
             this.lockDuration = LOCKDURATION_DEFAULT;
         }
@@ -95,7 +114,9 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
             consumer = new BatchConsumer(this,
                     processor,
                     getScheduledExecutorService(),
+                    retries,
                     retryTimeout,
+                    retryTimeouts,
                     lockDuration,
                     topic,
                     completeTask,
@@ -103,7 +124,9 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
         } else {
             consumer = new BatchConsumer(this,
                     processor,
+                    retries,
                     retryTimeout,
+                    retryTimeouts,
                     lockDuration,
                     topic,
                     completeTask,
