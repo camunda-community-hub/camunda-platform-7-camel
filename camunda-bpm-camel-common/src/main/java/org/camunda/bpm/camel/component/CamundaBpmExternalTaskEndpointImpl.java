@@ -11,6 +11,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUTS_
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_DEFAULT;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.TOPIC_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.WORKERID_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.VARIABLESTOFETCH_PARAMETER;
 
 import java.util.LinkedList;
@@ -42,6 +43,7 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
     private final int maxTasksPerPoll;
     private final long lockDuration;
     private final List<String> variablesToFetch;
+    private final String workerId;
 
     public CamundaBpmExternalTaskEndpointImpl(final String endpointUri, final CamundaBpmComponent component,
             final Map<String, Object> parameters) {
@@ -62,7 +64,7 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
         } else {
             this.retries = 0;
         }
-        
+
         if (parameters.containsKey(RETRYTIMEOUT_PARAMETER)) {
             this.retryTimeout = TimePatternConverter.toMilliSeconds((String) parameters.remove(RETRYTIMEOUT_PARAMETER));
         } else {
@@ -74,12 +76,12 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
             final String[] retryTimeoutsStrings = retryTimeoutsString.split(",");
             retryTimeouts = new long[retryTimeoutsStrings.length];
             for (int i = 0; i < retryTimeoutsStrings.length; ++i) {
-            	retryTimeouts[i] = TimePatternConverter.toMilliSeconds(retryTimeoutsStrings[i]);
+                retryTimeouts[i] = TimePatternConverter.toMilliSeconds(retryTimeoutsStrings[i]);
             }
         } else {
-        	retryTimeouts = null;
+            retryTimeouts = null;
         }
-        
+
         if (parameters.containsKey(MAXTASKSPERPOLL_PARAMETER)) {
             this.maxTasksPerPoll = Integer.parseInt((String) parameters.remove(MAXTASKSPERPOLL_PARAMETER));
         } else {
@@ -98,14 +100,19 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
             this.lockDuration = LOCKDURATION_DEFAULT;
         }
 
+        if (parameters.containsKey(WORKERID_PARAMETER)) {
+            this.workerId = (String) parameters.remove(WORKERID_PARAMETER);
+        } else {
+            this.workerId = endpointUri;
+        }
+
         if (parameters.containsKey(VARIABLESTOFETCH_PARAMETER)) {
-        	final String variables = (String) parameters.remove(VARIABLESTOFETCH_PARAMETER);
-        	if (variables.trim().isEmpty()) {
-        		variablesToFetch = new LinkedList<String>();
-        	} else {
-        		variablesToFetch = StringUtil.splitListBySeparator(variables,
-        				",");
-        	}
+            final String variables = (String) parameters.remove(VARIABLESTOFETCH_PARAMETER);
+            if (variables.trim().isEmpty()) {
+                variablesToFetch = new LinkedList<String>();
+            } else {
+                variablesToFetch = StringUtil.splitListBySeparator(variables, ",");
+            }
         } else {
             variablesToFetch = null;
         }
@@ -126,7 +133,8 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
                     lockDuration,
                     topic,
                     completeTask,
-                    variablesToFetch);
+                    variablesToFetch,
+                    workerId);
         } else {
             consumer = new BatchConsumer(this,
                     processor,
@@ -136,7 +144,8 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
                     lockDuration,
                     topic,
                     completeTask,
-                    variablesToFetch);
+                    variablesToFetch,
+                    workerId);
         }
         configureConsumer(consumer);
         consumer.setMaxMessagesPerPoll(maxTasksPerPoll);

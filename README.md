@@ -52,6 +52,7 @@ Parameter | Description
 --- | ---
 `topic` | (mandatory) The name of the topic as configured for the external task in BPMN. The endpoint will only consume tasks of this topic.
 `maxTasksPerPoll` | (optional, default: 5) The endpoint is a polling consumer. This parameter defines the number of tasks fetched by each poll. Further configuration concerning scheduling of polling can be found at the description of [Camel's scheduler component](http://camel.apache.org/scheduler.html).
+`workerId` | (optional, default: the endpoint's URI) The workerId used to poll Camunda for external tasks. Polled tasks are locked for that workerId. So if the task is not completed by the endpoint itself (see parameter `completeTask`), then the workerId used to complete the task must be the same used to poll the task.
 `lockDuration` | (optional, default: 60s) Once a task is fetched it is locked for other consumers. This parameter defines how long it is locked if there is no further interaction.
 `retries` | The number of times the external task will be tried to resolve before an incident is raised.
 `retryTimeout` | (optional, default: 500ms) The timeout between subsequent retries.

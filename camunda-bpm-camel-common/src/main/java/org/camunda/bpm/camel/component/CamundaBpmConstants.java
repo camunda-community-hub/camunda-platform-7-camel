@@ -17,6 +17,7 @@ public final class CamundaBpmConstants {
     /* Apache Camel URI parameters */
     public final static String PROCESS_DEFINITION_KEY_PARAMETER = "processDefinitionKey";
     public final static String TOPIC_PARAMETER = "topic";
+    public final static String WORKERID_PARAMETER = "workerId";
     public final static String VARIABLESTOFETCH_PARAMETER = "variablesToFetch";
     public final static String MAXTASKSPERPOLL_PARAMETER = "maxTasksPerPoll";
     public final static int MAXTASKSPERPOLL_DEFAULT = 5;

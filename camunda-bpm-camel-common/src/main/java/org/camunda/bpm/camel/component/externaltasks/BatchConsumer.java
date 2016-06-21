@@ -39,11 +39,11 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     private final String topic;
     private final boolean completeTask;
     private final List<String> variablesToFetch;
+    private final String workerId;
 
-    public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
-    		final int retries, final long retryTimeout, final long[] retryTimeouts,
-            final long lockDuration, final String topic, final boolean completeTask,
-            final List<String> variablesToFetch) {
+    public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retries,
+            final long retryTimeout, final long[] retryTimeouts, final long lockDuration, final String topic,
+            final boolean completeTask, final List<String> variablesToFetch, final String workerId) {
 
         super(endpoint, processor);
 
@@ -55,13 +55,14 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.topic = topic;
         this.completeTask = completeTask;
         this.variablesToFetch = variablesToFetch;
+        this.workerId = workerId;
 
     }
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
             final ScheduledExecutorService executor, final int retries, final long retryTimeout,
-            final long[] retryTimeouts, final long lockDuration, final String topic,
-            final boolean completeTask, final List<String> variablesToFetch) {
+            final long[] retryTimeouts, final long lockDuration, final String topic, final boolean completeTask,
+            final List<String> variablesToFetch, final String workerId) {
 
         super(endpoint, processor, executor);
 
@@ -73,6 +74,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.topic = topic;
         this.completeTask = completeTask;
         this.variablesToFetch = variablesToFetch;
+        this.workerId = workerId;
 
     }
 
@@ -182,14 +184,14 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         // failure
         if (exchange.isFailed()) {
 
-        	final int retries;
-        	if (task.getRetries() == null) {
-        		retries = this.retries;
-        	} else {
-        		retries = task.getRetries() - 1;
-        	}
-        	
-        	final long calculatedTimeout = calculateTimeout(retries);
+            final int retries;
+            if (task.getRetries() == null) {
+                retries = this.retries;
+            } else {
+                retries = task.getRetries() - 1;
+            }
+
+            final long calculatedTimeout = calculateTimeout(retries);
 
             final Exception exception = exchange.getException();
             externalTaskService.handleFailure(task.getId(),
@@ -228,18 +230,18 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     }
 
     private long calculateTimeout(final int retries) {
-    	
-    	final int currentTry = this.retries - retries;
-    	if (retries < 1) {
-    		return 0;
-    	} else if ((retryTimeouts != null) && (currentTry < retryTimeouts.length)) {
-    		return retryTimeouts[currentTry];
-    	} else {
-    		return retryTimeout;
-    	}
-    	
+
+        final int currentTry = this.retries - retries;
+        if (retries < 1) {
+            return 0;
+        } else if ((retryTimeouts != null) && (currentTry < retryTimeouts.length)) {
+            return retryTimeouts[currentTry];
+        } else {
+            return retryTimeout;
+        }
+
     }
-    
+
     protected int poll() throws Exception {
 
         int messagesPolled = 0;
@@ -254,9 +256,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         });
 
         if (isPollAllowed()) {
-        	
+
             final List<LockedExternalTask> tasks = getExternalTaskService().fetchAndLock(maxMessagesPerPoll,
-                    camundaEndpoint.getEndpointUri(),
+                    workerId,
                     true).topic(topic, lockDuration).variables(variablesToFetch).execute();
 
             messagesPolled = tasks.size();
