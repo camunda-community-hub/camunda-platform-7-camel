@@ -28,9 +28,11 @@ import org.camunda.bpm.camel.component.externaltasks.BatchConsumer;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.model.xml.impl.util.StringUtil;
 
-public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
+public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
 
     public static final String EXCHANGE_HEADER_TASK = "CamundaBpmExternalTask";
+
+    public static final String EXCHANGE_HEADER_TASKID = "CamundaBpmExternalTaskId";
 
     private CamundaBpmComponent component;
 
@@ -45,7 +47,7 @@ public class CamundaBpmExternalTaskEndpointImpl extends DefaultPollingEndpoint i
     private final List<String> variablesToFetch;
     private final String workerId;
 
-    public CamundaBpmExternalTaskEndpointImpl(final String endpointUri, final CamundaBpmComponent component,
+    public CamundaBpmPollExternalTasksEndpointImpl(final String endpointUri, final CamundaBpmComponent component,
             final Map<String, Object> parameters) {
 
         super(endpointUri, component);

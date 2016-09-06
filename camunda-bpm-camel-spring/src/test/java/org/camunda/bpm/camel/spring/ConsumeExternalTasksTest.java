@@ -23,11 +23,13 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Expression;
 import org.apache.camel.Processor;
+import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
+import org.camunda.bpm.engine.externaltask.LockedExternalTask;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -240,6 +242,80 @@ public class ConsumeExternalTasksTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    @Deployment(resources = { "process/StartExternalTask4.bpmn20.xml" })
+    public void testCompleteTaskSucessfully() throws Exception {
+
+        // variables returned but must not be set since task will not be
+        // completed
+        mockEndpoint.returnReplyBody(new Expression() {
+            @Override
+            public <T> T evaluate(Exchange exchange, Class<T> type) {
+                final HashMap<String, Object> result = new HashMap<String, Object>();
+                result.put("var2", "bar2");
+                result.put("var3", "bar3");
+                return (T) result;
+            }
+        });
+    
+        // start process
+        final Map<String, Object> processVariables = new HashMap<String, Object>();
+        processVariables.put("var1", "foo");
+        processVariables.put("var2", "bar");
+        processVariables.put("var3", "foobar");
+        final ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("startExternalTaskProcess2",
+                processVariables);
+        assertThat(processInstance).isNotNull();        
+
+        // external task is still not resolved and not locked
+        final List<ExternalTask> externalTasks1 = externalTaskService.createExternalTaskQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(externalTasks1).isNotNull();
+        assertThat(externalTasks1.size()).isEqualTo(1);
+        assertThat(externalTasks1.get(0).getWorkerId()).isNull();
+        
+        // find external task and lock
+        final List<LockedExternalTask> locked = externalTaskService.fetchAndLock(1, "0815", true)
+        		.topic("topic4", 5000).execute();
+        assertThat(locked).isNotNull();
+        assertThat(locked.size()).isEqualTo(1);
+        final LockedExternalTask lockedExternalTask = locked.get(0);
+        
+        // call route "direct:testRoute"
+        final ProducerTemplate template = camelContext.createProducerTemplate();
+        template.requestBodyAndHeader("direct:testRoute", null, "CamundaBpmExternalTaskId", lockedExternalTask.getId());
+        
+        // assert that process in end event "HappyEnd"
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("HappyEnd").singleResult()).isNotNull();
+
+        // assert that process ended not due to error boundary event 4711
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("End4711").singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 0815
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("End0815").singleResult()).isNull();
+        
+        // assert that the variables sent in the response-message has been set
+        // into the process
+        final List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(variables.size()).isEqualTo(3);
+        final HashMap<String, Object> variablesAsMap = new HashMap<String, Object>();
+        for (final HistoricVariableInstance variable : variables) {
+            variablesAsMap.put(variable.getName(), variable.getValue());
+        }
+        assertThat(variablesAsMap.containsKey("var1")).isTrue();
+        assertThat(variablesAsMap.get("var1")).isEqualTo("foo");
+        assertThat(variablesAsMap.containsKey("var2")).isTrue();
+        assertThat(variablesAsMap.get("var2")).isEqualTo("bar2");
+        assertThat(variablesAsMap.containsKey("var3")).isTrue();
+        assertThat(variablesAsMap.get("var3")).isEqualTo("bar3");
+        
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
     @Deployment(resources = { "process/StartExternalTask2.bpmn20.xml" })
     public void testCompleteTaskIsFalseAndLockDuration() throws Exception {
 
@@ -426,7 +502,7 @@ public class ConsumeExternalTasksTest {
         assertThat(externalTasks1).isNotNull();
         assertThat(externalTasks1.size()).isEqualTo(1);
         assertThat(externalTasks1.get(0).getWorkerId()).isEqualTo(
-                "camunda-bpm://externalTask?delay=250&maxTasksPerPoll=5&retries=2&retryTimeout=2s&retryTimeouts=1s&topic=topic1");
+                "camunda-bpm://poll-externalTasks?delay=250&maxTasksPerPoll=5&retries=2&retryTimeout=2s&retryTimeouts=1s&topic=topic1");
         assertThat(externalTasks1.get(0).getRetries()).isEqualTo(2);
 
         // wait for the next try
