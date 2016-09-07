@@ -42,6 +42,7 @@ public class MessageProducerTest extends BaseCamelTest {
         assertThat(producer).isInstanceOf(MessageProducer.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageIsDeliveredCalled() throws Exception {
         ProcessInstance processInstance = mock(ProcessInstance.class);
@@ -56,6 +57,7 @@ public class MessageProducerTest extends BaseCamelTest {
         assertThat(producer).isInstanceOf(MessageProducer.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void signalCalled() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -112,6 +114,7 @@ public class MessageProducerTest extends BaseCamelTest {
         verify(query).processInstanceId("theProcessInstanceId");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageProcessInstanceId() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -140,6 +143,7 @@ public class MessageProducerTest extends BaseCamelTest {
         verify(runtimeService).messageEventReceived(eq("aMessageName"), eq("theExecutionId"), anyMap());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageBusinessKey() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -154,6 +158,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
 
@@ -165,6 +170,7 @@ public class MessageProducerTest extends BaseCamelTest {
         assertThat(correlationCaptor.getValue().size()).isEqualTo(0);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageBusinessKeyCorrelationKey() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -183,6 +189,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
 
@@ -196,6 +203,7 @@ public class MessageProducerTest extends BaseCamelTest {
         assertTrue(correlationCaptor.getValue().values().contains("theCorrelationKey"));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageBusinessKeyCorrelationKeyType() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -217,6 +225,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
 
@@ -231,6 +240,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageNoKey() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -244,6 +254,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
         verify(runtimeService).correlateMessage(eq("aMessageName"),
@@ -253,6 +264,7 @@ public class MessageProducerTest extends BaseCamelTest {
         assertThat(correlationCaptor.getValue().size()).isEqualTo(0);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageCorrelationKey() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -268,6 +280,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
         verify(runtimeService).correlateMessage(eq("aMessageName"),

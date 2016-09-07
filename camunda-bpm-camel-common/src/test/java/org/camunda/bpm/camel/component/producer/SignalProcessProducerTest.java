@@ -41,6 +41,7 @@ public class SignalProcessProducerTest extends BaseCamelTest {
         endpoint.createProducer();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void signalShouldBeCalled() throws Exception {
         ProcessInstance processInstance = mock(ProcessInstance.class);
@@ -56,6 +57,7 @@ public class SignalProcessProducerTest extends BaseCamelTest {
         assertThat(producer).isInstanceOf(MessageProducer.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void signalWithBusinessKeyShouldBeCalled() throws Exception {
         ProcessInstance processInstance = mock(ProcessInstance.class);
