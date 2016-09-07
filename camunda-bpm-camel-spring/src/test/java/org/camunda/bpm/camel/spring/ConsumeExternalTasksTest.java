@@ -410,6 +410,9 @@ public class ConsumeExternalTasksTest {
         assertThat(variablesAsMap.containsKey("var3")).isTrue();
         assertThat(variablesAsMap.get("var3")).isEqualTo("foobar");
 
+        // complete task to make test order not relevant
+        externalTaskService.complete(externalTasks2.get(0).getId(), "0815");
+
     }
 
     @SuppressWarnings("unchecked")
@@ -581,6 +584,9 @@ public class ConsumeExternalTasksTest {
         assertThat(variablesAsMap.get("var2")).isEqualTo("bar");
         assertThat(variablesAsMap.containsKey("var3")).isTrue();
         assertThat(variablesAsMap.get("var3")).isEqualTo("foobar");
+
+        // complete task to make test order not relevant
+        externalTaskService.complete(externalTasks2.get(0).getId(), "0815");
 
     }
 
