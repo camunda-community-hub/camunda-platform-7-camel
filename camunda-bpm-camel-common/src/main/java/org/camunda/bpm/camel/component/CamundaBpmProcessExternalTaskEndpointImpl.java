@@ -1,7 +1,7 @@
 package org.camunda.bpm.camel.component;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.COMPLETETASK_DEFAULT;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.COMPLETETASK_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.ONCOMPLETION_DEFAULT;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.ONCOMPLETION_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRIES_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUTS_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_DEFAULT;
@@ -25,7 +25,7 @@ public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint
 
     // parameters
     private final String topic;
-    private final boolean completeTask;
+    private final boolean onCompletion;
     private final int retries;
     private final long retryTimeout;
     private final long[] retryTimeouts;
@@ -67,10 +67,10 @@ public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint
             retryTimeouts = null;
         }
 
-        if (parameters.containsKey(COMPLETETASK_PARAMETER)) {
-            this.completeTask = Boolean.parseBoolean((String) parameters.remove(COMPLETETASK_PARAMETER));
+        if (parameters.containsKey(ONCOMPLETION_PARAMETER)) {
+            this.onCompletion = Boolean.parseBoolean((String) parameters.remove(ONCOMPLETION_PARAMETER));
         } else {
-            this.completeTask = COMPLETETASK_DEFAULT;
+            this.onCompletion = ONCOMPLETION_DEFAULT;
         }
 
         if (parameters.containsKey(WORKERID_PARAMETER)) {
@@ -99,7 +99,7 @@ public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint
     protected Processor createProcessor() throws Exception {
     	
     	return new TaskProcessor(this, topic, retries, retryTimeout,
-    			retryTimeouts, completeTask, workerId);
+    			retryTimeouts, true, onCompletion, workerId);
     	
     }
 

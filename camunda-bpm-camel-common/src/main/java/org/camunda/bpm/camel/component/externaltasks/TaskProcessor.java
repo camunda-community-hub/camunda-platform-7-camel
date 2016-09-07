@@ -22,18 +22,20 @@ public class TaskProcessor implements Processor {
     private final long retryTimeout;
     private final long[] retryTimeouts;
     private final boolean completeTask;
+    private final boolean onCompletion;
     private final String topic;
     private final String workerId;
     
     public TaskProcessor(final CamundaBpmEndpoint endpoint, final String topic,
     		final int retries, final long retryTimeout, final long[] retryTimeouts,
-    		final boolean completeTask, final String workerId) {
+    		final boolean completeTask, final boolean onCompletion, final String workerId) {
 		
         this.camundaEndpoint = endpoint;
         this.retries = retries;
         this.retryTimeout = retryTimeout;
         this.retryTimeouts = retryTimeouts;
         this.completeTask = completeTask;
+        this.onCompletion = onCompletion;
         this.workerId = workerId;
     	this.topic = topic;
     	
@@ -48,6 +50,12 @@ public class TaskProcessor implements Processor {
 	@Override
 	public void process(final Exchange exchange) {
 		
+	    if (!onCompletion) {
+	        
+	        internalProcessing(exchange);
+	        
+	    } else {
+	        
 		final TaskProcessor taskProcessor = this;
         exchange.addOnCompletion(new Synchronization() {
 
@@ -63,6 +71,8 @@ public class TaskProcessor implements Processor {
 
         });
 		
+        }
+
 	}
     
 	@SuppressWarnings("unchecked")

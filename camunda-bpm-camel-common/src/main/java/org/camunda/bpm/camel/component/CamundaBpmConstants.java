@@ -23,6 +23,8 @@ public final class CamundaBpmConstants {
     public final static int MAXTASKSPERPOLL_DEFAULT = 5;
     public final static String COMPLETETASK_PARAMETER = "completeTask";
     public final static boolean COMPLETETASK_DEFAULT = true;
+    public final static String ONCOMPLETION_PARAMETER = "onCompletion";
+    public final static boolean ONCOMPLETION_DEFAULT = false;
     public final static String LOCKDURATION_PARAMETER = "lockDuration";
     public final static long LOCKDURATION_DEFAULT = 60000;
     public final static String RETRIES_PARAMETER = "retries";

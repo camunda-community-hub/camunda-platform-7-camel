@@ -50,7 +50,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.variablesToFetch = variablesToFetch;
         this.workerId = workerId;
         
-        this.taskProcessor = new TaskProcessor(endpoint, topic, retries, retryTimeout, retryTimeouts, completeTask, workerId);
+        this.taskProcessor = new TaskProcessor(endpoint, topic, retries, retryTimeout, retryTimeouts, completeTask, true, workerId);
 
     }
 
@@ -68,7 +68,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.variablesToFetch = variablesToFetch;
         this.workerId = workerId;
 
-        this.taskProcessor = new TaskProcessor(endpoint, topic, retries, retryTimeout, retryTimeouts, completeTask, workerId);
+        this.taskProcessor = new TaskProcessor(endpoint, topic, retries, retryTimeout, retryTimeouts, completeTask, true, workerId);
         
     }
 
