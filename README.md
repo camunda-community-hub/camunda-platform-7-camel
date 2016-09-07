@@ -83,11 +83,11 @@ to complete the external task. The endpoint also supports throwing an incident o
 
 For using it the incoming message of the Camel route must include a parameter `CamundaBpmExternalTaskId` which contains the id of the external task.
 
-Example: `camunda-bpm:process-externalTasks?topic=topic1`
+Example: `camunda-bpm:process-externalTask?topic=topic1`
 
 Typical usage:
-* `<from uri="direct:bar" /><to uri="camunda-bpm:process-externalTasks" />`
-* `<from uri="direct:bar" /><to uri="camunda-bpm:process-externalTasks?onCompletion=true" /><to uri="some-other-endpoint" />`
+* `<from uri="direct:bar" /><to uri="camunda-bpm:process-externalTask" />`
+* `<from uri="direct:bar" /><to uri="camunda-bpm:process-externalTask?onCompletion=true" /><to uri="some-other-endpoint" />`
 
 Parameter | Description
 --- | ---
