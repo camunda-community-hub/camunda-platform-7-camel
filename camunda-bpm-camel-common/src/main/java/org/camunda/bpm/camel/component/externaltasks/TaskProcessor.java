@@ -119,10 +119,11 @@ public class TaskProcessor implements Processor {
             }
         }
 
-        // 'process-externalTask' at the end of a route does not have any output
-        // - only input which was any proceeder's output.
         final Message out;
-        if (exchange.hasOut()) {
+        if (onCompletion) {
+            // 'process-externalTask' at the end of a route does not have any
+            // output
+            // - only input which was any proceeder's output.
             out = exchange.getOut();
         } else {
             out = in;
@@ -138,14 +139,8 @@ public class TaskProcessor implements Processor {
                 return;
             }
 
-            final int retries;
-            if (task.getRetries() == null) {
-                retries = this.retries;
-            } else {
-                retries = task.getRetries() - 1;
-            }
-
-            final long calculatedTimeout = calculateTimeout(retries);
+            final int retries = retriesLeft(task.getRetries());
+            final long calculatedTimeout = calculateTimeout(task.getRetries());
 
             final Exception exception = exchange.getException();
             externalTaskService.handleFailure(task.getId(),
@@ -196,9 +191,26 @@ public class TaskProcessor implements Processor {
 
     }
 
-    private long calculateTimeout(final int retries) {
+    public int retriesLeft(final Integer taskRetries) {
 
-        final int currentTry = this.retries - retries;
+        if (taskRetries == null) {
+            return this.retries;
+        } else {
+            return taskRetries - 1;
+        }
+
+    }
+
+    public int attemptsStarted(final Integer taskRetries) {
+
+        final int retriesLeft = retriesLeft(taskRetries);
+        return this.retries - retriesLeft;
+
+    }
+
+    private long calculateTimeout(final Integer taskRetries) {
+
+        final int currentTry = attemptsStarted(taskRetries);
         if (retries < 1) {
             return 0;
         } else if ((retryTimeouts != null) && (currentTry < retryTimeouts.length)) {

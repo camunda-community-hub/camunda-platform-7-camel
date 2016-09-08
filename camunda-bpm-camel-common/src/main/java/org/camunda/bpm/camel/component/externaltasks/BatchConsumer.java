@@ -34,7 +34,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     private final boolean completeTask;
     private final List<String> variablesToFetch;
     private final String workerId;
-    
+
     private final TaskProcessor taskProcessor;
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retries,
@@ -49,8 +49,15 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.completeTask = completeTask;
         this.variablesToFetch = variablesToFetch;
         this.workerId = workerId;
-        
-        this.taskProcessor = new TaskProcessor(endpoint, topic, retries, retryTimeout, retryTimeouts, completeTask, true, workerId);
+
+        this.taskProcessor = new TaskProcessor(endpoint,
+                topic,
+                retries,
+                retryTimeout,
+                retryTimeouts,
+                completeTask,
+                true,
+                workerId);
 
     }
 
@@ -68,8 +75,15 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.variablesToFetch = variablesToFetch;
         this.workerId = workerId;
 
-        this.taskProcessor = new TaskProcessor(endpoint, topic, retries, retryTimeout, retryTimeouts, completeTask, true, workerId);
-        
+        this.taskProcessor = new TaskProcessor(endpoint,
+                topic,
+                retries,
+                retryTimeout,
+                retryTimeouts,
+                completeTask,
+                true,
+                workerId);
+
     }
 
     @Override
@@ -108,9 +122,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     private boolean processExchange(final Exchange exchange) throws Exception {
 
-    	taskProcessor.process(exchange);
+        taskProcessor.process(exchange);
         getProcessor().process(exchange);
-        
+
         return true;
 
     }
@@ -179,8 +193,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID, task.getProcessDefinitionId());
                 exchange.setProperty(CAMUNDA_BPM_PROCESS_PRIO, task.getPriority());
 
+                final int retries = taskProcessor.retriesLeft(task.getRetries());
+                final int attemptsStarted = taskProcessor.attemptsStarted(task.getRetries());
+
                 final Message in = exchange.getIn();
                 in.setHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_TASK, task);
+                in.setHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_RETRIESLEFT, retries);
+                in.setHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_ATTEMPTSSTARTED, attemptsStarted);
                 in.setBody(task.getVariables());
 
                 exchanges.add(exchange);
