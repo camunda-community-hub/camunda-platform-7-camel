@@ -33,7 +33,6 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
     public static final String EXCHANGE_HEADER_TASK = "CamundaBpmExternalTask";
     public static final String EXCHANGE_HEADER_RETRIESLEFT = "CamundaBpmExternalRetriesLeft";
     public static final String EXCHANGE_HEADER_ATTEMPTSSTARTED = "CamundaBpmExternalAttemptsStarted";
-    public static final String EXCHANGE_HEADER_TASKID = "CamundaBpmExternalTaskId";
 
     private CamundaBpmComponent component;
 

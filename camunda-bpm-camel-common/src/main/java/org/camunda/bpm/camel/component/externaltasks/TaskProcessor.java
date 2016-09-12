@@ -10,6 +10,7 @@ import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.spi.Synchronization;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.camel.component.CamundaBpmPollExternalTasksEndpointImpl;
+import org.camunda.bpm.camel.component.CamundaBpmProcessExternalTaskEndpointImpl;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
@@ -90,7 +91,7 @@ public class TaskProcessor implements Processor {
 
         final LockedExternalTask lockedTask = in.getHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_TASK,
                 LockedExternalTask.class);
-        final String lockedTaskId = in.getHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_TASKID,
+        final String lockedTaskId = in.getHeader(CamundaBpmProcessExternalTaskEndpointImpl.EXCHANGE_HEADER_TASKID,
                 String.class);
 
         final String taskId;
@@ -101,7 +102,7 @@ public class TaskProcessor implements Processor {
         } else {
             throw new RuntimeCamelException("Unexpected exchange: in-header '"
                     + CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_TASK + "' and '"
-                    + CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_TASKID + "' is null!");
+                    + CamundaBpmProcessExternalTaskEndpointImpl.EXCHANGE_HEADER_TASKID + "' is null!");
         }
 
         final ExternalTask task = getExternalTaskService().createExternalTaskQuery().externalTaskId(
@@ -145,7 +146,7 @@ public class TaskProcessor implements Processor {
             final Exception exception = exchange.getException();
             externalTaskService.handleFailure(task.getId(),
                     task.getWorkerId(),
-                    exception.getMessage(),
+                    exception != null ? exception.getMessage() : "task failed",
                     retries,
                     calculatedTimeout);
 
@@ -159,6 +160,11 @@ public class TaskProcessor implements Processor {
                 logger.warning("Should complete the external task with BPM error '" + errorCode
                         + "' but the task seems to be already processed - will do nothing! Camnda external task id: '"
                         + taskId + "'");
+                return;
+            }
+
+            // Ignore if service advises us to do so.
+            if (errorCode.equals(CamundaBpmProcessExternalTaskEndpointImpl.EXCHANGE_RESPONSE_IGNORE)) {
                 return;
             }
 

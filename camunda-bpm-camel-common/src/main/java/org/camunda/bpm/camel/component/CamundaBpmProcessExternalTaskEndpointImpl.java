@@ -19,7 +19,8 @@ import org.camunda.bpm.engine.ProcessEngine;
 
 public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint implements CamundaBpmEndpoint {
 
-    public static final String EXCHANGE_HEADER_TASK = "CamundaBpmExternalTask";
+    public static final String EXCHANGE_HEADER_TASKID = "CamundaBpmExternalTaskId";
+    public static final String EXCHANGE_RESPONSE_IGNORE = "CamundaBpmExternalTaskIgnore";
 
     private CamundaBpmComponent component;
 
@@ -41,9 +42,9 @@ public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint
         if (parameters.containsKey(TOPIC_PARAMETER)) {
             this.topic = (String) parameters.remove(TOPIC_PARAMETER);
         } else {
-        	this.topic = null;
+            this.topic = null;
         }
-        
+
         if (parameters.containsKey(RETRIES_PARAMETER)) {
             this.retries = Integer.parseInt((String) parameters.remove(RETRIES_PARAMETER));
         } else {
@@ -76,7 +77,7 @@ public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint
         if (parameters.containsKey(WORKERID_PARAMETER)) {
             this.workerId = (String) parameters.remove(WORKERID_PARAMETER);
         } else {
-        	this.workerId = null;
+            this.workerId = null;
         }
 
     }
@@ -94,13 +95,12 @@ public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint
         return component.getProcessEngine();
 
     }
-    
+
     @Override
     protected Processor createProcessor() throws Exception {
-    	
-    	return new TaskProcessor(this, topic, retries, retryTimeout,
-    			retryTimeouts, true, onCompletion, workerId);
-    	
+
+        return new TaskProcessor(this, topic, retries, retryTimeout, retryTimeouts, true, onCompletion, workerId);
+
     }
 
 }
