@@ -7,6 +7,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CO
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CORRELATION_KEY_NAME_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.MESSAGE_NAME_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.camundaBpmUri;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -176,14 +177,15 @@ public class MessageProducerTest extends BaseCamelTest {
         Exchange exchange = mock(Exchange.class);
         Message message = mock(Message.class);
 
+        final String BODY = "body";
+        when(message.getBody()).thenReturn(BODY);
         when(exchange.getIn()).thenReturn(message);
         when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
-
         when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
 
-        CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
-                camundaBpmUri("message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&"
-                        + CORRELATION_KEY_NAME_PARAMETER + "=" + "aCorrelationKeyName"));
+        CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(camundaBpmUri(
+                "message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&" + CORRELATION_KEY_NAME_PARAMETER + "="
+                        + "aCorrelationKeyName" + "&" + COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER + "=test"));
 
         Producer producer = endpoint.createProducer();
 
@@ -192,15 +194,19 @@ public class MessageProducerTest extends BaseCamelTest {
         @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
+        ArgumentCaptor<Map<String, Object>> variablesCaptor = ArgumentCaptor.forClass(mapClass);
 
         verify(runtimeService).correlateMessage(eq("aMessageName"),
                 eq("theBusinessKey"),
                 correlationCaptor.capture(),
-                anyMap());
+                variablesCaptor.capture());
 
         assertThat(correlationCaptor.getValue().size()).isEqualTo(1);
         assertTrue(correlationCaptor.getValue().keySet().contains("aCorrelationKeyName"));
         assertTrue(correlationCaptor.getValue().values().contains("theCorrelationKey"));
+        assertThat(variablesCaptor.getValue().size()).isEqualTo(1);
+        assertTrue(variablesCaptor.getValue().containsKey("test"));
+        assertTrue(variablesCaptor.getValue().containsValue(BODY));
     }
 
     @SuppressWarnings("unchecked")
