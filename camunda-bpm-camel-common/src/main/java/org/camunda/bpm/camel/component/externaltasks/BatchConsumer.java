@@ -1,9 +1,10 @@
 package org.camunda.bpm.camel.component.externaltasks;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_ID;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_PRIO;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_DEFINITION_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_DEFINITION_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_PRIO;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_TASK;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +20,6 @@ import org.apache.camel.Processor;
 import org.apache.camel.impl.ScheduledBatchPollingConsumer;
 import org.apache.camel.util.CastUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
-import org.camunda.bpm.camel.component.CamundaBpmPollExternalTasksEndpointImpl;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
 
@@ -167,8 +167,8 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         PriorityQueue<Exchange> exchanges = new PriorityQueue<Exchange>(new Comparator<Exchange>() {
             @Override
             public int compare(Exchange o1, Exchange o2) {
-                Long prio1 = (Long) o1.getProperty(CAMUNDA_BPM_PROCESS_PRIO, 0);
-                Long prio2 = (Long) o2.getProperty(CAMUNDA_BPM_PROCESS_PRIO, 0);
+                Long prio1 = (Long) o1.getProperty(EXCHANGE_HEADER_PROCESS_PRIO, 0);
+                Long prio2 = (Long) o2.getProperty(EXCHANGE_HEADER_PROCESS_PRIO, 0);
                 return prio1.compareTo(prio2);
             }
         });
@@ -188,18 +188,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
                 exchange.setFromEndpoint(getEndpoint());
                 exchange.setExchangeId(task.getWorkerId() + "/" + task.getId());
-                exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, task.getProcessInstanceId());
-                exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, task.getProcessDefinitionKey());
-                exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID, task.getProcessDefinitionId());
-                exchange.setProperty(CAMUNDA_BPM_PROCESS_PRIO, task.getPriority());
-
-                final int retries = taskProcessor.retriesLeft(task.getRetries());
-                final int attemptsStarted = taskProcessor.attemptsStarted(task.getRetries());
+                exchange.setProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID, task.getProcessInstanceId());
+                exchange.setProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_KEY, task.getProcessDefinitionKey());
+                exchange.setProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID, task.getProcessDefinitionId());
+                exchange.setProperty(EXCHANGE_HEADER_PROCESS_PRIO, task.getPriority());
 
                 final Message in = exchange.getIn();
-                in.setHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_TASK, task);
-                in.setHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_RETRIESLEFT, retries);
-                in.setHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_ATTEMPTSSTARTED, attemptsStarted);
+                in.setHeader(EXCHANGE_HEADER_TASK, task);
                 in.setBody(task.getVariables());
 
                 exchanges.add(exchange);

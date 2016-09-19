@@ -1,5 +1,11 @@
 package org.camunda.bpm.camel.component.externaltasks;
 
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_ATTEMPTSSTARTED;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_RETRIESLEFT;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_TASK;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_TASKID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_RESPONSE_IGNORE;
+
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -9,8 +15,6 @@ import org.apache.camel.Processor;
 import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.spi.Synchronization;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
-import org.camunda.bpm.camel.component.CamundaBpmPollExternalTasksEndpointImpl;
-import org.camunda.bpm.camel.component.CamundaBpmProcessExternalTaskEndpointImpl;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
@@ -60,6 +64,11 @@ public class TaskProcessor implements Processor {
 
         } else {
 
+            // set headers only for "on-completion" processing because
+            // otherwise the service doing something is already done
+            // and therefore cannot use this in-headers any more.
+            setInHeaders(exchange);
+
             final TaskProcessor taskProcessor = this;
             exchange.addOnCompletion(new Synchronization() {
 
@@ -79,46 +88,28 @@ public class TaskProcessor implements Processor {
 
     }
 
+    private void setInHeaders(final Exchange exchange) {
+
+        final Message in = getInMessage(exchange);
+        final String taskId = getExternalTaskId(in);
+        final ExternalTask task = getExternalTask(taskId);
+
+        final int retries = retriesLeft(task.getRetries());
+        final int attemptsStarted = attemptsStarted(task.getRetries());
+
+        in.setHeader(EXCHANGE_HEADER_RETRIESLEFT, retries);
+        in.setHeader(EXCHANGE_HEADER_ATTEMPTSSTARTED, attemptsStarted);
+
+    }
+
     @SuppressWarnings("unchecked")
     void internalProcessing(final Exchange exchange) {
 
-        final Message in = exchange.getIn();
-        if (in == null) {
-            throw new RuntimeCamelException("Unexpected exchange: in is null!");
-        }
+        final Message in = getInMessage(exchange);
+        final String taskId = getExternalTaskId(in);
+        final ExternalTask task = getExternalTask(taskId);
 
         final ExternalTaskService externalTaskService = getExternalTaskService();
-
-        final LockedExternalTask lockedTask = in.getHeader(CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_TASK,
-                LockedExternalTask.class);
-        final String lockedTaskId = in.getHeader(CamundaBpmProcessExternalTaskEndpointImpl.EXCHANGE_HEADER_TASKID,
-                String.class);
-
-        final String taskId;
-        if (lockedTask != null) {
-            taskId = lockedTask.getId();
-        } else if (lockedTaskId != null) {
-            taskId = lockedTaskId;
-        } else {
-            throw new RuntimeCamelException("Unexpected exchange: in-header '"
-                    + CamundaBpmPollExternalTasksEndpointImpl.EXCHANGE_HEADER_TASK + "' and '"
-                    + CamundaBpmProcessExternalTaskEndpointImpl.EXCHANGE_HEADER_TASKID + "' is null!");
-        }
-
-        final ExternalTask task = getExternalTaskService().createExternalTaskQuery().externalTaskId(
-                taskId).singleResult();
-        if (task != null) {
-            if ((task.getWorkerId() != null) && (workerId != null) && !task.getWorkerId().equals(workerId)) {
-                throw new RuntimeCamelException(
-                        "Unexpected exchange: the external task '" + taskId + "' is locked for worker '"
-                                + task.getWorkerId() + "' which differs from the configured worker '" + workerId + "!");
-            }
-            if ((task.getTopicName() != null) && (topic != null) && !task.getTopicName().equals(topic)) {
-                throw new RuntimeCamelException(
-                        "Unexpected exchange: the external task '" + taskId + "' is from topic '" + task.getWorkerId()
-                                + "' which differs from the configured topic '" + topic + "!");
-            }
-        }
 
         final Message out;
         if (onCompletion) {
@@ -164,7 +155,7 @@ public class TaskProcessor implements Processor {
             }
 
             // Ignore if service advises us to do so.
-            if (errorCode.equals(CamundaBpmProcessExternalTaskEndpointImpl.EXCHANGE_RESPONSE_IGNORE)) {
+            if (errorCode.equals(EXCHANGE_RESPONSE_IGNORE)) {
                 return;
             }
 
@@ -194,6 +185,54 @@ public class TaskProcessor implements Processor {
             }
 
         }
+
+    }
+
+    private Message getInMessage(final Exchange exchange) {
+        final Message in = exchange.getIn();
+        if (in == null) {
+            throw new RuntimeCamelException("Unexpected exchange: in is null!");
+        }
+        return in;
+    }
+
+    private ExternalTask getExternalTask(final String taskId) {
+
+        final ExternalTask task = getExternalTaskService().createExternalTaskQuery().externalTaskId(
+                taskId).singleResult();
+        if (task != null) {
+            if ((task.getWorkerId() != null) && (workerId != null) && !task.getWorkerId().equals(workerId)) {
+                throw new RuntimeCamelException(
+                        "Unexpected exchange: the external task '" + taskId + "' is locked for worker '"
+                                + task.getWorkerId() + "' which differs from the configured worker '" + workerId + "!");
+            }
+            if ((task.getTopicName() != null) && (topic != null) && !task.getTopicName().equals(topic)) {
+                throw new RuntimeCamelException(
+                        "Unexpected exchange: the external task '" + taskId + "' is from topic '" + task.getWorkerId()
+                                + "' which differs from the configured topic '" + topic + "!");
+            }
+        }
+        return task;
+
+    }
+
+    private String getExternalTaskId(final Message in) {
+
+        final LockedExternalTask lockedTask = in.getHeader(EXCHANGE_HEADER_TASK, LockedExternalTask.class);
+        final String lockedTaskId = in.getHeader(EXCHANGE_HEADER_TASKID, String.class);
+
+        final String taskId;
+
+        if (lockedTask != null) {
+            taskId = lockedTask.getId();
+        } else if (lockedTaskId != null) {
+            taskId = lockedTaskId;
+        } else {
+            throw new RuntimeCamelException("Unexpected exchange: in-header '" + EXCHANGE_HEADER_TASK + "' and '"
+                    + EXCHANGE_HEADER_TASKID + "' is null!");
+        }
+
+        return taskId;
 
     }
 

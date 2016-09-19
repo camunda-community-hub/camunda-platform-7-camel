@@ -6,13 +6,19 @@ package org.camunda.bpm.camel.component;
 public final class CamundaBpmConstants {
 
     public static final String CAMUNDA_BPM_CAMEL_URI_SCHEME = "camunda-bpm";
-    public static final String CAMUNDA_BPM_PROCESS_DEFINITION_KEY = "CamundaBpmProcessDefinitionKey";
-    public static final String CAMUNDA_BPM_PROCESS_DEFINITION_ID = "CamundaBpmProcessDefinitionId";
-    public static final String CAMUNDA_BPM_PROCESS_INSTANCE_ID = "CamundaBpmProcessInstanceId";
-    public static final String CAMUNDA_BPM_PROCESS_PRIO = "CamundaBpmProcessInstancePrio";
-    public static final String CAMUNDA_BPM_BUSINESS_KEY = "CamundaBpmBusinessKey";
-    public static final String CAMUNDA_BPM_CORRELATION_KEY = "CamundaBpmCorrelationKey";
-    public static final String CAMUNDA_BPM_CORRELATION_KEY_TYPE = "CamundaBpmCorrelationKeyType";
+
+    public static final String EXCHANGE_HEADER_PROCESS_DEFINITION_KEY = "CamundaBpmProcessDefinitionKey";
+    public static final String EXCHANGE_HEADER_PROCESS_DEFINITION_ID = "CamundaBpmProcessDefinitionId";
+    public static final String EXCHANGE_HEADER_PROCESS_INSTANCE_ID = "CamundaBpmProcessInstanceId";
+    public static final String EXCHANGE_HEADER_PROCESS_PRIO = "CamundaBpmProcessInstancePrio";
+    public static final String EXCHANGE_HEADER_BUSINESS_KEY = "CamundaBpmBusinessKey";
+    public static final String EXCHANGE_HEADER_CORRELATION_KEY = "CamundaBpmCorrelationKey";
+    public static final String EXCHANGE_HEADER_CORRELATION_KEY_TYPE = "CamundaBpmCorrelationKeyType";
+    public static final String EXCHANGE_HEADER_TASK = "CamundaBpmExternalTask";
+    public static final String EXCHANGE_HEADER_RETRIESLEFT = "CamundaBpmExternalRetriesLeft";
+    public static final String EXCHANGE_HEADER_ATTEMPTSSTARTED = "CamundaBpmExternalAttemptsStarted";
+    public static final String EXCHANGE_HEADER_TASKID = "CamundaBpmExternalTaskId";
+    public static final String EXCHANGE_RESPONSE_IGNORE = "CamundaBpmExternalTaskIgnore";
 
     /* Apache Camel URI parameters */
     public final static String PROCESS_DEFINITION_KEY_PARAMETER = "processDefinitionKey";

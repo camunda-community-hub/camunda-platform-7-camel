@@ -47,8 +47,8 @@ public class StartProcessProducerTest extends BaseCamelTest {
         producer.process(exchange);
 
         verify(runtimeService, times(1)).startProcessInstanceByKey(eq("aProcessDefinitionKey"), anyMap());
-        assertThat(exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID)).isEqualTo("theProcessDefinitionId");
-        assertThat(exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo("theProcessInstanceId");
+        assertThat(exchange.getProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID)).isEqualTo("theProcessDefinitionId");
+        assertThat(exchange.getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo("theProcessInstanceId");
     }
 
     @SuppressWarnings("unchecked")
@@ -66,14 +66,14 @@ public class StartProcessProducerTest extends BaseCamelTest {
                 camundaBpmUri("start?" + PROCESS_DEFINITION_KEY_PARAMETER + "=" + "aProcessDefinitionKey"));
         StartProcessProducer producer = (StartProcessProducer) endpoint.createProducer();
         Exchange exchange = new DefaultExchange(camelContext);
-        exchange.setProperty(CAMUNDA_BPM_BUSINESS_KEY, "aBusinessKey");
+        exchange.setProperty(EXCHANGE_HEADER_BUSINESS_KEY, "aBusinessKey");
         producer.process(exchange);
 
         verify(runtimeService, times(1)).startProcessInstanceByKey(eq("aProcessDefinitionKey"),
                 eq("aBusinessKey"),
                 anyMap());
-        assertThat(exchange.getProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID)).isEqualTo("theProcessDefinitionId");
-        assertThat(exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo("theProcessInstanceId");
-        assertThat(exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY)).isEqualTo("aBusinessKey");
+        assertThat(exchange.getProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID)).isEqualTo("theProcessDefinitionId");
+        assertThat(exchange.getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo("theProcessInstanceId");
+        assertThat(exchange.getProperty(EXCHANGE_HEADER_BUSINESS_KEY)).isEqualTo("aBusinessKey");
     }
 }

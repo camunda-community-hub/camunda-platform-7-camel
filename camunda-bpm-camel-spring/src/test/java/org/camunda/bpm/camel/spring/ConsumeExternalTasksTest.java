@@ -11,7 +11,9 @@ package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Versi
                                      * limitations under the License.
                                      */
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_RETRIESLEFT;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_ATTEMPTSSTARTED;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Date;
@@ -126,7 +128,7 @@ public class ConsumeExternalTasksTest {
 
         // assert that the camunda BPM process instance ID has been added as a
         // property to the message
-        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(
+        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(
                 processInstance.getId());
 
         // all process instance variables are loaded since no "variablesToFetch"
@@ -204,7 +206,7 @@ public class ConsumeExternalTasksTest {
 
         // assert that the camunda BPM process instance ID has been added as a
         // property to the message
-        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(
+        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(
                 processInstance.getId());
 
         // no process instance variables are loaded since an empty
@@ -290,6 +292,9 @@ public class ConsumeExternalTasksTest {
 
         // ensure endpoint has been called
         assertThat(mockEndpoint.assertExchangeReceived(0)).isNotNull();
+        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getHeader(EXCHANGE_HEADER_ATTEMPTSSTARTED)).isEqualTo(
+                0);
+        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getHeader(EXCHANGE_HEADER_RETRIESLEFT)).isEqualTo(2);
 
         // assert that process in end event "HappyEnd"
         assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
@@ -632,9 +637,9 @@ public class ConsumeExternalTasksTest {
 
         // assert that the camunda BPM process instance ID has been added as a
         // property to the message for both exchanges received
-        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(
+        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(
                 processInstance.getId());
-        assertThat(mockEndpoint.assertExchangeReceived(1).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(
+        assertThat(mockEndpoint.assertExchangeReceived(1).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(
                 processInstance.getId());
 
         // only two process instance variables are loaded according configured
@@ -709,7 +714,7 @@ public class ConsumeExternalTasksTest {
 
         // assert that the camunda BPM process instance ID has been added as a
         // property to the message
-        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(
+        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(
                 processInstance.getId());
 
         // assert that the variables sent in the response-message has been set
@@ -811,8 +816,15 @@ public class ConsumeExternalTasksTest {
 
         // assert that the camunda BPM process instance ID has been added as a
         // property to the message
-        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(
+        assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(
                 processInstance.getId());
+        // assert that in-headers are set properly
+        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getHeader(EXCHANGE_HEADER_ATTEMPTSSTARTED)).isEqualTo(
+                0);
+        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getHeader(EXCHANGE_HEADER_RETRIESLEFT)).isEqualTo(2);
+        assertThat(mockEndpoint.assertExchangeReceived(1).getIn().getHeader(EXCHANGE_HEADER_ATTEMPTSSTARTED)).isEqualTo(
+                1);
+        assertThat(mockEndpoint.assertExchangeReceived(1).getIn().getHeader(EXCHANGE_HEADER_RETRIESLEFT)).isEqualTo(1);
 
         // assert that the variables sent in the response-message has been set
         // into the process

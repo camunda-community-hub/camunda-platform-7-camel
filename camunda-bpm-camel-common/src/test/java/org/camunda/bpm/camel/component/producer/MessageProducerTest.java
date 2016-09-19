@@ -1,10 +1,10 @@
 package org.camunda.bpm.camel.component.producer;
 
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.ACTIVITY_ID_PARAMETER;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY_TYPE;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_BUSINESS_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY_TYPE;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CORRELATION_KEY_NAME_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.MESSAGE_NAME_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER;
@@ -67,7 +67,7 @@ public class MessageProducerTest extends BaseCamelTest {
         Execution execution = mock(Execution.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_PROCESS_INSTANCE_ID), eq(String.class))).thenReturn(
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_PROCESS_INSTANCE_ID), eq(String.class))).thenReturn(
                 "theProcessInstanceId");
         when(runtimeService.createExecutionQuery()).thenReturn(query);
         when(query.processInstanceId(anyString())).thenReturn(query);
@@ -93,7 +93,7 @@ public class MessageProducerTest extends BaseCamelTest {
         ProcessInstance processInstance = mock(ProcessInstance.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
 
         when(runtimeService.createProcessInstanceQuery()).thenReturn(piQuery);
         when(runtimeService.createExecutionQuery()).thenReturn(query);
@@ -124,7 +124,7 @@ public class MessageProducerTest extends BaseCamelTest {
         Execution execution = mock(Execution.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_PROCESS_INSTANCE_ID), eq(String.class))).thenReturn(
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_PROCESS_INSTANCE_ID), eq(String.class))).thenReturn(
                 "theProcessInstanceId");
         when(runtimeService.createExecutionQuery()).thenReturn(query);
         when(query.processInstanceId(anyString())).thenReturn(query);
@@ -151,7 +151,7 @@ public class MessageProducerTest extends BaseCamelTest {
         Message message = mock(Message.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
                 camundaBpmUri("message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName"));
@@ -180,8 +180,8 @@ public class MessageProducerTest extends BaseCamelTest {
         final String BODY = "body";
         when(message.getBody()).thenReturn(BODY);
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
-        when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(camundaBpmUri(
                 "message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&" + CORRELATION_KEY_NAME_PARAMETER + "="
@@ -216,16 +216,16 @@ public class MessageProducerTest extends BaseCamelTest {
         Message message = mock(Message.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
 
-        when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY), eq(java.lang.Integer.class))).thenReturn(15);
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_CORRELATION_KEY), eq(java.lang.Integer.class))).thenReturn(15);
 
-        when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY_TYPE), eq(String.class))).thenReturn(
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_CORRELATION_KEY_TYPE), eq(String.class))).thenReturn(
                 "java.lang.Integer");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(camundaBpmUri(
                 "message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&" + CORRELATION_KEY_NAME_PARAMETER + "="
-                        + "aCorrelationKeyName" + "&" + CAMUNDA_BPM_CORRELATION_KEY_TYPE + "=java.lang.Integer"));
+                        + "aCorrelationKeyName" + "&" + EXCHANGE_HEADER_CORRELATION_KEY_TYPE + "=java.lang.Integer"));
 
         Producer producer = endpoint.createProducer();
 
@@ -277,7 +277,7 @@ public class MessageProducerTest extends BaseCamelTest {
         Message message = mock(Message.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
                 camundaBpmUri("message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&"

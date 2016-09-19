@@ -19,9 +19,6 @@ import org.camunda.bpm.engine.ProcessEngine;
 
 public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint implements CamundaBpmEndpoint {
 
-    public static final String EXCHANGE_HEADER_TASKID = "CamundaBpmExternalTaskId";
-    public static final String EXCHANGE_RESPONSE_IGNORE = "CamundaBpmExternalTaskIgnore";
-
     private CamundaBpmComponent component;
 
     // parameters

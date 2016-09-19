@@ -74,7 +74,7 @@ public class SendToCamelTest {
     assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("sendToCamelProcess").count()).isEqualTo(0);
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
 
     // Assert that the body of the message received by the endpoint contains a hash map with the value of the process variable 'var1' sent from camunda BPM
     assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo("{var1=foo}");

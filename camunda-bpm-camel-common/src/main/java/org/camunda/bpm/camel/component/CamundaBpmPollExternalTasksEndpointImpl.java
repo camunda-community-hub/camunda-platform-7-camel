@@ -30,10 +30,6 @@ import org.camunda.bpm.model.xml.impl.util.StringUtil;
 
 public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
 
-    public static final String EXCHANGE_HEADER_TASK = "CamundaBpmExternalTask";
-    public static final String EXCHANGE_HEADER_RETRIESLEFT = "CamundaBpmExternalRetriesLeft";
-    public static final String EXCHANGE_HEADER_ATTEMPTSSTARTED = "CamundaBpmExternalAttemptsStarted";
-
     private CamundaBpmComponent component;
 
     // parameters
