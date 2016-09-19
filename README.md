@@ -79,7 +79,7 @@ Additionally these in-headers are set:
 * `CamundaBpmExternalTask` contains the entire [LockedExternalTask](https://docs.camunda.org/javadoc/camunda-bpm-platform/7.5/org/camunda/bpm/engine/externaltask/LockedExternalTask.html) object
 * `CamundaBpmExternalAttemptsStarted` contains how many times the task was processed but failed
 * `CamundaBpmExternalRetriesLeft` contains how many times the task will be processed any more if this execution fails
-* the in-body a map containing the process instance variables requested (Map< String, Object >).
+* the in-body is a map containing the process instance variables requested (Map< String, Object >)
 
 If the reply-body contains a map (Map< String, Object >) this map is treated as a list of process instance variables and therefore used to update the process. If the reply-body is a string it is used as a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries or an incident if the number of retries elapsed).
 
