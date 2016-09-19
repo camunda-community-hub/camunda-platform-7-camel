@@ -74,7 +74,14 @@ The exchange produced by the endpoint got several properties:
 * `CamundaBpmProcessDefinitionId`
 * `CamundaBpmProcessDefinitionKey`
 * `CamundaBpmProcessInstancePrio`
-Additionally the in-header `CamundaBpmExternalTask` contains the entire [LockedExternalTask](https://docs.camunda.org/javadoc/camunda-bpm-platform/7.5/org/camunda/bpm/engine/externaltask/LockedExternalTask.html) object and the in-body a map containing the process instance variables requested (Map< String, Object >). If the reply-body contains a map (Map< String, Object >) this map is treated as a list of process instance variables and therefore used to update the process. If the reply-body is a string it is used as a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries or an incident if the number of retries elapsed).
+
+Additionally these in-headers are set:
+* `CamundaBpmExternalTask` contains the entire [LockedExternalTask](https://docs.camunda.org/javadoc/camunda-bpm-platform/7.5/org/camunda/bpm/engine/externaltask/LockedExternalTask.html) object
+* `CamundaBpmExternalAttemptsStarted` contains how many times the task was processed but failed
+* `CamundaBpmExternalRetriesLeft` contains how many times the task will be processed any more if this execution fails
+* the in-body a map containing the process instance variables requested (Map< String, Object >).
+
+If the reply-body contains a map (Map< String, Object >) this map is treated as a list of process instance variables and therefore used to update the process. If the reply-body is a string it is used as a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries or an incident if the number of retries elapsed).
 
 ### `camunda-bpm://process-externalTask` Processing outstanding external tasks
 
@@ -97,6 +104,10 @@ Parameter | Description
 `retryTimeout` | (optional, default: 500ms) The timeout between subsequent retries.
 `retryTimeouts` | (optional, no default) A comma separated list of timeouts used for retries. This is useful when calling an external services which might be down or simply busy. Using `retryTimeouts=5s,30s,5m` in combination with will `retryTimeout=30m&retries=5` will use the retry timeout sequence 5, 30 seconds, 5, 30 and 30 minutes.
 `onCompletion` | (optional, default: false) Setting this parameter to `true` the external task is completed after the entire Camel route was processed. This allows you to define this endpoint direct behind the route's start endpoint. The main advantage of doing so is that it catches thrown exceptions and treats them as failure. If this endpoint is at the end of the Camel route any exception throw by preceding processors not being treated in that way. Using this parameter set to `true` forces exactly the same behavior as done by the endpoint `camunda-bpm://poll-externalTasks` and it's parameter `completeTask` set to `true`. Additionally if exchanges out body is equal to the string `CamundaBpmExternalTaskIgnore` then the current action will be ignored and won't effect the external task in any way. 
+
+These in-headers are set to be used subsequent endpoints:
+* `CamundaBpmExternalAttemptsStarted` contains how many times the task was processed but failed
+* `CamundaBpmExternalRetriesLeft` contains how many times the task will be processed any more if this execution fails
 
 ### `camunda-bpm://start` Start a process instance
 
