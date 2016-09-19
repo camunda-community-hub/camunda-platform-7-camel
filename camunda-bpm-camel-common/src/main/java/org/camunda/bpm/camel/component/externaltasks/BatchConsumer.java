@@ -1,13 +1,13 @@
 package org.camunda.bpm.camel.component.externaltasks;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_ID;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_DEFINITION_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_PRIO;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_DEFINITION_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_DEFINITION_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_PRIO;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_TASK;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -17,12 +17,9 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.Message;
 import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
-import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.impl.ScheduledBatchPollingConsumer;
-import org.apache.camel.spi.Synchronization;
 import org.apache.camel.util.CastUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
-import org.camunda.bpm.camel.component.CamundaBpmExternalTaskEndpointImpl;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
 
@@ -32,14 +29,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     // parameters
     private int timeout;
-    private final int retries;
-    private final long retryTimeout;
-    private final long[] retryTimeouts;
     private final long lockDuration;
     private final String topic;
     private final boolean completeTask;
     private final List<String> variablesToFetch;
     private final String workerId;
+
+    private final TaskProcessor taskProcessor;
 
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retries,
             final long retryTimeout, final long[] retryTimeouts, final long lockDuration, final String topic,
@@ -48,14 +44,20 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         super(endpoint, processor);
 
         this.camundaEndpoint = endpoint;
-        this.retries = retries;
-        this.retryTimeout = retryTimeout;
-        this.retryTimeouts = retryTimeouts;
         this.lockDuration = lockDuration;
         this.topic = topic;
         this.completeTask = completeTask;
         this.variablesToFetch = variablesToFetch;
         this.workerId = workerId;
+
+        this.taskProcessor = new TaskProcessor(endpoint,
+                topic,
+                retries,
+                retryTimeout,
+                retryTimeouts,
+                completeTask,
+                true,
+                workerId);
 
     }
 
@@ -67,14 +69,20 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         super(endpoint, processor, executor);
 
         this.camundaEndpoint = endpoint;
-        this.retries = retries;
-        this.retryTimeout = retryTimeout;
-        this.retryTimeouts = retryTimeouts;
         this.lockDuration = lockDuration;
         this.topic = topic;
         this.completeTask = completeTask;
         this.variablesToFetch = variablesToFetch;
         this.workerId = workerId;
+
+        this.taskProcessor = new TaskProcessor(endpoint,
+                topic,
+                retries,
+                retryTimeout,
+                retryTimeouts,
+                completeTask,
+                true,
+                workerId);
 
     }
 
@@ -114,21 +122,9 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     private boolean processExchange(final Exchange exchange) throws Exception {
 
-        exchange.addOnCompletion(new Synchronization() {
-
-            @Override
-            public void onFailure(final Exchange exchange) {
-                completeTask(exchange);
-            }
-
-            @Override
-            public void onComplete(final Exchange exchange) {
-                completeTask(exchange);
-            }
-
-        });
-
+        taskProcessor.process(exchange);
         getProcessor().process(exchange);
+
         return true;
 
     }
@@ -154,91 +150,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     private void releaseTask(final Exchange exchange) {
 
         exchange.setProperty(Exchange.ROLLBACK_ONLY, Boolean.TRUE);
-        completeTask(exchange);
+        taskProcessor.internalProcessing(exchange);
 
     }
 
     private ExternalTaskService getExternalTaskService() {
 
         return camundaEndpoint.getProcessEngine().getExternalTaskService();
-
-    }
-
-    @SuppressWarnings("unchecked")
-    private void completeTask(final Exchange exchange) {
-
-        final Message in = exchange.getIn();
-        if (in == null) {
-            throw new RuntimeCamelException("Unexpected exchange: in is null!");
-        }
-
-        final LockedExternalTask task = in.getHeader(CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK,
-                LockedExternalTask.class);
-        if (task == null) {
-            throw new RuntimeCamelException("Unexpected exchange: in-header '"
-                    + CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK + "' is null!");
-        }
-
-        final ExternalTaskService externalTaskService = getExternalTaskService();
-
-        // failure
-        if (exchange.isFailed()) {
-
-            final int retries;
-            if (task.getRetries() == null) {
-                retries = this.retries;
-            } else {
-                retries = task.getRetries() - 1;
-            }
-
-            final long calculatedTimeout = calculateTimeout(retries);
-
-            final Exception exception = exchange.getException();
-            externalTaskService.handleFailure(task.getId(),
-                    task.getWorkerId(),
-                    exception.getMessage(),
-                    retries,
-                    calculatedTimeout);
-
-        } else
-        // bpmn error
-        if ((in != null) && (in.getBody() != null) && (in.getBody() instanceof String)) {
-
-            final String errorCode = in.getBody(String.class);
-
-            externalTaskService.handleBpmnError(task.getId(), task.getWorkerId(), errorCode);
-
-        } else
-        // success
-        if (completeTask) {
-
-            final Map<String, Object> variablesToBeSet;
-            if ((in != null) && (in.getBody() != null) && (in.getBody() instanceof Map)) {
-                variablesToBeSet = in.getBody(Map.class);
-            } else {
-                variablesToBeSet = null;
-            }
-
-            if (variablesToBeSet != null) {
-                externalTaskService.complete(task.getId(), task.getWorkerId(), variablesToBeSet);
-            } else {
-                externalTaskService.complete(task.getId(), task.getWorkerId());
-            }
-
-        }
-
-    }
-
-    private long calculateTimeout(final int retries) {
-
-        final int currentTry = this.retries - retries;
-        if (retries < 1) {
-            return 0;
-        } else if ((retryTimeouts != null) && (currentTry < retryTimeouts.length)) {
-            return retryTimeouts[currentTry];
-        } else {
-            return retryTimeout;
-        }
 
     }
 
@@ -249,8 +167,8 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         PriorityQueue<Exchange> exchanges = new PriorityQueue<Exchange>(new Comparator<Exchange>() {
             @Override
             public int compare(Exchange o1, Exchange o2) {
-                Long prio1 = (Long) o1.getProperty(CAMUNDA_BPM_PROCESS_PRIO, 0);
-                Long prio2 = (Long) o2.getProperty(CAMUNDA_BPM_PROCESS_PRIO, 0);
+                Long prio1 = (Long) o1.getProperty(EXCHANGE_HEADER_PROCESS_PRIO, 0);
+                Long prio2 = (Long) o2.getProperty(EXCHANGE_HEADER_PROCESS_PRIO, 0);
                 return prio1.compareTo(prio2);
             }
         });
@@ -270,13 +188,13 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
                 exchange.setFromEndpoint(getEndpoint());
                 exchange.setExchangeId(task.getWorkerId() + "/" + task.getId());
-                exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, task.getProcessInstanceId());
-                exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, task.getProcessDefinitionKey());
-                exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID, task.getProcessDefinitionId());
-                exchange.setProperty(CAMUNDA_BPM_PROCESS_PRIO, task.getPriority());
+                exchange.setProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID, task.getProcessInstanceId());
+                exchange.setProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_KEY, task.getProcessDefinitionKey());
+                exchange.setProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID, task.getProcessDefinitionId());
+                exchange.setProperty(EXCHANGE_HEADER_PROCESS_PRIO, task.getPriority());
 
                 final Message in = exchange.getIn();
-                in.setHeader(CamundaBpmExternalTaskEndpointImpl.EXCHANGE_HEADER_TASK, task);
+                in.setHeader(EXCHANGE_HEADER_TASK, task);
                 in.setBody(task.getVariables());
 
                 exchanges.add(exchange);

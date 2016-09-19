@@ -13,10 +13,10 @@
 package org.camunda.bpm.camel.component.producer;
 
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.ACTIVITY_ID_PARAMETER;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY_TYPE;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_BUSINESS_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY_TYPE;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CORRELATION_KEY_NAME_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.MESSAGE_NAME_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.PROCESS_DEFINITION_KEY_PARAMETER;
@@ -80,8 +80,8 @@ public class MessageProducer extends CamundaBpmProducer {
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void process(Exchange exchange) throws Exception {
-        String processInstanceId = exchange.getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, String.class);
-        String businessKey = exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY, String.class);
+        String processInstanceId = exchange.getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID, String.class);
+        String businessKey = exchange.getProperty(EXCHANGE_HEADER_BUSINESS_KEY, String.class);
 
         Map<String, Object> processVariables = ExchangeUtils.prepareVariables(exchange, parameters);
 
@@ -90,11 +90,11 @@ public class MessageProducer extends CamundaBpmProducer {
 
             if (correlationKeyName != null) {
                 Class clazz = String.class;
-                String correlationKeyType = exchange.getProperty(CAMUNDA_BPM_CORRELATION_KEY_TYPE, String.class);
+                String correlationKeyType = exchange.getProperty(EXCHANGE_HEADER_CORRELATION_KEY_TYPE, String.class);
                 if (correlationKeyType != null) {
                     clazz = Class.forName(correlationKeyType);
                 }
-                Object correlationKey = exchange.getProperty(CAMUNDA_BPM_CORRELATION_KEY, clazz);
+                Object correlationKey = exchange.getProperty(EXCHANGE_HEADER_CORRELATION_KEY, clazz);
                 if (correlationKey == null) {
                     throw new RuntimeException("Missing value for correlation key for message '" + messageName + "'");
                 }
@@ -150,7 +150,7 @@ public class MessageProducer extends CamundaBpmProducer {
 
             if (processInstanceId == null) {
                 throw new RuntimeException("Could not find the process instance via the provided properties ("
-                        + CAMUNDA_BPM_PROCESS_INSTANCE_ID + "= '" + processInstanceId + "', " + CAMUNDA_BPM_BUSINESS_KEY
+                        + EXCHANGE_HEADER_PROCESS_INSTANCE_ID + "= '" + processInstanceId + "', " + EXCHANGE_HEADER_BUSINESS_KEY
                         + "= '" + businessKey + "'");
             }
 

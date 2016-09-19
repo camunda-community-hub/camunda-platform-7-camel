@@ -62,20 +62,20 @@ public class StartProcessProducer extends CamundaBpmProducer {
     /*
      * If the exchange contains the CAMUNDA_BPM_BUSINESS_KEY then we pass it to the engine
      */
-    String processDefinitionKey = this.processDefinitionKey != null ? this.processDefinitionKey : exchange.getIn().getHeader(CAMUNDA_BPM_PROCESS_DEFINITION_KEY, String.class);
+    String processDefinitionKey = this.processDefinitionKey != null ? this.processDefinitionKey : exchange.getIn().getHeader(EXCHANGE_HEADER_PROCESS_DEFINITION_KEY, String.class);
 
     ProcessInstance instance = null;
-    if (exchange.getProperties().containsKey(CAMUNDA_BPM_BUSINESS_KEY)) {
+    if (exchange.getProperties().containsKey(EXCHANGE_HEADER_BUSINESS_KEY)) {
       instance = runtimeService.startProcessInstanceByKey(processDefinitionKey,
-                                                          exchange.getProperty(CAMUNDA_BPM_BUSINESS_KEY, String.class),
+                                                          exchange.getProperty(EXCHANGE_HEADER_BUSINESS_KEY, String.class),
                                                           processVariables);
-      exchange.setProperty(CAMUNDA_BPM_BUSINESS_KEY, instance.getBusinessKey());
+      exchange.setProperty(EXCHANGE_HEADER_BUSINESS_KEY, instance.getBusinessKey());
     } else {
       instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, processVariables);
     }
 
-    exchange.setProperty(CAMUNDA_BPM_PROCESS_DEFINITION_ID, instance.getProcessDefinitionId());
-    exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID, instance.getProcessInstanceId());
+    exchange.setProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID, instance.getProcessDefinitionId());
+    exchange.setProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID, instance.getProcessInstanceId());
     exchange.getOut().setBody(instance.getProcessInstanceId());
   }
 

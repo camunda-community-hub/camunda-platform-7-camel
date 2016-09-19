@@ -52,12 +52,12 @@ public class SimpleProcessTest extends ProcessEngineTestCase {
 
     String instanceId = (String) tpl.requestBody("direct:start", Collections.singletonMap("var1", "ala"));
 
-    tpl.sendBodyAndProperty("direct:receive", null, CAMUNDA_BPM_PROCESS_INSTANCE_ID, instanceId);
+    tpl.sendBodyAndProperty("direct:receive", null, EXCHANGE_HEADER_PROCESS_INSTANCE_ID, instanceId);
 
     assertProcessEnded(instanceId);
 
     service1.assertIsSatisfied();
-    Map m = service2.getExchanges().get(0).getIn().getBody(Map.class);
+    Map<?, ?> m = service2.getExchanges().get(0).getIn().getBody(Map.class);
     assertEquals("ala", m.get("var1"));
     assertEquals("var2", m.get("var2"));
 
@@ -71,11 +71,11 @@ public class SimpleProcessTest extends ProcessEngineTestCase {
     MockEndpoint me = (MockEndpoint) ctx.getEndpoint("mock:service1");
     me.expectedBodiesReceived("ala");
 
-    tpl.sendBodyAndProperty("direct:start", Collections.singletonMap("var1", "ala"), CAMUNDA_BPM_PROCESS_DEFINITION_KEY, "key1");
+    tpl.sendBodyAndProperty("direct:start", Collections.singletonMap("var1", "ala"), EXCHANGE_HEADER_PROCESS_DEFINITION_KEY, "key1");
 
     String instanceId = runtimeService.createProcessInstanceQuery().processInstanceBusinessKey("key1")
         .singleResult().getProcessInstanceId();
-    tpl.sendBodyAndProperty("direct:receive", null, CAMUNDA_BPM_PROCESS_DEFINITION_KEY, "key1");
+    tpl.sendBodyAndProperty("direct:receive", null, EXCHANGE_HEADER_PROCESS_DEFINITION_KEY, "key1");
 
     assertProcessEnded(instanceId);
 

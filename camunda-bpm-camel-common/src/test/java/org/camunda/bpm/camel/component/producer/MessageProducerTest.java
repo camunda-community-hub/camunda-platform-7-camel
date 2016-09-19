@@ -1,12 +1,13 @@
 package org.camunda.bpm.camel.component.producer;
 
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.ACTIVITY_ID_PARAMETER;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY_TYPE;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_BUSINESS_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY_TYPE;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.CORRELATION_KEY_NAME_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.MESSAGE_NAME_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.camundaBpmUri;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -42,6 +43,7 @@ public class MessageProducerTest extends BaseCamelTest {
         assertThat(producer).isInstanceOf(MessageProducer.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageIsDeliveredCalled() throws Exception {
         ProcessInstance processInstance = mock(ProcessInstance.class);
@@ -56,6 +58,7 @@ public class MessageProducerTest extends BaseCamelTest {
         assertThat(producer).isInstanceOf(MessageProducer.class);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void signalCalled() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -64,7 +67,7 @@ public class MessageProducerTest extends BaseCamelTest {
         Execution execution = mock(Execution.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_PROCESS_INSTANCE_ID), eq(String.class))).thenReturn(
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_PROCESS_INSTANCE_ID), eq(String.class))).thenReturn(
                 "theProcessInstanceId");
         when(runtimeService.createExecutionQuery()).thenReturn(query);
         when(query.processInstanceId(anyString())).thenReturn(query);
@@ -90,7 +93,7 @@ public class MessageProducerTest extends BaseCamelTest {
         ProcessInstance processInstance = mock(ProcessInstance.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
 
         when(runtimeService.createProcessInstanceQuery()).thenReturn(piQuery);
         when(runtimeService.createExecutionQuery()).thenReturn(query);
@@ -112,6 +115,7 @@ public class MessageProducerTest extends BaseCamelTest {
         verify(query).processInstanceId("theProcessInstanceId");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageProcessInstanceId() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -120,7 +124,7 @@ public class MessageProducerTest extends BaseCamelTest {
         Execution execution = mock(Execution.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_PROCESS_INSTANCE_ID), eq(String.class))).thenReturn(
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_PROCESS_INSTANCE_ID), eq(String.class))).thenReturn(
                 "theProcessInstanceId");
         when(runtimeService.createExecutionQuery()).thenReturn(query);
         when(query.processInstanceId(anyString())).thenReturn(query);
@@ -140,13 +144,14 @@ public class MessageProducerTest extends BaseCamelTest {
         verify(runtimeService).messageEventReceived(eq("aMessageName"), eq("theExecutionId"), anyMap());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageBusinessKey() throws Exception {
         Exchange exchange = mock(Exchange.class);
         Message message = mock(Message.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
                 camundaBpmUri("message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName"));
@@ -154,6 +159,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
 
@@ -165,58 +171,67 @@ public class MessageProducerTest extends BaseCamelTest {
         assertThat(correlationCaptor.getValue().size()).isEqualTo(0);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageBusinessKeyCorrelationKey() throws Exception {
         Exchange exchange = mock(Exchange.class);
         Message message = mock(Message.class);
 
+        final String BODY = "body";
+        when(message.getBody()).thenReturn(BODY);
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
 
-        when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
-
-        CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
-                camundaBpmUri("message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&"
-                        + CORRELATION_KEY_NAME_PARAMETER + "=" + "aCorrelationKeyName"));
+        CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(camundaBpmUri(
+                "message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&" + CORRELATION_KEY_NAME_PARAMETER + "="
+                        + "aCorrelationKeyName" + "&" + COPY_MESSAGE_BODY_AS_PROCESS_VARIABLE_PARAMETER + "=test"));
 
         Producer producer = endpoint.createProducer();
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
+        ArgumentCaptor<Map<String, Object>> variablesCaptor = ArgumentCaptor.forClass(mapClass);
 
         verify(runtimeService).correlateMessage(eq("aMessageName"),
                 eq("theBusinessKey"),
                 correlationCaptor.capture(),
-                anyMap());
+                variablesCaptor.capture());
 
         assertThat(correlationCaptor.getValue().size()).isEqualTo(1);
         assertTrue(correlationCaptor.getValue().keySet().contains("aCorrelationKeyName"));
         assertTrue(correlationCaptor.getValue().values().contains("theCorrelationKey"));
+        assertThat(variablesCaptor.getValue().size()).isEqualTo(1);
+        assertTrue(variablesCaptor.getValue().containsKey("test"));
+        assertTrue(variablesCaptor.getValue().containsValue(BODY));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageBusinessKeyCorrelationKeyType() throws Exception {
         Exchange exchange = mock(Exchange.class);
         Message message = mock(Message.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_BUSINESS_KEY), eq(String.class))).thenReturn("theBusinessKey");
 
-        when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY), eq(java.lang.Integer.class))).thenReturn(15);
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_CORRELATION_KEY), eq(java.lang.Integer.class))).thenReturn(15);
 
-        when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY_TYPE), eq(String.class))).thenReturn(
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_CORRELATION_KEY_TYPE), eq(String.class))).thenReturn(
                 "java.lang.Integer");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(camundaBpmUri(
                 "message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&" + CORRELATION_KEY_NAME_PARAMETER + "="
-                        + "aCorrelationKeyName" + "&" + CAMUNDA_BPM_CORRELATION_KEY_TYPE + "=java.lang.Integer"));
+                        + "aCorrelationKeyName" + "&" + EXCHANGE_HEADER_CORRELATION_KEY_TYPE + "=java.lang.Integer"));
 
         Producer producer = endpoint.createProducer();
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
 
@@ -231,6 +246,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageNoKey() throws Exception {
         Exchange exchange = mock(Exchange.class);
@@ -244,6 +260,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
         verify(runtimeService).correlateMessage(eq("aMessageName"),
@@ -253,13 +270,14 @@ public class MessageProducerTest extends BaseCamelTest {
         assertThat(correlationCaptor.getValue().size()).isEqualTo(0);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void messageCorrelationKey() throws Exception {
         Exchange exchange = mock(Exchange.class);
         Message message = mock(Message.class);
 
         when(exchange.getIn()).thenReturn(message);
-        when(exchange.getProperty(eq(CAMUNDA_BPM_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
+        when(exchange.getProperty(eq(EXCHANGE_HEADER_CORRELATION_KEY), eq(String.class))).thenReturn("theCorrelationKey");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
                 camundaBpmUri("message?" + MESSAGE_NAME_PARAMETER + "=" + "aMessageName" + "&"
@@ -268,6 +286,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
         producer.process(exchange);
 
+        @SuppressWarnings("rawtypes")
         Class<Map<String, Object>> mapClass = (Class<Map<String, Object>>) (Class) Map.class;
         ArgumentCaptor<Map<String, Object>> correlationCaptor = ArgumentCaptor.forClass(mapClass);
         verify(runtimeService).correlateMessage(eq("aMessageName"),

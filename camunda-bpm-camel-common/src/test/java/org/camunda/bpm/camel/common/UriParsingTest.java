@@ -5,7 +5,6 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.camundaBpmUri;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import org.apache.camel.Component;
-import org.apache.camel.Endpoint;
 import org.apache.camel.ResolveEndpointFailedException;
 import org.camunda.bpm.camel.BaseCamelTest;
 import org.camunda.bpm.camel.component.CamundaBpmComponent;
@@ -21,6 +20,6 @@ public class UriParsingTest extends BaseCamelTest {
 
     @Test(expected = ResolveEndpointFailedException.class)
     public void testGetCamundaEndpointWithUnknownUriExtension() throws Exception {
-        Endpoint endpoint = camelContext.getEndpoint(camundaBpmUri("what/ever"));
+        camelContext.getEndpoint(camundaBpmUri("what/ever"));
     }
 }
