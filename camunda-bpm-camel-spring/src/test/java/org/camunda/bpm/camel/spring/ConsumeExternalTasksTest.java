@@ -11,9 +11,9 @@ package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Versi
                                      * limitations under the License.
                                      */
 
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_ATTEMPTSSTARTED;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_RETRIESLEFT;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_ATTEMPTSSTARTED;
 import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Date;
@@ -27,6 +27,8 @@ import org.apache.camel.Expression;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.camunda.bpm.camel.component.CamundaBpmConstants;
+import org.camunda.bpm.camel.component.externaltasks.SetExternalTaskRetries;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -50,6 +52,24 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:consume-external-tasks-config.xml")
 public class ConsumeExternalTasksTest {
+
+    @SetExternalTaskRetries(retries = 0)
+    public static class CreateIncidentException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        public CreateIncidentException(final String message) {
+            super(message);
+        }
+    };
+
+    @SetExternalTaskRetries(retries = 0, relative = true)
+    public static class DontChangeRetriesException extends Exception {
+        private static final long serialVersionUID = 1L;
+
+        public DontChangeRetriesException(final String message) {
+            super(message);
+        }
+    };
 
     private MockEndpoint mockEndpoint;
 
@@ -504,7 +524,99 @@ public class ConsumeExternalTasksTest {
     @Deployment(resources = { "process/StartExternalTask4.bpmn20.xml" })
     public void testCompleteTaskFailure() throws Exception {
 
-        final String FAILURE = "Failure";
+        // start process
+        final Map<String, Object> processVariables = new HashMap<String, Object>();
+        processVariables.put("var1", "foo");
+        processVariables.put("var2", "bar");
+        processVariables.put("var3", "foobar");
+        final ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("startExternalTaskProcess2",
+                processVariables);
+        assertThat(processInstance).isNotNull();
+
+        // external task is still not resolved and not locked
+        final List<ExternalTask> externalTasks1 = externalTaskService.createExternalTaskQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(externalTasks1).isNotNull();
+        assertThat(externalTasks1.size()).isEqualTo(1);
+        assertThat(externalTasks1.get(0).getWorkerId()).isNull();
+        assertThat(externalTasks1.get(0).getRetries()).isNull();
+
+        // find external task and lock
+        final List<LockedExternalTask> locked = externalTaskService.fetchAndLock(1, "0815", true).topic("topic4",
+                5000).execute();
+        assertThat(locked).isNotNull();
+        assertThat(locked.size()).isEqualTo(1);
+        final LockedExternalTask lockedExternalTask = locked.get(0);
+
+        /*
+         * test CamundaBpmConstants.EXCHANGE_RESPONSE_IGNORE
+         */
+
+        // variables returned but must not be set since task will not be
+        // completed
+        mockEndpoint.returnReplyBody(new Expression() {
+            @SuppressWarnings("unchecked")
+            @Override
+            public <T> T evaluate(Exchange exchange, Class<T> type) {
+                return (T) CamundaBpmConstants.EXCHANGE_RESPONSE_IGNORE;
+            }
+        });
+
+        // second route does not recognize exceptions
+
+        // call route "direct:secondTestRoute"
+        final ProducerTemplate template = camelContext.createProducerTemplate();
+        template.requestBodyAndHeader("direct:secondTestRoute",
+                null,
+                "CamundaBpmExternalTaskId",
+                lockedExternalTask.getId());
+
+        // ensure endpoint has been called
+        assertThat(mockEndpoint.assertExchangeReceived(0)).isNotNull();
+
+        // external task is still not resolved
+        final List<ExternalTask> externalTasks2 = externalTaskService.createExternalTaskQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(externalTasks2).isNotNull();
+        assertThat(externalTasks2.size()).isEqualTo(1);
+        // Exception aborted processing so retries could not be set!
+        assertThat(externalTasks2.get(0).getRetries()).isNull();
+        assertThat(externalTasks2.get(0).getErrorMessage()).isNull();
+
+        // assert that process not in the end event "HappyEnd"
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("HappyEnd").singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 4711
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("End4711").singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 0815
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("End0815").singleResult()).isNull();
+
+        // assert that the variables unchanged
+        final List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(variables.size()).isEqualTo(3);
+        final HashMap<String, Object> variablesAsMap = new HashMap<String, Object>();
+        for (final HistoricVariableInstance variable : variables) {
+            variablesAsMap.put(variable.getName(), variable.getValue());
+        }
+        assertThat(variablesAsMap.containsKey("var1")).isTrue();
+        assertThat(variablesAsMap.get("var1")).isEqualTo("foo");
+        assertThat(variablesAsMap.containsKey("var2")).isTrue();
+        assertThat(variablesAsMap.get("var2")).isEqualTo("bar");
+        assertThat(variablesAsMap.containsKey("var3")).isTrue();
+        assertThat(variablesAsMap.get("var3")).isEqualTo("foobar");
+
+        /*
+         * test common exception
+         */
+
+        mockEndpoint.reset();
+
+        final String FAILURE = "FAILURE";
 
         // variables returned but must not be set since task will not be
         // completed
@@ -514,6 +626,66 @@ public class ConsumeExternalTasksTest {
                 throw new Exception(FAILURE);
             }
         });
+
+        // call route "direct:testRoute"
+        final ProducerTemplate template2 = camelContext.createProducerTemplate();
+        try {
+            template2.requestBodyAndHeader("direct:firstTestRoute",
+                    null,
+                    "CamundaBpmExternalTaskId",
+                    lockedExternalTask.getId());
+            Assert.fail("Expected an exception, but Camel route succeeded!");
+        } catch (Exception e) {
+            // expected
+        }
+
+        // ensure endpoint has been called
+        assertThat(mockEndpoint.assertExchangeReceived(0)).isNotNull();
+
+        // external task is still not resolved
+        final List<ExternalTask> externalTasks4 = externalTaskService.createExternalTaskQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(externalTasks4).isNotNull();
+        assertThat(externalTasks4.size()).isEqualTo(1);
+        // Exception aborted processing so retries could not be set!
+        assertThat(externalTasks4.get(0).getRetries()).isEqualTo(2);
+        assertThat(externalTasks4.get(0).getErrorMessage()).isEqualTo(FAILURE);
+
+        // assert that process not in the end event "HappyEnd"
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("HappyEnd").singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 4711
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("End4711").singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 0815
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("End0815").singleResult()).isNull();
+
+        // assert that the variables unchanged
+        final List<HistoricVariableInstance> variables2 = historyService.createHistoricVariableInstanceQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(variables2.size()).isEqualTo(3);
+        final HashMap<String, Object> variablesAsMap2 = new HashMap<String, Object>();
+        for (final HistoricVariableInstance variable : variables2) {
+            variablesAsMap2.put(variable.getName(), variable.getValue());
+        }
+        assertThat(variablesAsMap2.containsKey("var1")).isTrue();
+        assertThat(variablesAsMap2.get("var1")).isEqualTo("foo");
+        assertThat(variablesAsMap2.containsKey("var2")).isTrue();
+        assertThat(variablesAsMap2.get("var2")).isEqualTo("bar");
+        assertThat(variablesAsMap2.containsKey("var3")).isTrue();
+        assertThat(variablesAsMap2.get("var3")).isEqualTo("foobar");
+
+        // complete task to make test order not relevant
+        externalTaskService.complete(externalTasks2.get(0).getId(), "0815");
+
+    }
+
+    @Test
+    @Deployment(resources = { "process/StartExternalTask4.bpmn20.xml" })
+    public void testSetExternalTaskRetriesAnnotation() throws Exception {
 
         // start process
         final Map<String, Object> processVariables = new HashMap<String, Object>();
@@ -539,10 +711,30 @@ public class ConsumeExternalTasksTest {
         assertThat(locked.size()).isEqualTo(1);
         final LockedExternalTask lockedExternalTask = locked.get(0);
 
+        // set retries artificially
+        externalTaskService.handleFailure(lockedExternalTask.getId(), "0815", "Blabal", 2, 0);
+
+        /*
+         * DontChangeRetriesException
+         */
+
+        mockEndpoint.reset();
+
+        final String DONTCHANGEMSG = "DoNotChange";
+
+        // variables returned but must not be set since task will not be
+        // completed
+        mockEndpoint.whenAnyExchangeReceived(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                throw new DontChangeRetriesException(DONTCHANGEMSG);
+            }
+        });
+
         // call route "direct:testRoute"
-        final ProducerTemplate template = camelContext.createProducerTemplate();
+        final ProducerTemplate template2 = camelContext.createProducerTemplate();
         try {
-            template.requestBodyAndHeader("direct:secondTestRoute",
+            template2.requestBodyAndHeader("direct:firstTestRoute",
                     null,
                     "CamundaBpmExternalTaskId",
                     lockedExternalTask.getId());
@@ -555,12 +747,13 @@ public class ConsumeExternalTasksTest {
         assertThat(mockEndpoint.assertExchangeReceived(0)).isNotNull();
 
         // external task is still not resolved
-        final List<ExternalTask> externalTasks2 = externalTaskService.createExternalTaskQuery().processInstanceId(
+        final List<ExternalTask> externalTasks4 = externalTaskService.createExternalTaskQuery().processInstanceId(
                 processInstance.getId()).list();
-        assertThat(externalTasks2).isNotNull();
-        assertThat(externalTasks2.size()).isEqualTo(1);
+        assertThat(externalTasks4).isNotNull();
+        assertThat(externalTasks4.size()).isEqualTo(1);
         // Exception aborted processing so retries could not be set!
-        assertThat(externalTasks2.get(0).getRetries()).isNull();
+        assertThat(externalTasks4.get(0).getRetries()).isEqualTo(2);
+        assertThat(externalTasks4.get(0).getErrorMessage()).isEqualTo(DONTCHANGEMSG);
 
         // assert that process not in the end event "HappyEnd"
         assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
@@ -574,24 +767,91 @@ public class ConsumeExternalTasksTest {
         assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
                 processInstance.getId()).activityId("End0815").singleResult()).isNull();
 
-        // assert that the variables sent in the response-message has been set
-        // into the process
-        final List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery().processInstanceId(
+        // assert that the variables unchanged
+        final List<HistoricVariableInstance> variables2 = historyService.createHistoricVariableInstanceQuery().processInstanceId(
                 processInstance.getId()).list();
-        assertThat(variables.size()).isEqualTo(3);
-        final HashMap<String, Object> variablesAsMap = new HashMap<String, Object>();
-        for (final HistoricVariableInstance variable : variables) {
-            variablesAsMap.put(variable.getName(), variable.getValue());
+        assertThat(variables2.size()).isEqualTo(3);
+        final HashMap<String, Object> variablesAsMap2 = new HashMap<String, Object>();
+        for (final HistoricVariableInstance variable : variables2) {
+            variablesAsMap2.put(variable.getName(), variable.getValue());
         }
-        assertThat(variablesAsMap.containsKey("var1")).isTrue();
-        assertThat(variablesAsMap.get("var1")).isEqualTo("foo");
-        assertThat(variablesAsMap.containsKey("var2")).isTrue();
-        assertThat(variablesAsMap.get("var2")).isEqualTo("bar");
-        assertThat(variablesAsMap.containsKey("var3")).isTrue();
-        assertThat(variablesAsMap.get("var3")).isEqualTo("foobar");
+        assertThat(variablesAsMap2.containsKey("var1")).isTrue();
+        assertThat(variablesAsMap2.get("var1")).isEqualTo("foo");
+        assertThat(variablesAsMap2.containsKey("var2")).isTrue();
+        assertThat(variablesAsMap2.get("var2")).isEqualTo("bar");
+        assertThat(variablesAsMap2.containsKey("var3")).isTrue();
+        assertThat(variablesAsMap2.get("var3")).isEqualTo("foobar");
+
+        /*
+         * DontChangeRetriesException
+         */
+
+        mockEndpoint.reset();
+
+        final String CREATEINCIDENT = "Incident";
+
+        // variables returned but must not be set since task will not be
+        // completed
+        mockEndpoint.whenAnyExchangeReceived(new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                throw new CreateIncidentException(CREATEINCIDENT);
+            }
+        });
+
+        // call route "direct:testRoute"
+        final ProducerTemplate template3 = camelContext.createProducerTemplate();
+        try {
+            template3.requestBodyAndHeader("direct:firstTestRoute",
+                    null,
+                    "CamundaBpmExternalTaskId",
+                    lockedExternalTask.getId());
+            Assert.fail("Expected an exception, but Camel route succeeded!");
+        } catch (Exception e) {
+            // expected
+        }
+
+        // ensure endpoint has been called
+        assertThat(mockEndpoint.assertExchangeReceived(0)).isNotNull();
+
+        // external task is still not resolved
+        final List<ExternalTask> externalTasks3 = externalTaskService.createExternalTaskQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(externalTasks3).isNotNull();
+        assertThat(externalTasks3.size()).isEqualTo(1);
+        // Exception aborted processing so retries could not be set!
+        assertThat(externalTasks3.get(0).getRetries()).isEqualTo(0);
+        assertThat(externalTasks3.get(0).getErrorMessage()).isEqualTo(CREATEINCIDENT);
+
+        // assert that process not in the end event "HappyEnd"
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("HappyEnd").singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 4711
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("End4711").singleResult()).isNull();
+
+        // assert that process ended not due to error boundary event 0815
+        assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(
+                processInstance.getId()).activityId("End0815").singleResult()).isNull();
+
+        // assert that the variables unchanged
+        final List<HistoricVariableInstance> variables3 = historyService.createHistoricVariableInstanceQuery().processInstanceId(
+                processInstance.getId()).list();
+        assertThat(variables3.size()).isEqualTo(3);
+        final HashMap<String, Object> variablesAsMap3 = new HashMap<String, Object>();
+        for (final HistoricVariableInstance variable : variables3) {
+            variablesAsMap3.put(variable.getName(), variable.getValue());
+        }
+        assertThat(variablesAsMap3.containsKey("var1")).isTrue();
+        assertThat(variablesAsMap3.get("var1")).isEqualTo("foo");
+        assertThat(variablesAsMap3.containsKey("var2")).isTrue();
+        assertThat(variablesAsMap3.get("var2")).isEqualTo("bar");
+        assertThat(variablesAsMap3.containsKey("var3")).isTrue();
+        assertThat(variablesAsMap3.get("var3")).isEqualTo("foobar");
 
         // complete task to make test order not relevant
-        externalTaskService.complete(externalTasks2.get(0).getId(), "0815");
+        externalTaskService.complete(externalTasks1.get(0).getId(), "0815");
 
     }
 

@@ -94,8 +94,9 @@ public class TaskProcessor implements Processor {
         final String taskId = getExternalTaskId(in);
         final ExternalTask task = getExternalTask(taskId);
 
-        final int retries = retriesLeft(task.getRetries());
-        final int attemptsStarted = attemptsStarted(task.getRetries());
+        final SetExternalTaskRetries annotation = findAnnotationByException(exchange.getException());
+        final int retries = retriesLeft(task.getRetries(), annotation);
+        final int attemptsStarted = attemptsStarted(task.getRetries(), annotation);
 
         in.setHeader(EXCHANGE_HEADER_RETRIESLEFT, retries);
         in.setHeader(EXCHANGE_HEADER_ATTEMPTSSTARTED, attemptsStarted);
@@ -131,10 +132,11 @@ public class TaskProcessor implements Processor {
                 return;
             }
 
-            final int retries = retriesLeft(task.getRetries());
-            final long calculatedTimeout = calculateTimeout(task.getRetries());
-
             final Exception exception = exchange.getException();
+            final SetExternalTaskRetries annotation = findAnnotationByException(exchange.getException());
+            final int retries = retriesLeft(task.getRetries(), annotation);
+            final long calculatedTimeout = calculateTimeout(task.getRetries(), annotation);
+
             externalTaskService.handleFailure(task.getId(),
                     task.getWorkerId(),
                     exception != null ? exception.getMessage() : "task failed",
@@ -236,26 +238,66 @@ public class TaskProcessor implements Processor {
 
     }
 
-    public int retriesLeft(final Integer taskRetries) {
+    public int retriesLeft(final Integer taskRetries, final SetExternalTaskRetries annotation) {
 
+        final int currentRetries;
+        final boolean decreaseCurrentRetriesByOne;
         if (taskRetries == null) {
-            return this.retries;
+            currentRetries = this.retries;
+            decreaseCurrentRetriesByOne = false;
         } else {
-            return taskRetries - 1;
+            currentRetries = taskRetries;
+            decreaseCurrentRetriesByOne = true;
+        }
+
+        return findRetriesByAnnotation(annotation, currentRetries, decreaseCurrentRetriesByOne);
+
+    }
+
+    private SetExternalTaskRetries findAnnotationByException(final Throwable e) {
+
+        if (e == null) {
+            return null;
+        }
+
+        final SetExternalTaskRetries annotation = e.getClass().getAnnotation(SetExternalTaskRetries.class);
+        if (annotation != null) {
+            return annotation;
+        }
+
+        return findAnnotationByException(e.getCause());
+
+    }
+
+    private int findRetriesByAnnotation(final SetExternalTaskRetries annotation, final int currentRetries,
+            final boolean decreaseCurrentRetriesByOne) {
+
+        if (annotation == null) {
+            if (decreaseCurrentRetriesByOne) {
+                return currentRetries - 1;
+            } else {
+                return currentRetries;
+            }
+        }
+
+        if (annotation.relative()) {
+            return currentRetries + annotation.retries();
+        } else {
+            return annotation.retries();
         }
 
     }
 
-    public int attemptsStarted(final Integer taskRetries) {
+    public int attemptsStarted(final Integer taskRetries, final SetExternalTaskRetries annotation) {
 
-        final int retriesLeft = retriesLeft(taskRetries);
+        final int retriesLeft = retriesLeft(taskRetries, annotation);
         return this.retries - retriesLeft;
 
     }
 
-    private long calculateTimeout(final Integer taskRetries) {
+    private long calculateTimeout(final Integer taskRetries, final SetExternalTaskRetries annotation) {
 
-        final int currentTry = attemptsStarted(taskRetries);
+        final int currentTry = attemptsStarted(taskRetries, annotation);
         if (retries < 1) {
             return 0;
         } else if ((retryTimeouts != null) && (currentTry < retryTimeouts.length)) {

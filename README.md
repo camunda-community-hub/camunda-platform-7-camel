@@ -81,7 +81,7 @@ Additionally these in-headers are set:
 * `CamundaBpmExternalRetriesLeft` contains how many times the task will be processed any more if this execution fails
 * the in-body is a map containing the process instance variables requested (Map< String, Object >)
 
-If the reply-body contains a map (Map< String, Object >) this map is treated as a list of process instance variables and therefore used to update the process. If the reply-body is a string it is used as a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries or an incident if the number of retries elapsed).
+If the reply-body contains a map (Map< String, Object >) this map is treated as a list of process instance variables and therefore used to update the process. If the reply-body is a string it is used as a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries or an incident if the number of retries elapsed). Additionally exceptions can be annotated by `@org.camunda.bpm.camel.component.externaltasks.SetExternalTaskRetries` to control how the current exception effects the retry counter. 
 
 ### `camunda-bpm://process-externalTask` Processing outstanding external tasks
 
