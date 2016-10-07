@@ -7,6 +7,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADE
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_RESPONSE_IGNORE;
 
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 import org.apache.camel.Exchange;
@@ -14,6 +15,7 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.spi.Synchronization;
+import org.camunda.bpm.camel.common.CamundaUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
@@ -137,11 +139,17 @@ public class TaskProcessor implements Processor {
             final int retries = retriesLeft(task.getRetries(), annotation);
             final long calculatedTimeout = calculateTimeout(task.getRetries(), annotation);
 
-            externalTaskService.handleFailure(task.getId(),
-                    task.getWorkerId(),
-                    exception != null ? exception.getMessage() : "task failed",
-                    retries,
-                    calculatedTimeout);
+            CamundaUtils.retryIfOptimisticLockingException(new Callable<Void>() {
+                @Override
+                public Void call() {
+                    externalTaskService.handleFailure(task.getId(),
+                            task.getWorkerId(),
+                            exception != null ? exception.getMessage() : "task failed",
+                            retries,
+                            calculatedTimeout);
+                    return null;
+                }
+            });
 
         } else
         // bpmn error
@@ -161,7 +169,13 @@ public class TaskProcessor implements Processor {
                 return;
             }
 
-            externalTaskService.handleBpmnError(task.getId(), task.getWorkerId(), errorCode);
+            CamundaUtils.retryIfOptimisticLockingException(new Callable<Void>() {
+                @Override
+                public Void call() {
+                    externalTaskService.handleBpmnError(task.getId(), task.getWorkerId(), errorCode);
+                    return null;
+                }
+            });
 
         } else
         // success
@@ -180,11 +194,17 @@ public class TaskProcessor implements Processor {
                 variablesToBeSet = null;
             }
 
-            if (variablesToBeSet != null) {
-                externalTaskService.complete(task.getId(), task.getWorkerId(), variablesToBeSet);
-            } else {
-                externalTaskService.complete(task.getId(), task.getWorkerId());
-            }
+            CamundaUtils.retryIfOptimisticLockingException(new Callable<Void>() {
+                @Override
+                public Void call() {
+                    if (variablesToBeSet != null) {
+                        externalTaskService.complete(task.getId(), task.getWorkerId(), variablesToBeSet);
+                    } else {
+                        externalTaskService.complete(task.getId(), task.getWorkerId());
+                    }
+                    return null;
+                }
+            });
 
         }
 

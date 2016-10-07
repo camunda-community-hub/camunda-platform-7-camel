@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.camel.Exchange;
@@ -19,6 +20,7 @@ import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.ScheduledBatchPollingConsumer;
 import org.apache.camel.util.CastUtils;
+import org.camunda.bpm.camel.common.CamundaUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
@@ -175,9 +177,14 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
         if (isPollAllowed()) {
 
-            final List<LockedExternalTask> tasks = getExternalTaskService().fetchAndLock(maxMessagesPerPoll,
-                    workerId,
-                    true).topic(topic, lockDuration).variables(variablesToFetch).execute();
+            final List<LockedExternalTask> tasks = CamundaUtils.retryIfOptimisticLockingException(
+                    new Callable<List<LockedExternalTask>>() {
+                        @Override
+                        public List<LockedExternalTask> call() {
+                            return getExternalTaskService().fetchAndLock(maxMessagesPerPoll, workerId, true).topic(
+                                    topic, lockDuration).variables(variablesToFetch).execute();
+                        }
+                    });
 
             messagesPolled = tasks.size();
 

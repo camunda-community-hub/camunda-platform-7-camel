@@ -102,16 +102,4 @@
     <tag>HEAD</tag>
   </scm>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>camunda-nexus</id>
-      <name>camunda BPM Maven Snapshot Repository</name>
-      <url>https://public.phactum.at/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>camunda-nexus</id>
-      <name>camunda BPM Maven Repository</name>
-      <url>https://app.camunda.com/nexus/content/repositories/camunda-bpm-community-extensions</url>
-    </repository>
-  </distributionManagement>
 </project>
