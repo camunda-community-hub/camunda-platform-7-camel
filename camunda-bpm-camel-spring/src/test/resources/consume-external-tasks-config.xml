@@ -22,7 +22,7 @@
 
 		<route id="secondRoute">
 			<from
-				uri="camunda-bpm:poll-externalTasks?topic=topic2&amp;completeTask=false&amp;delay=250&amp;variablesToFetch=var2,var3&amp;lockDuration=2s&amp;maxTasksPerPoll=2&amp;workerId=0815" />
+				uri="camunda-bpm:poll-externalTasks?topic=topic2&amp;async=true&amp;delay=250&amp;variablesToFetch=var2,var3&amp;lockDuration=2s&amp;maxTasksPerPoll=2&amp;workerId=0815" />
 			<to
 				uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true" />
 			<to uri="mock:endpoint" />
@@ -30,7 +30,7 @@
 
         <route id="thirdRoute">
             <from
-                uri="camunda-bpm:poll-externalTasks?topic=topic3&amp;completeTask=true&amp;delay=250&amp;variablesToFetch=" />
+                uri="camunda-bpm:poll-externalTasks?topic=topic3&amp;async=false&amp;delay=250&amp;variablesToFetch=" />
             <to
                 uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true" />
             <to uri="mock:endpoint" />

@@ -27,8 +27,8 @@ public final class CamundaBpmConstants {
     public final static String VARIABLESTOFETCH_PARAMETER = "variablesToFetch";
     public final static String MAXTASKSPERPOLL_PARAMETER = "maxTasksPerPoll";
     public final static int MAXTASKSPERPOLL_DEFAULT = 5;
-    public final static String COMPLETETASK_PARAMETER = "completeTask";
-    public final static boolean COMPLETETASK_DEFAULT = true;
+    public final static String ASYNC_PARAMETER = "async";
+    public final static boolean ASYNC_DEFAULT = false;
     public final static String ONCOMPLETION_PARAMETER = "onCompletion";
     public final static boolean ONCOMPLETION_DEFAULT = false;
     public final static String LOCKDURATION_PARAMETER = "lockDuration";

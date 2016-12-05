@@ -1,7 +1,7 @@
 package org.camunda.bpm.camel.component;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.COMPLETETASK_DEFAULT;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.COMPLETETASK_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.ASYNC_DEFAULT;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.ASYNC_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.LOCKDURATION_DEFAULT;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.LOCKDURATION_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.MAXTASKSPERPOLL_DEFAULT;
@@ -86,10 +86,10 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
             this.maxTasksPerPoll = MAXTASKSPERPOLL_DEFAULT;
         }
 
-        if (parameters.containsKey(COMPLETETASK_PARAMETER)) {
-            this.completeTask = Boolean.parseBoolean((String) parameters.remove(COMPLETETASK_PARAMETER));
+        if (parameters.containsKey(ASYNC_PARAMETER)) {
+            this.completeTask = !Boolean.parseBoolean((String) parameters.remove(ASYNC_PARAMETER));
         } else {
-            this.completeTask = COMPLETETASK_DEFAULT;
+            this.completeTask = !ASYNC_DEFAULT;
         }
 
         if (parameters.containsKey(LOCKDURATION_PARAMETER)) {

@@ -194,7 +194,7 @@ public class ConsumeExternalTasksTest {
     @SuppressWarnings("unchecked")
     @Test
     @Deployment(resources = { "process/StartExternalTask3.bpmn20.xml" })
-    public void testLoadNoProcessVariablesAndCompleteTaskIsTrue() throws Exception {
+    public void testLoadNoProcessVariablesAndAsyncIsFalse() throws Exception {
 
         // variables to be set by the Camel-endpoint processing the external
         // task
@@ -858,7 +858,7 @@ public class ConsumeExternalTasksTest {
     @SuppressWarnings("unchecked")
     @Test
     @Deployment(resources = { "process/StartExternalTask2.bpmn20.xml" })
-    public void testCompleteTaskIsFalseAndLockDuration() throws Exception {
+    public void testAsyncIsTrueAndLockDuration() throws Exception {
 
         // variables returned but must not be set since task will not be
         // completed
