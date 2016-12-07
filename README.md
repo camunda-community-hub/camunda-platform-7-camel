@@ -25,13 +25,13 @@ ${camel.sendTo('<camel endpoint>')}
 Alternatively you can specify which process instance variables you want to send to Camel with:
 
 ```
-${camel.sendTo('<camel endpoint>', '<list of process variables>')}
+${camel.sendTo('<camel endpoint>', '<comma-separated list of process variables>')}
 ```
 
 Additionally you can specify a correlationKey to send to Camel. It can be used to correlate a response message. The route for the response must contain a parameter correlationKeyName with the name of the process variable which is used for correlation:
 
 ```
-${camel.sendTo('<camel endpoint>', '<list of process variables>', 'correlationKey')}
+${camel.sendTo('<camel endpoint>', '<comma-separated list of process variables>', 'correlationKey')}
 ```
 
 The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if available) and `CamundaBpmCorrelationKey` (if set) will be available to any downstream processesors in the Camel route.
