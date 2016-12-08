@@ -147,7 +147,7 @@ The Spring bean id `camel` will be then available to expressions used in Service
 </dependency>
 ```
 
-The CDI configuration needs a bit more work - especially for bootstrapping Camel. The easiest is to do this in a Singelton Startup EJB (see [Example: CamelBootStrap.java](https://github.com/camunda/camunda-bpm-examples/blob/master/camel-use-cases/src/main/java/org/camunda/demo/camel/CamelBootStrap.java)):
+The CDI configuration needs a bit more work - especially for bootstrapping Camel. The easiest is to do this in a Singleton Startup EJB (see [Example: CamelBootStrap.java](https://github.com/camunda/camunda-bpm-examples/blob/master/camel-use-cases/src/main/java/org/camunda/demo/camel/CamelBootStrap.java)):
 
 ```
 @Singleton
@@ -203,22 +203,22 @@ The camunda-bpm-osgi project is used with the blueprint-wrapper `context.xml`. T
 
 # Feedback and further development
 
-This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation). Feedback, pull requests, ... you name it... are very welcome! Meet us on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev) list.
+This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation). Feedback, pull requests, ... you name it... are very welcome! Meet us on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev).
 
-Out landry list of development TODOs (in no special order):
+Out laundry list of development TODOs (in no special order):
 
 - Create JBoss Distribution with Camel (including Bootstrapping) as a JBoss Module and Routes to be defined within Process Applications [CIS-19](https://app.camunda.com/jira/browse/CIS-19)
 - Exception handling, i.e. Apache Camel exceptions to BPMNErrors mapping
 - Implement asynchronous support
-- Refactor Camel to camunda BPM signalling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
+- Refactor Camel to camunda BPM signaling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
 
-These use cases are considered not interessting - tell us if you think different!
+These use cases are considered not interesting - tell us if you think different!
 - Deploy process definition from Camel message
 
 
 # Credits
 
-This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and the following people have contributed to its further develoment in the context of camunda BPM: [contributors](https://github.com/camunda/camunda-bpm-camel/graphs/contributors).
+This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and the following people have contributed to its further development in the context of camunda BPM: [contributors](https://github.com/camunda/camunda-bpm-camel/graphs/contributors).
 
 # License
 
