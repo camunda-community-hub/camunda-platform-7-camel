@@ -38,14 +38,14 @@
         
         <route id="firstProcessRoute">
             <from uri="direct:firstTestRoute" />
-            <to uri="camunda-bpm:process-externalTask?onCompletion=true&amp;retries=2&amp;retryTimeouts=1s" />
+            <to uri="camunda-bpm:async-externalTask?onCompletion=true&amp;retries=2&amp;retryTimeouts=1s" />
             <to uri="mock:endpoint" />
         </route>
 
         <route id="secondProcessRoute">
             <from uri="direct:secondTestRoute" />
             <to uri="mock:endpoint" />
-            <to uri="camunda-bpm:process-externalTask" />
+            <to uri="camunda-bpm:async-externalTask" />
         </route>
 
 	</camelContext>
