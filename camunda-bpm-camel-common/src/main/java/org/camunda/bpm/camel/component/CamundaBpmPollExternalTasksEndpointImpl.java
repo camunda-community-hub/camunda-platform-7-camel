@@ -13,10 +13,13 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.RETRYTIMEOUT_D
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.TOPIC_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.WORKERID_PARAMETER;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.VARIABLESTOFETCH_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.DESERIALIZEVARIABLES_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.DESERIALIZEVARIABLES_DEFAULT;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.camel.Consumer;
 import org.apache.camel.PollingConsumer;
@@ -30,6 +33,9 @@ import org.camunda.bpm.model.xml.impl.util.StringUtil;
 
 public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
 
+    private static final Logger logger = Logger.getLogger(
+            CamundaBpmPollExternalTasksEndpointImpl.class.getCanonicalName());
+
     private CamundaBpmComponent component;
 
     // parameters
@@ -41,6 +47,7 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
     private final int maxTasksPerPoll;
     private final long lockDuration;
     private final List<String> variablesToFetch;
+    private final boolean deserializeVariables;
     private final String workerId;
 
     public CamundaBpmPollExternalTasksEndpointImpl(final String endpointUri, final CamundaBpmComponent component,
@@ -115,6 +122,18 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
             variablesToFetch = null;
         }
 
+        if (parameters.containsKey(DESERIALIZEVARIABLES_PARAMETER)) {
+            this.deserializeVariables = Boolean.parseBoolean(
+                    (String) parameters.remove(DESERIALIZEVARIABLES_PARAMETER));
+            if (!BatchConsumer.systemKnowsDeserializationOfVariables() && this.deserializeVariables) {
+                logger.warning("Parameter '" + DESERIALIZEVARIABLES_PARAMETER
+                        + "' is set to 'true' but this setting will be ignored in this environment since the "
+                        + " version of runtime Camunda is below 7.6.0!");
+            }
+        } else {
+            this.deserializeVariables = DESERIALIZEVARIABLES_DEFAULT;
+        }
+
     }
 
     @Override
@@ -132,6 +151,7 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
                     topic,
                     completeTask,
                     variablesToFetch,
+                    deserializeVariables,
                     workerId);
         } else {
             consumer = new BatchConsumer(this,
@@ -143,6 +163,7 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
                     topic,
                     completeTask,
                     variablesToFetch,
+                    deserializeVariables,
                     workerId);
         }
         configureConsumer(consumer);

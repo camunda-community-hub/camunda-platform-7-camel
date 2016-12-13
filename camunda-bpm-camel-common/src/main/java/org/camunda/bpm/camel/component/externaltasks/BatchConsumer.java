@@ -6,6 +6,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADE
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_PRIO;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_TASK;
 
+import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -18,11 +19,13 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.Message;
 import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
+import org.apache.camel.RuntimeCamelException;
 import org.apache.camel.impl.ScheduledBatchPollingConsumer;
 import org.apache.camel.util.CastUtils;
 import org.camunda.bpm.camel.common.CamundaUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
+import org.camunda.bpm.engine.externaltask.ExternalTaskQueryTopicBuilder;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
 
 public class BatchConsumer extends ScheduledBatchPollingConsumer {
@@ -35,13 +38,31 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     private final String topic;
     private final boolean completeTask;
     private final List<String> variablesToFetch;
+    private final boolean deserializeVariables;
+    private static Method deserializeVariablesMethod;
     private final String workerId;
 
     private final TaskProcessor taskProcessor;
 
+    static {
+
+        try {
+            deserializeVariablesMethod = ExternalTaskQueryTopicBuilder.class.getMethod(
+                    "enableCustomObjectDeserialization");
+        } catch (Exception e) {
+            // ignore because the Camunda version below 7.6.0 is used
+        }
+
+    }
+
+    public static boolean systemKnowsDeserializationOfVariables() {
+        return deserializeVariablesMethod != null;
+    }
+
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor, final int retries,
             final long retryTimeout, final long[] retryTimeouts, final long lockDuration, final String topic,
-            final boolean completeTask, final List<String> variablesToFetch, final String workerId) {
+            final boolean completeTask, final List<String> variablesToFetch, final boolean deserializeVariables,
+            final String workerId) {
 
         super(endpoint, processor);
 
@@ -50,6 +71,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.topic = topic;
         this.completeTask = completeTask;
         this.variablesToFetch = variablesToFetch;
+        this.deserializeVariables = deserializeVariables;
         this.workerId = workerId;
 
         this.taskProcessor = new TaskProcessor(endpoint,
@@ -66,7 +88,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     public BatchConsumer(final CamundaBpmEndpoint endpoint, final Processor processor,
             final ScheduledExecutorService executor, final int retries, final long retryTimeout,
             final long[] retryTimeouts, final long lockDuration, final String topic, final boolean completeTask,
-            final List<String> variablesToFetch, final String workerId) {
+            final List<String> variablesToFetch, final boolean deserializeVariables, final String workerId) {
 
         super(endpoint, processor, executor);
 
@@ -75,6 +97,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
         this.topic = topic;
         this.completeTask = completeTask;
         this.variablesToFetch = variablesToFetch;
+        this.deserializeVariables = deserializeVariables;
         this.workerId = workerId;
 
         this.taskProcessor = new TaskProcessor(endpoint,
@@ -181,8 +204,18 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
                     new Callable<List<LockedExternalTask>>() {
                         @Override
                         public List<LockedExternalTask> call() {
-                            return getExternalTaskService().fetchAndLock(maxMessagesPerPoll, workerId, true).topic(
-                                    topic, lockDuration).variables(variablesToFetch).execute();
+                            ExternalTaskQueryTopicBuilder query = getExternalTaskService() //
+                                    .fetchAndLock(maxMessagesPerPoll, workerId, true) //
+                                    .topic(topic, lockDuration) //
+                                    .variables(variablesToFetch);
+                            if (deserializeVariables && (deserializeVariablesMethod != null)) {
+                                try {
+                                    query = (ExternalTaskQueryTopicBuilder) deserializeVariablesMethod.invoke(query);
+                                } catch (Exception e) {
+                                    throw new RuntimeCamelException(e);
+                                }
+                            }
+                            return query.execute();
                         }
                     });
 

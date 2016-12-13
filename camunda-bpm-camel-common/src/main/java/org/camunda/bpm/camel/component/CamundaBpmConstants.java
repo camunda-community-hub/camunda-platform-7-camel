@@ -25,6 +25,8 @@ public final class CamundaBpmConstants {
     public final static String TOPIC_PARAMETER = "topic";
     public final static String WORKERID_PARAMETER = "workerId";
     public final static String VARIABLESTOFETCH_PARAMETER = "variablesToFetch";
+    public final static String DESERIALIZEVARIABLES_PARAMETER = "deserializeVariables";
+    public final static boolean DESERIALIZEVARIABLES_DEFAULT = true;
     public final static String MAXTASKSPERPOLL_PARAMETER = "maxTasksPerPoll";
     public final static int MAXTASKSPERPOLL_DEFAULT = 5;
     public final static String ASYNC_PARAMETER = "async";
