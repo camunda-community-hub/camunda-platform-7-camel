@@ -50,7 +50,7 @@ public class UriUtils {
     public static enum UriType {
 
         StartProcess("start"), SendSignal("signal"), SendMessage("message"),
-        		PollExternalTasks("poll-externalTasks"), ProcessExternalTask("process-externalTask");
+        		PollExternalTasks("poll-externalTasks"), ProcessExternalTask("async-externalTask");
 
         private String identifier;
 
