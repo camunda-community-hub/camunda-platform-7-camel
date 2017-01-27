@@ -139,7 +139,8 @@ public ScheduledPollConsumerScheduler produceTopic1Scheduler() {
     final DefaultScheduledPollConsumerScheduler scheduledPollConsumerScheduler = new DefaultScheduledPollConsumerScheduler();
     scheduledPollConsumerScheduler.setConcurrentTasks(2);
     return scheduledPollConsumerScheduler;
-}```
+}
+```
 
 ### `camunda-bpm://async-externalTask` Processing outstanding external tasks
 
