@@ -127,6 +127,20 @@ Additionally these in-headers are set:
 
 If the reply-body contains a map (Map< String, Object >) this map is treated as a list of process instance variables and therefore used to update the process. If the reply-body is a string it is used as a BPMN error code to signal an error to the process. If processing the exchange fails (e.g. an exception is caught) then the exception's message is used to mark the task as failed (which might cause further retries or an incident if the number of retries elapsed). Additionally exceptions can be annotated by `@org.camunda.bpm.camel.component.externaltasks.SetExternalTaskRetries` to control how the current exception effects the retry counter. 
 
+Hint: Processing of the route is not done in parallel even if the route uses a AsyncProcessor. This is Camel's default behavior of a polling Consumer! If you want to process the external tasks in parallel you have to define your own scheduler:
+
+Example: `camunda-bpm:poll-externalTasks?topic=topic1&scheduler=#topic1Scheduler`
+ 
+A scheduler is found by lookup in Camel's registry (what kind of registry is used depends on your environment, typical registries are CDI BeanManager and JNDI). This is an example of CDI producer building a scheduler which processes two external tasks in parallel: 
+
+`@Produces
+@Named("topic1Scheduler")
+public ScheduledPollConsumerScheduler produceTopic1Scheduler() {
+    final DefaultScheduledPollConsumerScheduler scheduledPollConsumerScheduler = new DefaultScheduledPollConsumerScheduler();
+    scheduledPollConsumerScheduler.setConcurrentTasks(2);
+    return scheduledPollConsumerScheduler;
+}`
+
 ### `camunda-bpm://async-externalTask` Processing outstanding external tasks
 
 By using `camunda-bpm://poll-externalTasks`' parameter `async` at value `true` it is up to your responsibility to complete the task once your processing is done. A typical situation is when you want to process the response of asynchronous communication. In this situation you may use this processor endpoint (see [Camel docs](http://camel.apache.org/processor.html#Processor-TurningyourprocessorintoafullComponent))

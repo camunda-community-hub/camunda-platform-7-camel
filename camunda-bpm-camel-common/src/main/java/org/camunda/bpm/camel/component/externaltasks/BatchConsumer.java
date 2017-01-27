@@ -14,6 +14,8 @@ import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.apache.camel.AsyncCallback;
+import org.apache.camel.AsyncProcessor;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.Message;
@@ -148,7 +150,17 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     private boolean processExchange(final Exchange exchange) throws Exception {
 
         taskProcessor.process(exchange);
-        getProcessor().process(exchange);
+        final Processor currentProcessor = getProcessor();
+        if (currentProcessor instanceof AsyncProcessor) {
+            ((AsyncProcessor) currentProcessor).process(exchange, new AsyncCallback() {
+                @Override
+                public void done(boolean doneSync) {
+                    // we are not interested in this event
+                }
+            });
+        } else {
+            currentProcessor.process(exchange);
+        }
 
         return true;
 
