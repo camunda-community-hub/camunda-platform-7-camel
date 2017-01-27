@@ -133,13 +133,13 @@ Example: `camunda-bpm:poll-externalTasks?topic=topic1&scheduler=#topic1Scheduler
  
 A scheduler is found by lookup in Camel's registry (what kind of registry is used depends on your environment, typical registries are CDI BeanManager and JNDI). This is an example of CDI producer building a scheduler which processes two external tasks in parallel: 
 
-`@Produces
+```@Produces
 @Named("topic1Scheduler")
 public ScheduledPollConsumerScheduler produceTopic1Scheduler() {
     final DefaultScheduledPollConsumerScheduler scheduledPollConsumerScheduler = new DefaultScheduledPollConsumerScheduler();
     scheduledPollConsumerScheduler.setConcurrentTasks(2);
     return scheduledPollConsumerScheduler;
-}`
+}```
 
 ### `camunda-bpm://async-externalTask` Processing outstanding external tasks
 
