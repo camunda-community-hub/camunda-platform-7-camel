@@ -168,13 +168,6 @@
           <trimStackTrace>false</trimStackTrace>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
           <argLine>-Djava.awt.headless=true -Xmx256m</argLine>
-          <includes>
-            <include>org/camunda/bpm/camel/spring/SmokeTest.java</include>
-            <include>org/camunda/bpm/camel/spring/StartProcessFromRouteTest.java</include>
-            <include>org/camunda/bpm/camel/spring/SendToCamelTest.java</include>
-            <include>org/camunda/bpm/camel/spring/ConsumeExternalTasksTest.java</include>
-            <include>org/camunda/bpm/camel/spring/ReceiveFromCamelTest.java</include>
-          </includes>
         </configuration>
       </plugin>
     </plugins>
