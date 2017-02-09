@@ -69,10 +69,10 @@ public class ReceiveFromCamelIT extends BaseArquillianIntegrationTest {
      * http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html
      */
     ProducerTemplate tpl = camelContextBootstrap.getCamelContext().createProducerTemplate();
-    tpl.sendBodyAndProperty("direct:sendToCamundaBpm", null, CAMUNDA_BPM_PROCESS_INSTANCE_ID, processInstance.getId());
+    tpl.sendBodyAndProperty("direct:sendToCamundaBpm", null, EXCHANGE_HEADER_PROCESS_INSTANCE_ID, processInstance.getId());
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(resultEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
+    assertThat(resultEndpoint.assertExchangeReceived(0).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(processInstance.getId());
 
     // Assert that the process instance is finished
     assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("receiveFromCamelProcess").count()).isEqualTo(0);

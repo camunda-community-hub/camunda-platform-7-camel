@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="1.0.0">
+  <bpmn:process id="startExternalTaskProcess2" name="startExternalTaskProcess2" isExecutable="true">
+    <bpmn:startEvent id="StartEvent" name="Test started">
+      <bpmn:outgoing>SequenceFlow_0l4pbmo</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0l4pbmo" sourceRef="StartEvent" targetRef="ExternalTask" />
+    <bpmn:serviceTask id="ExternalTask" name="external task" camunda:type="external" camunda:topic="topic2">
+      <bpmn:incoming>SequenceFlow_0l4pbmo</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0f33sel</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="HappyEnd" name="ended successfully">
+      <bpmn:incoming>SequenceFlow_0f33sel</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0f33sel" sourceRef="ExternalTask" targetRef="HappyEnd" />
+    <bpmn:boundaryEvent id="BoundaryEvent_1fo3zq3" attachedToRef="ExternalTask">
+      <bpmn:outgoing>SequenceFlow_1qb0nsz</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="Error_1wspo3z" />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="End4711" name="error 4711">
+      <bpmn:incoming>SequenceFlow_1qb0nsz</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1qb0nsz" sourceRef="BoundaryEvent_1fo3zq3" targetRef="End4711" />
+    <bpmn:boundaryEvent id="BoundaryEvent_0kgaqat" attachedToRef="ExternalTask">
+      <bpmn:outgoing>SequenceFlow_05bnafp</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="Error_0bdhxqu" />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="End0815" name="error 0815">
+      <bpmn:incoming>SequenceFlow_05bnafp</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_05bnafp" sourceRef="BoundaryEvent_0kgaqat" targetRef="End0815" />
+  </bpmn:process>
+  <bpmn:error id="Error_1wspo3z" name="Error4711" errorCode="4711" />
+  <bpmn:error id="Error_0bdhxqu" name="Error0815" errorCode="0815" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="startExternalTaskProcess">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent">
+        <dc:Bounds x="173" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0l4pbmo_di" bpmnElement="SequenceFlow_0l4pbmo">
+        <di:waypoint xsi:type="dc:Point" x="209" y="120" />
+        <di:waypoint xsi:type="dc:Point" x="279" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="199" y="95" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ServiceTask_0lq8m88_di" bpmnElement="ExternalTask">
+        <dc:Bounds x="279" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1op55er_di" bpmnElement="HappyEnd">
+        <dc:Bounds x="468" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="441" y="138" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0f33sel_di" bpmnElement="SequenceFlow_0f33sel">
+        <di:waypoint xsi:type="dc:Point" x="379" y="120" />
+        <di:waypoint xsi:type="dc:Point" x="468" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="378.5" y="95" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_1fo3zq3_di" bpmnElement="BoundaryEvent_1fo3zq3">
+        <dc:Bounds x="361" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="334" y="178" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1wfp0pk_di" bpmnElement="End4711">
+        <dc:Bounds x="468" y="200.83668903803132" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="441" y="236.83668903803132" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1qb0nsz_di" bpmnElement="SequenceFlow_1qb0nsz">
+        <di:waypoint xsi:type="dc:Point" x="379" y="178" />
+        <di:waypoint xsi:type="dc:Point" x="379" y="219" />
+        <di:waypoint xsi:type="dc:Point" x="468" y="219" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="349" y="188.5" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_0kgaqat_di" bpmnElement="BoundaryEvent_0kgaqat">
+        <dc:Bounds x="315" y="142" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="288" y="178" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1lylx3e_di" bpmnElement="End0815">
+        <dc:Bounds x="468" y="289.6870997255261" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="441" y="325.6870997255261" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_05bnafp_di" bpmnElement="SequenceFlow_05bnafp">
+        <di:waypoint xsi:type="dc:Point" x="333" y="178" />
+        <di:waypoint xsi:type="dc:Point" x="333" y="308" />
+        <di:waypoint xsi:type="dc:Point" x="468" y="308" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="303" y="233" width="90" height="20" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

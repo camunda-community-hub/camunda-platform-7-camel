@@ -14,6 +14,7 @@ package org.camunda.bpm.camel.component;
 
 import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
+import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,28 +30,38 @@ import java.util.Map;
  */
 public class CamundaBpmComponent extends DefaultComponent {
 
-  final Logger log = LoggerFactory.getLogger(CamundaBpmComponent.class);
+    final Logger log = LoggerFactory.getLogger(CamundaBpmComponent.class);
 
-  protected ProcessEngine processEngine;
+    protected ProcessEngine processEngine;
 
-  public CamundaBpmComponent() {
-  }
+    public CamundaBpmComponent() {
+    }
 
-  public CamundaBpmComponent(ProcessEngine processEngine) {
-    super();
-    this.processEngine = processEngine;
-  }
+    public CamundaBpmComponent(ProcessEngine processEngine) {
+        super();
+        this.processEngine = processEngine;
+    }
 
-  @Override
-  protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-    return new CamundaBpmEndpointDefaultImpl(uri, this, parameters);
-  }
+    @Override
+    protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
 
-  public ProcessEngine getProcessEngine() {
-    return this.processEngine;
-  }
+        final ParsedUri parsedUri = new ParsedUri(remaining);
+        switch (parsedUri.getType()) {
+        case PollExternalTasks:
+        	return new CamundaBpmPollExternalTasksEndpointImpl(uri, this, parameters);
+        case ProcessExternalTask:
+        	return new CamundaBpmProcessExternalTaskEndpointImpl(uri, this, parameters);
+        default:
+            return new CamundaBpmEndpointDefaultImpl(uri, parsedUri, this, parameters);
+        }
 
-  public void setProcessEngine(ProcessEngine processEngine) {
-    this.processEngine = processEngine;
-  }
+    }
+
+    public ProcessEngine getProcessEngine() {
+        return this.processEngine;
+    }
+
+    public void setProcessEngine(ProcessEngine processEngine) {
+        this.processEngine = processEngine;
+    }
 }

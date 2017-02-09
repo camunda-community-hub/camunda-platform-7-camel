@@ -13,67 +13,60 @@
 
 package org.camunda.bpm.camel.component;
 
-import org.camunda.bpm.camel.common.CamundaBpmConsumer;
-import org.camunda.bpm.camel.component.producer.CamundaBpmProducerFactory;
-import org.camunda.bpm.engine.ProcessEngine;
-import org.apache.camel.*;
-import org.apache.camel.impl.DefaultEndpoint;
-
 import java.util.Map;
 
+import org.apache.camel.Consumer;
+import org.apache.camel.Processor;
+import org.apache.camel.Producer;
+import org.apache.camel.impl.DefaultEndpoint;
+import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
+import org.camunda.bpm.camel.component.producer.CamundaBpmProducerFactory;
+import org.camunda.bpm.engine.ProcessEngine;
+
 /**
- * This class has been modified to be consistent with the changes to CamelBehavior and its implementations. The set of changes
- * significantly increases the flexibility of our Camel integration, as you can either choose one of three "out-of-the-box" modes,
- * or you can choose to create your own. Please reference the comments for the "CamelBehavior" class for more information on the 
- * out-of-the-box implementation class options.  
+ * This class has been modified to be consistent with the changes to
+ * CamelBehavior and its implementations. The set of changes significantly
+ * increases the flexibility of our Camel integration, as you can either choose
+ * one of three "out-of-the-box" modes, or you can choose to create your own.
+ * Please reference the comments for the "CamelBehavior" class for more
+ * information on the out-of-the-box implementation class options.
  * 
  * @author Ryan Johnston (@rjfsu), Tijs Rademakers
  */
 public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements CamundaBpmEndpoint {
 
-  private CamundaBpmComponent component;
-  private CamundaBpmConsumer camundaBpmConsumer;
-  private Map<String, Object> parameters;
+    private CamundaBpmComponent component;
+    private Map<String, Object> parameters;
+    private final ParsedUri uri;
 
-  public CamundaBpmEndpointDefaultImpl(String uri, CamundaBpmComponent component, Map<String, Object> parameters) {
-    super();
-    setCamelContext(component.getCamelContext());
-    setEndpointUri(uri);
-    this.component = component;
-    this.parameters = parameters;
-  }
-
-  public ProcessEngine getProcessEngine() {
-    return this.component.getProcessEngine();
-  }
-
-  public void addConsumer(CamundaBpmConsumer consumer) {
-    if (camundaBpmConsumer != null) {
-      throw new RuntimeException("camunda BPM consumer already defined for " + getEndpointUri() + "!");
+    public CamundaBpmEndpointDefaultImpl(String uri, ParsedUri parsedUri, CamundaBpmComponent component,
+            Map<String, Object> parameters) {
+        super();
+        setCamelContext(component.getCamelContext());
+        setEndpointUri(uri);
+        this.uri = parsedUri;
+        this.component = component;
+        this.parameters = parameters;
     }
-    camundaBpmConsumer = consumer;
-  }
 
-  public void process(Exchange ex) throws Exception {
-    if (camundaBpmConsumer == null) {
-      throw new RuntimeException("camunda BPM consumer not defined for " + getEndpointUri());
+    public ProcessEngine getProcessEngine() {
+        return this.component.getProcessEngine();
     }
-    camundaBpmConsumer.getProcessor().process(ex);
-  }
 
-  public Producer createProducer() throws Exception {
-    return CamundaBpmProducerFactory.createProducer(this, getEndpointUri(), this.parameters);
-  }
+    public Producer createProducer() throws Exception {
+        return CamundaBpmProducerFactory.createProducer(this, this.uri, this.parameters);
+    }
 
-  public Consumer createConsumer(Processor processor) throws Exception {
-    return new CamundaBpmConsumer(this, processor);
-  }
+    public Consumer createConsumer(Processor processor) throws Exception {
+        return null;
+    }
 
-  public boolean isSingleton() {
-    return true;
-  }
-  @Override
-  public boolean isLenientProperties() {
-    return true;
-  }
+    public boolean isSingleton() {
+        return true;
+    }
+
+    @Override
+    public boolean isLenientProperties() {
+        return true;
+    }
 }

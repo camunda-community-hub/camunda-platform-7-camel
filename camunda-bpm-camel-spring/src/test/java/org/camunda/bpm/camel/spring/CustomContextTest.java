@@ -54,12 +54,12 @@ public class CustomContextTest extends ProcessEngineTestCase {
     String instanceId = (String) tpl.requestBody("direct:start", Collections.singletonMap("var1", "ala"));
 
 
-    tpl.sendBodyAndProperty("direct:receive", null, CAMUNDA_BPM_PROCESS_INSTANCE_ID, instanceId);
+    tpl.sendBodyAndProperty("direct:receive", null, EXCHANGE_HEADER_PROCESS_INSTANCE_ID, instanceId);
 
     assertProcessEnded(instanceId);
 
     service1.assertIsSatisfied();
-    Map m = service2.getExchanges().get(0).getIn().getBody(Map.class);
+    Map<?, ?> m = service2.getExchanges().get(0).getIn().getBody(Map.class);
     assertEquals("ala", m.get("var1"));
     assertEquals("var2", m.get("var2"));
 

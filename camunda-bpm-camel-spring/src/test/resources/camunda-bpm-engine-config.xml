@@ -23,6 +23,7 @@
     <property name="transactionManager" ref="transactionManager"/>
     <property name="databaseSchemaUpdate" value="true"/>
     <property name="jobExecutorActivate" value="false"/>
+    <property name="metricsEnabled" value="false" /><!-- see https://github.com/camunda/camunda-bpm-spring-boot-starter/issues/55 -->
   </bean>
 
   <bean id="processEngine" class="org.camunda.bpm.engine.spring.ProcessEngineFactoryBean">
@@ -34,6 +35,7 @@
   <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
   <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
   <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+  <bean id="externalTaskService" factory-bean="processEngine" factory-method="getExternalTaskService" />
 
   <bean id="activitiRule" class="org.camunda.bpm.engine.test.ProcessEngineRule">
     <property name="processEngine" ref="processEngine" />

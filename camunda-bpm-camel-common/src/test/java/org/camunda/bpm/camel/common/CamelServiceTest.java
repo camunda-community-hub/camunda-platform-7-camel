@@ -1,8 +1,8 @@
 package org.camunda.bpm.camel.common;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_BUSINESS_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -85,13 +85,13 @@ public class CamelServiceTest extends BaseCamelTest {
     verify(producerTemplate).send(anyString(), exchangeCaptor.capture());
     verify(execution).getVariableNames();
 
-    assertThat(exchangeCaptor.getValue().getProperty(CAMUNDA_BPM_BUSINESS_KEY))
+    assertThat(exchangeCaptor.getValue().getProperty(EXCHANGE_HEADER_BUSINESS_KEY))
         .isEqualTo("theBusinessKey");
     assertThat(
-        exchangeCaptor.getValue().getProperty(CAMUNDA_BPM_CORRELATION_KEY))
+        exchangeCaptor.getValue().getProperty(EXCHANGE_HEADER_CORRELATION_KEY))
         .isNull();
     assertThat(
-        exchangeCaptor.getValue().getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID))
+        exchangeCaptor.getValue().getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID))
         .isEqualTo("theProcessInstanceId");
   }
 
@@ -163,7 +163,7 @@ public class CamelServiceTest extends BaseCamelTest {
     verify(producerTemplate).send(anyString(), exchangeCaptor.capture());
 
     assertThat(
-        exchangeCaptor.getValue().getProperty(CAMUNDA_BPM_CORRELATION_KEY))
+        exchangeCaptor.getValue().getProperty(EXCHANGE_HEADER_CORRELATION_KEY))
         .isEqualTo("theCorrelationKey");
   }
 }

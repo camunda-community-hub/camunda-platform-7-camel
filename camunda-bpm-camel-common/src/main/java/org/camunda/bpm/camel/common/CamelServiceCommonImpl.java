@@ -1,8 +1,8 @@
 package org.camunda.bpm.camel.common;
 
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_BUSINESS_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CORRELATION_KEY;
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_PROCESS_INSTANCE_ID;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_BUSINESS_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -75,13 +75,13 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     String businessKey = execution.getBusinessKey();
 
     Exchange exchange = new DefaultExchange(camelContext);
-    exchange.setProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID,
+    exchange.setProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID,
         execution.getProcessInstanceId());
     if (businessKey != null) {
-      exchange.setProperty(CAMUNDA_BPM_BUSINESS_KEY, businessKey);
+      exchange.setProperty(EXCHANGE_HEADER_BUSINESS_KEY, businessKey);
     }
     if (correlationKey != null) {
-      exchange.setProperty(CAMUNDA_BPM_CORRELATION_KEY, correlationKey);
+      exchange.setProperty(EXCHANGE_HEADER_CORRELATION_KEY, correlationKey);
     }
     exchange.getIn().setBody(variablesToSend);
     exchange.setPattern(ExchangePattern.InOut);

@@ -73,7 +73,7 @@ public class StartProcessFromRouteIT extends BaseArquillianIntegrationTest {
     assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("startProcessFromRoute").count()).isEqualTo(0);
 
     // Assert that the camunda BPM process instance ID has been added as a property to the message
-    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(CAMUNDA_BPM_PROCESS_INSTANCE_ID)).isEqualTo(processInstanceId);
+    assertThat(mockEndpoint.assertExchangeReceived(0).getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo(processInstanceId);
 
     // The body of the message comming out from the camunda-bpm:<process definition> endpoint is the process instance
     assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(String.class)).isEqualTo(processInstanceId);
