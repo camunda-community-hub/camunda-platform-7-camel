@@ -168,7 +168,7 @@ These in-headers are set to be used subsequent endpoints:
 * `CamundaBpmExternalAttemptsStarted` contains how many times the task was processed but failed
 * `CamundaBpmExternalRetriesLeft` contains how many times the task will be processed any more if this execution fails
 
-
+The Exception `org.camunda.bpm.camel.component.externaltasks.NoSuchExternalTaskException` (derived from RuntimeCamelException) might be thrown on processing an external task. The reason for this circumstance might be a situation in a BPM process in which the task implemented by the external task (e.g. ServiceTask) was cancelled. Tasks are cancelled due to interrupting events (e.g. timer event).
 
 # Examples
 Check the existing integration tests for guidance on how to use the current supported features in your projects: [Spring](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring) or [CDI](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/). To run the CDI integration tests do `mvn -DskipITs=false`.

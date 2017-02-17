@@ -233,7 +233,12 @@ public class TaskProcessor implements Processor {
                         "Unexpected exchange: the external task '" + taskId + "' is from topic '" + task.getWorkerId()
                                 + "' which differs from the configured topic '" + topic + "!");
             }
+        } else {
+            throw new NoSuchExternalTaskException("The referenced external task '" + taskId
+                    + "' is not available any more. For details see '"
+                    + "https://github.com/camunda/camunda-bpm-camel#camunda-bpmasync-externaltask-processing-outstanding-external-tasks'.");
         }
+
         return task;
 
     }
