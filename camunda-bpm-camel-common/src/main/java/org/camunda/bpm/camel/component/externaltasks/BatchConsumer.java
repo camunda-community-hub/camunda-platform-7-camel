@@ -201,14 +201,21 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
         int messagesPolled = 0;
 
-        PriorityQueue<Exchange> exchanges = new PriorityQueue<Exchange>(new Comparator<Exchange>() {
-            @Override
-            public int compare(Exchange o1, Exchange o2) {
-                Long prio1 = (Long) o1.getProperty(EXCHANGE_HEADER_PROCESS_PRIO, 0);
-                Long prio2 = (Long) o2.getProperty(EXCHANGE_HEADER_PROCESS_PRIO, 0);
-                return prio1.compareTo(prio2);
-            }
-        });
+        PriorityQueue<Exchange> exchanges = new PriorityQueue<Exchange>(
+                /*
+                 * default-value, unfortunately
+                 * PriorityQueue.DEFAULT_INITIAL_CAPACITY is private and the
+                 * constructor with one parameter of type Comparator is not
+                 * available in JSE 7
+                 */
+                11, new Comparator<Exchange>() {
+                    @Override
+                    public int compare(Exchange o1, Exchange o2) {
+                        Long prio1 = (Long) o1.getProperty(EXCHANGE_HEADER_PROCESS_PRIO, 0);
+                        Long prio2 = (Long) o2.getProperty(EXCHANGE_HEADER_PROCESS_PRIO, 0);
+                        return prio1.compareTo(prio2);
+                    }
+                });
 
         if (isPollAllowed()) {
 
