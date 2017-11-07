@@ -51,6 +51,7 @@ Parameter | Description
 `copyBodyAsVariable` | name of the process variable to which the body of the Camel should be copied. Default is `camelBody`
 `copyHeaders` | whether the [Camel message headers](http://camel.apache.org/header.html) should be copied as process variables
 `copyProperties` | whether the [Camel exchange](http://camel.apache.org/maven/current/camel-core/apidocs/org/apache/camel/Exchange.html) properties should be copied as process variables
+`copyVariablesToOutBody` | After the first wait state or the end of the process is reached the current values of the requested variables as a map is set to the out body instead of the process instance id. Supported formats are '*' (for all variables), 'var1,var2' (for certain variables) or 'var1' (for a single variable's value instead of a map). This requires the availability of Camunda's historic service.  
 
 If the Camel message body is a map, then all the keys will be copied as process variables of the started instance.
 
