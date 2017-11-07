@@ -34,7 +34,7 @@ Additionally you can specify a correlationKey to send to Camel. It can be used t
 ${camel.sendTo('<camel endpoint>', '<comma-separated list of process variables>', 'correlationKey')}
 ```
 
-If the Camel route fails a BPMN error `CamelFailed` is thrown and might be catched by the process. The BPMN error's message is set to the exception's message if the failed Camel exchange contains an exception.
+If the Camel route fails a BPMN error with the error code `CamelFailed` is thrown and might be catched by the process. The BPMN error's message is set to the exception's message if the failed Camel exchange contains an exception.
 
 The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if available) and `CamundaBpmCorrelationKey` (if set) will be available to any downstream processors in the Camel route.
 
