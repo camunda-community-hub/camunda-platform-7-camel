@@ -1,5 +1,6 @@
 package org.camunda.bpm.camel.common;
 
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.CAMUNDA_BPM_CAMEL_BPMN_ERROR;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_BUSINESS_KEY;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_CORRELATION_KEY;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
@@ -16,6 +17,7 @@ import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.impl.DefaultExchange;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.camunda.bpm.engine.delegate.BpmnError;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
@@ -86,6 +88,13 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     exchange.getIn().setBody(variablesToSend);
     exchange.setPattern(ExchangePattern.InOut);
     Exchange send = producerTemplate.send(endpointUri, exchange);
+    if (send.isFailed()) {
+      if (send.getException() != null) {
+        throw new BpmnError(CAMUNDA_BPM_CAMEL_BPMN_ERROR, send.getException().getMessage());
+      } else {
+        throw new BpmnError(CAMUNDA_BPM_CAMEL_BPMN_ERROR);
+      }
+    }
     return send.getIn().getBody();
   }
 
