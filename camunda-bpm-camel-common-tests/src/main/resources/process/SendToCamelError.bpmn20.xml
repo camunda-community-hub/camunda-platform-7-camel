@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:activiti="http://activiti.org/bpmn" targetNamespace="Examples" exporter="Camunda Modeler" exporterVersion="1.6.0" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd">
+  <process id="sendToCamelErrorProcess" isExecutable="true">
+    <startEvent id="start">
+      <outgoing>flow1</outgoing>
+    </startEvent>
+    <sequenceFlow id="flow1" sourceRef="start" targetRef="sendToCamelServiceTask" />
+    <serviceTask id="sendToCamelServiceTask" name="Send to Camel" activiti:expression="${camel.sendTo(&#39;direct:sendToCamelServiceTask&#39;, &#39;var1&#39;)}" activiti:resultVariableName="message">
+      <incoming>flow1</incoming>
+      <outgoing>flow2</outgoing>
+    </serviceTask>
+    <sequenceFlow id="flow2" sourceRef="sendToCamelServiceTask" targetRef="logProcessVariableServiceTask" />
+    <serviceTask id="logProcessVariableServiceTask" name="Log process&#10;variable" activiti:expression="${log.debug(var1)}">
+      <incoming>flow2</incoming>
+      <outgoing>SequenceFlow_2</outgoing>
+    </serviceTask>
+    <sequenceFlow id="SequenceFlow_2" name="" sourceRef="logProcessVariableServiceTask" targetRef="end" />
+    <endEvent id="end">
+      <incoming>SequenceFlow_2</incoming>
+    </endEvent>
+    <boundaryEvent id="BoundaryEvent_1smflyv" name="Camel failed" attachedToRef="sendToCamelServiceTask">
+      <outgoing>SequenceFlow_1vedwcu</outgoing>
+      <errorEventDefinition errorRef="Error_0c3j7ke" />
+    </boundaryEvent>
+    <endEvent id="error">
+      <incoming>SequenceFlow_1vedwcu</incoming>
+    </endEvent>
+    <sequenceFlow id="SequenceFlow_1vedwcu" sourceRef="BoundaryEvent_1smflyv" targetRef="error" />
+  </process>
+  <error id="Error_0c3j7ke" name="Error_SendToFailed" errorCode="CamelFailed" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_camelProcess">
+    <bpmndi:BPMNPlane id="BPMNPlane_camelProcess" bpmnElement="sendToCamelErrorProcess">
+      <bpmndi:BPMNShape id="BPMNShape_start" bpmnElement="start">
+        <omgdc:Bounds x="40" y="143" width="35" height="35" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_serviceTask1" bpmnElement="sendToCamelServiceTask">
+        <omgdc:Bounds x="140" y="130" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_end" bpmnElement="end">
+        <omgdc:Bounds x="480" y="142" width="35" height="35" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="497" y="182" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow2" bpmnElement="flow2" targetElement="_BPMNShape_ServiceTask_2">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="240" y="160" />
+        <omgdi:waypoint xsi:type="omgdc:Point" x="283" y="160" />
+        <omgdi:waypoint xsi:type="omgdc:Point" x="312" y="160" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="280" y="160" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="BPMNEdge_flow1" bpmnElement="flow1">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="75" y="160" />
+        <omgdi:waypoint xsi:type="omgdc:Point" x="140" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_ServiceTask_2" bpmnElement="logProcessVariableServiceTask">
+        <omgdc:Bounds x="312" y="130" width="100" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="BPMNEdge_SequenceFlow_2" bpmnElement="SequenceFlow_2" sourceElement="_BPMNShape_ServiceTask_2" targetElement="BPMNShape_end">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="412" y="160" />
+        <omgdi:waypoint xsi:type="omgdc:Point" x="480" y="159" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="443" y="160" width="6" height="6" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_0icgh3q_di" bpmnElement="BoundaryEvent_1smflyv">
+        <omgdc:Bounds x="222" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="246" y="209" width="62" height="12" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_0uj49hq_di" bpmnElement="error">
+        <omgdc:Bounds x="480" y="237" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="498" y="273" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1vedwcu_di" bpmnElement="SequenceFlow_1vedwcu">
+        <omgdi:waypoint xsi:type="omgdc:Point" x="240" y="208" />
+        <omgdi:waypoint xsi:type="omgdc:Point" x="240" y="255" />
+        <omgdi:waypoint xsi:type="omgdc:Point" x="480" y="255" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="255" y="231.5" width="0" height="0" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
