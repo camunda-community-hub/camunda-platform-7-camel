@@ -21,13 +21,15 @@ Use the following expression in a ServiceTask to send all the process instance v
 ```
 ${camel.sendTo('<camel endpoint>')}
 ```
+Hint: You will also get variables which were set but contain a null value.
 
 Alternatively you can specify which process instance variables you want to send to Camel with:
 
 ```
 ${camel.sendTo('<camel endpoint>', '<comma-separated list of process variables>')}
 ```
-
+Hint: missing or null value variables will cause to throw an IllegalArgumentException. You can append a question mark to each name of a variable which is allowed to be missing or null (e.g. 'mayBeNullVar?,mustNotBeNullVar').
+ 
 Additionally you can specify a correlationKey to send to Camel. It can be used to correlate a response message. The route for the response must contain a parameter correlationKeyName with the name of the process variable which is used for correlation:
 
 ```
