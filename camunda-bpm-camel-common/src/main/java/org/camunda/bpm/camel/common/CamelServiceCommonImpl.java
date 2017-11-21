@@ -8,7 +8,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
@@ -44,9 +46,15 @@ public abstract class CamelServiceCommonImpl implements CamelService {
       String correlationId) {
     Collection<String> vars;
     if (processVariables == null) {
+      vars = new LinkedList<String>();
       ActivityExecution execution = Context.getBpmnExecutionContext()
           .getExecution();
-      vars = execution.getVariableNames();
+      final Set<String> variableNames = execution.getVariableNames();
+      if (variableNames != null) {
+        for (String variableName : variableNames) {
+          vars.add(variableName + "?");
+        }
+      }
     } else if ("".equals(processVariables)) {
       vars = Collections.emptyList();
     } else {
@@ -61,10 +69,15 @@ public abstract class CamelServiceCommonImpl implements CamelService {
         .getBpmnExecutionContext().getExecution();
     Map<String, Object> variablesToSend = new HashMap<String, Object>();
     for (String var : variables) {
-      Object value = execution.getVariable(var);
-      if (value == null) {
-        throw new IllegalArgumentException("Process variable '" + var
-            + "' no found!");
+      Object value;
+      if (var.endsWith("?")) {
+        value = execution.getVariable(var.substring(0, var.length() - 1));
+      } else {
+        value = execution.getVariable(var);
+        if (value == null) {
+          throw new IllegalArgumentException("Process variable '" + var
+              + "' no found!");
+        }
       }
       variablesToSend.put(var, value);
     }
