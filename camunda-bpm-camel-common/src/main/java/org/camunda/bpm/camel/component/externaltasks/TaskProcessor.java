@@ -109,8 +109,18 @@ public class TaskProcessor implements Processor {
     void internalProcessing(final Exchange exchange) {
 
         final Message in = getInMessage(exchange);
-        final String taskId = getExternalTaskId(in);
-        final ExternalTask task = getExternalTask(taskId);
+
+        String currentTaskId;
+        ExternalTask currentTask;
+        try {
+            currentTaskId = getExternalTaskId(in);
+            currentTask = getExternalTask(currentTaskId);
+        } catch (final NoSuchExternalTaskException e) {
+            currentTask = null;
+            currentTaskId = null;
+        }
+        final ExternalTask task = currentTask;
+        final String taskId = currentTaskId;
 
         final ExternalTaskService externalTaskService = getExternalTaskService();
 
@@ -152,6 +162,10 @@ public class TaskProcessor implements Processor {
             });
 
         } else
+        // do not complete task in any way?
+        if (!completeTask) {
+            return;
+        } else
         // bpmn error
         if ((out != null) && (out.getBody() != null) && (out.getBody() instanceof String)) {
 
@@ -179,7 +193,7 @@ public class TaskProcessor implements Processor {
 
         } else
         // success
-        if (completeTask) {
+        {
 
             if (task == null) {
                 logger.warning("Should complete the external task but the task seems to be "
@@ -220,6 +234,10 @@ public class TaskProcessor implements Processor {
 
     private ExternalTask getExternalTask(final String taskId) {
 
+        if (taskId == null) {
+            return null;
+        }
+
         final ExternalTask task = getExternalTaskService().createExternalTaskQuery().externalTaskId(
                 taskId).singleResult();
         if (task != null) {
@@ -255,8 +273,7 @@ public class TaskProcessor implements Processor {
         } else if (lockedTaskId != null) {
             taskId = lockedTaskId;
         } else {
-            throw new RuntimeCamelException("Unexpected exchange: in-header '" + EXCHANGE_HEADER_TASK + "' and '"
-                    + EXCHANGE_HEADER_TASKID + "' is null!");
+            taskId = null;
         }
 
         return taskId;
