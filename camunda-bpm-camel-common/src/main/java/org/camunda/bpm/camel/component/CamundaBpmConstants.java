@@ -6,6 +6,7 @@ package org.camunda.bpm.camel.component;
 public final class CamundaBpmConstants {
 
     public static final String CAMUNDA_BPM_CAMEL_URI_SCHEME = "camunda-bpm";
+    public static final String CAMUNDA_BPM_CAMEL_BPMN_ERROR = "CamelFailed";
 
     public static final String EXCHANGE_HEADER_PROCESS_DEFINITION_KEY = "CamundaBpmProcessDefinitionKey";
     public static final String EXCHANGE_HEADER_PROCESS_DEFINITION_ID = "CamundaBpmProcessDefinitionId";

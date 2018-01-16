@@ -12,9 +12,12 @@ package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Versi
  */
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.test.Deployment;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
@@ -28,6 +31,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.fest.assertions.api.Assertions.assertThat;
@@ -81,4 +85,30 @@ public class SendToCamelTest {
 
     // FIXME: check that var2 is also present as a property!
   }
+
+  @Test
+  @Deployment(resources = {"process/SendToCamelError.bpmn20.xml"})
+  public void doTestError() throws Exception {
+    mockEndpoint.whenAnyExchangeReceived(new Processor() {
+      @Override
+      public void process(Exchange exchange) throws Exception {
+        // TODO Auto-generated method stub
+        throw new RuntimeException("failed!");
+      }
+    });
+      
+    Map<String, Object> processVariables = new HashMap<String, Object>();
+    processVariables.put("var1", "foo");
+    processVariables.put("var2", "bar");
+    ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("sendToCamelErrorProcess", processVariables);
+
+    // Verify that a process instance was executed and there are no instances executing now
+    assertThat(historyService.createHistoricProcessInstanceQuery().processDefinitionKey("sendToCamelErrorProcess").count()).isEqualTo(1);
+    assertThat(runtimeService.createProcessInstanceQuery().processDefinitionKey("sendToCamelErrorProcess").count()).isEqualTo(0);
+
+    // Verify that the process ended in 'error', not in 'end'
+    assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstance.getId()).activityId("error").count()).isEqualTo(1);
+    assertThat(historyService.createHistoricActivityInstanceQuery().processInstanceId(processInstance.getId()).activityId("end").count()).isEqualTo(0);
+  }
+  
 }
