@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.camel.Consumer;
-import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.converter.TimePatternConverter;
@@ -36,7 +35,7 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
     private static final Logger logger = Logger.getLogger(
             CamundaBpmPollExternalTasksEndpointImpl.class.getCanonicalName());
 
-    private CamundaBpmComponent component;
+    private final CamundaBpmComponent component;
 
     // parameters
     private final String topic;
@@ -170,16 +169,6 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
         consumer.setMaxMessagesPerPoll(maxTasksPerPoll);
 
         return consumer;
-
-    }
-
-    @Override
-    public PollingConsumer createPollingConsumer() throws Exception {
-
-        return null;
-        // return new
-        // org.camunda.bpm.camel.component.externaltasks.PollingConsumer(this,
-        // topic);
 
     }
 
