@@ -35,7 +35,7 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
     private static final Logger logger = Logger.getLogger(
             CamundaBpmPollExternalTasksEndpointImpl.class.getCanonicalName());
 
-    private final CamundaBpmComponent component;
+    private CamundaBpmComponent component;
 
     // parameters
     private final String topic;
