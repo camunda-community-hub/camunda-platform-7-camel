@@ -98,38 +98,68 @@ public class StartProcessProducer extends CamundaBpmProducer {
   private void setOutBody(final Exchange exchange, final ProcessInstance instance) {
     if (parameters.containsKey(COPY_PROCESS_VARIABLES_TO_OUT_BODY_PARAMETER)) {
       if (historyService == null) {
-          throw new RuntimeCamelException("Fetching process instance variables is not supported "
-                                          + "because a Camunda history service is needed but not available!");
+          throw new RuntimeCamelException("Fetching process instance variables is only supported "
+                                          + "for processes returning in a wait state because the "
+                                          + "Camunda history service is needed but not available!");
       }
       
       final String variableName = parameters.get(COPY_PROCESS_VARIABLES_TO_OUT_BODY_PARAMETER).toString();
       
       if (variableName.equals("*")) {
-        final List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery()
-                    .processInstanceIdIn(instance.getProcessInstanceId())
-                    .list();
-        exchange.getOut().setBody(convertToMap(variables));
+        if (historyService != null) {
+          final List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery()
+                      .processInstanceIdIn(instance.getProcessInstanceId())
+                      .list();
+          exchange.getOut().setBody(convertHistoricVariablesToMap(variables));
+        } else {
+          final List<VariableInstance> variables = runtimeService.createVariableInstanceQuery()
+                  .processInstanceIdIn(instance.getProcessInstanceId())
+                  .list();
+          exchange.getOut().setBody(convertToRuntimeVariablesMap(variables));
+        }
       } else if (variableName.contains(",")) {
         final HashMap<String, Object> variables = new HashMap<String, Object>();
         for (final String variableNameItem : variableName.split(",")) {
-          final HistoricVariableInstance variable = historyService.createHistoricVariableInstanceQuery()
-                      .processInstanceIdIn(instance.getProcessInstanceId())
-                      .variableName(variableNameItem)
+          if (historyService != null) {
+            final HistoricVariableInstance variable = historyService.createHistoricVariableInstanceQuery()
+                        .processInstanceIdIn(instance.getProcessInstanceId())
+                        .variableName(variableNameItem)
                         .singleResult();
-          if (variable != null) {
-            variables.put(variable.getName(), variable.getValue());
+            if (variable != null) {
+              variables.put(variable.getName(), variable.getValue());
+            }
+          } else {
+            final VariableInstance variable = runtimeService.createVariableInstanceQuery()
+                    .processInstanceIdIn(instance.getProcessInstanceId())
+                    .variableName(variableNameItem)
+                    .singleResult();
+            if (variable != null) {
+              variables.put(variable.getName(), variable.getValue());
+            }
           }
         }
         exchange.getOut().setBody(variables);
       } else if (!variableName.trim().isEmpty()) {
-        final List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery()
-                    .processInstanceIdIn(instance.getProcessInstanceId())
-                    .variableName(variableName)
-                    .list();
-        if (variables.isEmpty()) {
-          exchange.getOut().setBody(null);
+        if (historyService != null) {
+          final List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery()
+                      .processInstanceIdIn(instance.getProcessInstanceId())
+                      .variableName(variableName)
+                      .list();
+          if (variables.isEmpty()) {
+            exchange.getOut().setBody(null);
+          } else {
+            exchange.getOut().setBody(variables.iterator().next().getValue());
+          }
         } else {
-          exchange.getOut().setBody(variables.iterator().next().getValue());
+          final List<VariableInstance> variables = runtimeService.createVariableInstanceQuery()
+                      .processInstanceIdIn(instance.getProcessInstanceId())
+                      .variableName(variableName)
+                      .list();
+          if (variables.isEmpty()) {
+            exchange.getOut().setBody(null);
+          } else {
+            exchange.getOut().setBody(variables.iterator().next().getValue());
+          }
         }
       } else {
         exchange.getOut().setBody(instance.getProcessInstanceId());
@@ -139,7 +169,7 @@ public class StartProcessProducer extends CamundaBpmProducer {
     }
   }
   
-  private HashMap<String, Object> convertToMap(final List<HistoricVariableInstance> variables) {
+  private HashMap<String, Object> convertHistoricVariablesToMap(final List<HistoricVariableInstance> variables) {
     final HashMap<String,Object> result = new HashMap<String, Object>();
     final Iterator<HistoricVariableInstance> iterator = variables.iterator();
     while (iterator.hasNext()) {
@@ -149,4 +179,14 @@ public class StartProcessProducer extends CamundaBpmProducer {
     return result;
   }
 
+  private HashMap<String, Object> convertToRuntimeVariablesMap(final List<VariableInstance> variables) {
+    final HashMap<String,Object> result = new HashMap<String, Object>();
+    final Iterator<VariableInstance> iterator = variables.iterator();
+    while (iterator.hasNext()) {
+      final VariableInstance variable = iterator.next();
+      result.put(variable.getName(), variable.getValue());
+    }
+    return result;
+  }
+  
 }
