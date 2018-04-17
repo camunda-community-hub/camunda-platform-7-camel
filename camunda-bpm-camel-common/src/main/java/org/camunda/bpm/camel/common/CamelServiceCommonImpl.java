@@ -86,7 +86,7 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     exchange.getIn().setBody(variablesToSend);
     exchange.setPattern(ExchangePattern.InOut);
     Exchange send = producerTemplate.send(endpointUri, exchange);
-    return send.getIn().getBody();
+    return send.getOut().getBody();
   }
 
   @Required
