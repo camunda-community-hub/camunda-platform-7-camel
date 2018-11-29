@@ -186,7 +186,11 @@ This project is at the moment in incubation phase. This means that changes are b
 
 ## Environment
 
-From version 0.3 on JDK 1.7 or better is required (by Camel, see http://camel.apache.org/what-are-the-dependencies.html - Camel 2.14 onwards requires JDK 1.7 or better).
+* <= 0.3: < JDK 1.7
+* 0.4 - 0.5: JDK 1.7
+* >= 0.6: JDK 1.8
+
+This requirements is introduced by the Camel version, see http://camel.apache.org/what-are-the-dependencies.html (e.g. Camel 2.14 onwards requires JDK 1.7 or better).
 
 
 ## Maven coordinates
@@ -210,7 +214,7 @@ Choose a dependency depending on your target environment:
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-spring</artifactId>
-    <version>0.4</version>
+    <version>0.6</version>
 </dependency>
 ```
 In your Spring configuration you need to configure the `CamelService` like this:
