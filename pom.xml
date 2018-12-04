@@ -25,6 +25,7 @@
     <mockito.version>1.10.19</mockito.version>
     <powermock.version>1.7.4</powermock.version>
     <h2.version>1.4.197</h2.version>
+    <maven.javadoc.plugin.version>3.0.1</maven.javadoc.plugin.version>
   </properties>
 
   <modules>
@@ -71,6 +72,16 @@
     </plugins>
     <pluginManagement>
     	<plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven.javadoc.plugin.version}</version>
+          <configuration>
+            <additionalparam>-Xdoclint:none</additionalparam>
+            <encoding>${project.build.sourceEncoding}</encoding>
+            <source>${project.build.java.target}</source>
+          </configuration>
+        </plugin>
     		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
     		<plugin>
     			<groupId>org.eclipse.m2e</groupId>
