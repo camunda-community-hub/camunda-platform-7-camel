@@ -12,7 +12,7 @@
   <name>camunda BPM - Apache Camel Integration</name>
   <groupId>org.camunda.bpm.extension.camel</groupId>
   <artifactId>camunda-bpm-camel</artifactId>
-  <version>0.6</version>
+  <version>0.7-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -143,7 +143,7 @@
     <connection>scm:git:git@github.com:camunda/camunda-bpm-camel.git</connection>
     <url>scm:git:git@github.com:camunda/camunda-bpm-camel.git</url>
     <developerConnection>scm:git:git@github.com:camunda/camunda-bpm-camel.git</developerConnection>
-    <tag>0.6</tag>
+    <tag>HEAD</tag>
   </scm>
 
 </project>
