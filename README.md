@@ -6,9 +6,7 @@ This project focuses on bringing two great Open Source frameworks closer togethe
 
 ![Use Cases supported by camunda BPM Camel Component][2]
 
-See [example project 'camel use cases'](https://github.com/camunda/camunda-consulting/tree/master/showcases/camel-use-cases) for code for all of the use cases shown in the above model.
-
-[Discuss this process model on camunda share](http://camunda.org/share/#/process/f54a4ff9-4cc1-428c-829b-a4002dcdd81f) if you have questions or feedback.
+See [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) for code for all of the use cases shown in the above model.
 
 
 
