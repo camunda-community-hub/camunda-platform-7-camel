@@ -26,7 +26,7 @@ import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.converter.TimePatternConverter;
-import org.apache.camel.impl.DefaultPollingEndpoint;
+import org.apache.camel.support.DefaultPollingEndpoint;
 import org.camunda.bpm.camel.component.externaltasks.BatchConsumer;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.model.xml.impl.util.StringUtil;
@@ -134,6 +134,12 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
             this.deserializeVariables = DESERIALIZEVARIABLES_DEFAULT;
         }
 
+    }
+
+    @Override
+    public void close() {
+        log.info("Closing CamundaBpmPollExternalTasksEndpointImpl");
+        super.stop();
     }
 
     @Override

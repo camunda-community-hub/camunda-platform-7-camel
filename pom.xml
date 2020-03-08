@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.camunda</groupId>
     <artifactId>camunda-release-parent</artifactId>
-    <version>2.5</version>
+    <version>3.7</version>
     <relativePath />
   </parent>
 
@@ -16,11 +16,11 @@
   <packaging>pom</packaging>
 
   <properties>
-    <camunda-bpm.version>7.9.0</camunda-bpm.version>
-    <camel.version>2.22.2</camel.version>
-    <spring.framework.version>5.0.10.RELEASE</spring.framework.version>
+    <camunda-bpm.version>7.12.0</camunda-bpm.version>
+    <camel.version>3.0.1</camel.version>
+    <spring.framework.version>5.2.4.RELEASE</spring.framework.version>
     <fest.assert.version>2.0M10</fest.assert.version>
-    <sl4j.version>1.7.25</sl4j.version>
+    <sl4j.version>1.7.30</sl4j.version>
     <junit.version>4.12</junit.version>
     <mockito.version>1.10.19</mockito.version>
     <powermock.version>1.7.4</powermock.version>
@@ -64,8 +64,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.8</source>
+          <target>1.8</target>
           <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>

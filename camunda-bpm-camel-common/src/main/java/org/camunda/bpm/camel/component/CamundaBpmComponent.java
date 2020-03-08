@@ -13,11 +13,12 @@
 package org.camunda.bpm.camel.component;
 
 import org.apache.camel.Endpoint;
-import org.apache.camel.impl.DefaultComponent;
+import org.apache.camel.support.DefaultComponent;
 import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Map;
 
@@ -43,6 +44,12 @@ public class CamundaBpmComponent extends DefaultComponent {
     }
 
     @Override
+    public void close() {
+        log.info("Closing CamundaBpmComponent");
+        super.stop();
+    }
+
+    @Override
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
 
         final ParsedUri parsedUri = new ParsedUri(remaining);
@@ -61,6 +68,7 @@ public class CamundaBpmComponent extends DefaultComponent {
         return this.processEngine;
     }
 
+    @Autowired
     public void setProcessEngine(ProcessEngine processEngine) {
         this.processEngine = processEngine;
     }

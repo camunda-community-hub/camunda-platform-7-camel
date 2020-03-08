@@ -1,7 +1,7 @@
 package org.camunda.bpm.camel.cdi;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.Mock;
+import org.apache.camel.cdi.Uri;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -31,7 +31,7 @@ public class SendToCamelIT extends BaseArquillianIntegrationTest {
   }
 
   @Inject
-  @Mock
+  @Uri("mock:resultEndpoint")
   MockEndpoint resultEndpoint;
 
   @Produces

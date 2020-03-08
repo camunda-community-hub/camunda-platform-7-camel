@@ -15,9 +15,8 @@
 				uri="camunda-bpm:poll-externalTasks?topic=topic1&amp;maxTasksPerPoll=5&amp;delay=250&amp;retries=2&amp;retryTimeouts=1s&amp;retryTimeout=2s" />
 			<to
 				uri="log:org.camunda.bpm.camel.spring.samples?level=INFO&amp;showAll=true&amp;multiline=true" />
-			<threads poolSize="2">
-				<to uri="mock:endpoint" />
-			</threads>
+			<threads poolSize="2"/>
+			<to uri="mock:endpoint" />
 		</route>
 
 		<route id="secondRoute">

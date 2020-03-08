@@ -167,7 +167,7 @@
           <failIfNoTests>true</failIfNoTests>
           <trimStackTrace>false</trimStackTrace>
           <redirectTestOutputToFile>true</redirectTestOutputToFile>
-          <argLine>-Djava.awt.headless=true -Xmx256m</argLine>
+          <argLine>-Djava.awt.headless=true -Xmx512m</argLine>
         </configuration>
       </plugin>
     </plugins>

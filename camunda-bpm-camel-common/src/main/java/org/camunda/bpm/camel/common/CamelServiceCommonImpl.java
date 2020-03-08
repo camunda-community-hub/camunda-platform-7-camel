@@ -16,7 +16,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.impl.DefaultExchange;
+import org.apache.camel.support.DefaultExchange;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;

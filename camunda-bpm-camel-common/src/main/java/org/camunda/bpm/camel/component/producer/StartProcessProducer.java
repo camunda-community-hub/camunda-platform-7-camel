@@ -48,6 +48,12 @@ public class StartProcessProducer extends CamundaBpmProducer {
   }
 
   @Override
+  public void close() {
+    log.info("Closing StartProcessProducer");
+    this.stop();
+  }
+
+  @Override
   public void process(Exchange exchange) throws Exception {
     Map<String, Object> processVariables = new HashMap<String, Object>();
     if (parameters.containsKey(COPY_MESSAGE_PROPERTIES_PARAMETER)) {
