@@ -12,15 +12,14 @@
  */
 package org.camunda.bpm.camel.component;
 
+import java.util.Map;
+
 import org.apache.camel.Endpoint;
 import org.apache.camel.support.DefaultComponent;
 import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
 
 /**
  * camunda BPM Apache Camel component
@@ -68,7 +67,6 @@ public class CamundaBpmComponent extends DefaultComponent {
         return this.processEngine;
     }
 
-    @Autowired
     public void setProcessEngine(ProcessEngine processEngine) {
         this.processEngine = processEngine;
     }

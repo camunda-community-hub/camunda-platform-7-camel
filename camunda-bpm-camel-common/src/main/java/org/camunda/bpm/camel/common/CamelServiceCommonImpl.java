@@ -22,7 +22,6 @@ import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 public abstract class CamelServiceCommonImpl implements CamelService {
 
@@ -102,9 +101,7 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     return send.getIn().getBody();
   }
 
-  @Required
   public abstract void setProcessEngine(ProcessEngine processEngine);
 
-  @Required
   public abstract void setCamelContext(CamelContext camelContext);
 }
