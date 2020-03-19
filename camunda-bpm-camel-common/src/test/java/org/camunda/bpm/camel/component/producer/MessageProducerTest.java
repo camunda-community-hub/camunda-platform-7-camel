@@ -73,6 +73,7 @@ public class MessageProducerTest extends BaseCamelTest {
         when(query.processInstanceId(anyString())).thenReturn(query);
         when(query.activityId(anyString())).thenReturn(query);
         when(query.singleResult()).thenReturn(execution);
+        when(execution.getId()).thenReturn("1234");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
                 camundaBpmUri("message?" + ACTIVITY_ID_PARAMETER + "=" + "anActivityId"));
