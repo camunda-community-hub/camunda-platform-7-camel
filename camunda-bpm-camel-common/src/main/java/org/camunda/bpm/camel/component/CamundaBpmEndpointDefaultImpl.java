@@ -18,7 +18,7 @@ import java.util.Map;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
-import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.support.DefaultEndpoint;
 import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
 import org.camunda.bpm.camel.component.producer.CamundaBpmProducerFactory;
 import org.camunda.bpm.engine.ProcessEngine;
@@ -63,6 +63,12 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
 
     public boolean isSingleton() {
         return true;
+    }
+
+    @Override
+    public void close() {
+        log.info("Closing CamundaBpmEndpointDefaultImpl");
+        super.stop();
     }
 
     @Override

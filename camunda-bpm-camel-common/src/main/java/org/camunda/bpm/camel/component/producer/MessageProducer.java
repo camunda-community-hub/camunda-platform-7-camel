@@ -78,6 +78,12 @@ public class MessageProducer extends CamundaBpmProducer {
     }
 
     @Override
+    public void close() {
+        log.info("Closing MessageProducer");
+        this.stop();
+    }
+
+    @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void process(Exchange exchange) throws Exception {
         String processInstanceId = exchange.getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID, String.class);

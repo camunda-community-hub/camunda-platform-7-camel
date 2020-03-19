@@ -13,7 +13,7 @@ import java.util.Map;
 
 import org.apache.camel.Processor;
 import org.apache.camel.converter.TimePatternConverter;
-import org.apache.camel.impl.ProcessorEndpoint;
+import org.apache.camel.support.ProcessorEndpoint;
 import org.camunda.bpm.camel.component.externaltasks.TaskProcessor;
 import org.camunda.bpm.engine.ProcessEngine;
 
@@ -84,6 +84,12 @@ public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint
 
         return true;
 
+    }
+
+    @Override
+    public void close() {
+        log.info("Closing CamundaBpmProcessExternalTaskEndpointImpl");
+        this.stop();
     }
 
     @Override
