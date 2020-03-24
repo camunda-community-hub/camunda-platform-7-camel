@@ -188,7 +188,7 @@ This project is at the moment in incubation phase. This means that changes are b
 * 0.4 - 0.5: JDK 1.7
 * >= 0.6: JDK 1.8
 
-This requirements is introduced by the Camel version, see http://camel.apache.org/what-are-the-dependencies.html (e.g. Camel 2.14 onwards requires JDK 1.7 or better).
+Please also check Camel requirements: http://camel.apache.org/what-are-the-dependencies.html (e.g. Camel 2.14 onwards requires JDK 1.7 or better).
 
 
 ## Maven coordinates
@@ -212,7 +212,7 @@ Choose a dependency depending on your target environment:
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-spring</artifactId>
-    <version>0.6</version>
+    <version>0.7</version>
 </dependency>
 ```
 In your Spring configuration you need to configure the `CamelService` like this:
@@ -232,7 +232,7 @@ The Spring bean id `camel` will be then available to expressions used in Service
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-cdi</artifactId>
-    <version>0.4</version>
+    <version>0.7</version>
 </dependency>
 ```
 
@@ -276,7 +276,7 @@ Best read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html) a
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-blueprint</artifactId>
-    <version>0.4</version>
+    <version>0.7</version>
 </dependency>
 ```
 The OSGi Framework is used to retrieve the `ProcessEngine` and a `DefaultCamelContext` therefore the bean definition of the `CamelServiceImpl` is obsolete.
@@ -292,17 +292,7 @@ The camunda-bpm-osgi project is used with the blueprint-wrapper `context.xml`. T
 
 # Feedback and further development
 
-This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation). Feedback, pull requests, ... you name it... are very welcome! Meet us on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev).
-
-Out laundry list of development TODOs (in no special order):
-
-- Create JBoss Distribution with Camel (including Bootstrapping) as a JBoss Module and Routes to be defined within Process Applications [CIS-19](https://app.camunda.com/jira/browse/CIS-19)
-- Exception handling, i.e. Apache Camel exceptions to BPMNErrors mapping
-- Implement asynchronous support
-- Refactor Camel to camunda BPM signaling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
-
-These use cases are considered not interesting - tell us if you think different!
-- Deploy process definition from Camel message
+This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation). Feedback, pull requests, ... you name it... are very welcome! Meet us on the [Camunda BPM Forum](forum.camunda.org/).
 
 
 # Credits
