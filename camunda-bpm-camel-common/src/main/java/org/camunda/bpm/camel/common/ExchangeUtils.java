@@ -37,13 +37,14 @@ public class ExchangeUtils {
      * This method will conditionally copy the Camel body to the "camelBody"
      * variable if it is of type java.lang.String, OR it will copy the Camel
      * body to individual variables within the process engine if it is of type
-     * Map<String,Object>. If the copyVariablesFromProperties parameter is set
+     * Map. If the copyVariablesFromProperties parameter is set
      * on the endpoint, the properties are copied instead
      * 
      * @param exchange
      *            The Camel Exchange object
      * @param parameters
-     * @return A Map<String,Object> containing all of the variables to be used
+     *        Parameters as defined in the docs
+     * @return A Map containing all of the variables to be used
      *         in the process engine
      */
     @SuppressWarnings("rawtypes")

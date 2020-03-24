@@ -24,7 +24,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 /**
  * Starts a process instance given a process definition key.
- * <p/>
+ * <p>
  * Example: camunda-bpm://start?processDefinitionKey=aProcessDefinitionKey
  *
  * @author Ryan Johnston (@rjfsu)

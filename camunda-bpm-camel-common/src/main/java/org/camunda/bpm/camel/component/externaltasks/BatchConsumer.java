@@ -281,14 +281,14 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
     }
 
     /**
-     * Sets a timeout to use with {@link PollingConsumer}. <br/>
-     * <br/>
-     * Use <tt>timeout < 0</tt> for {@link PollingConsumer#receive()}. <br/>
-     * Use <tt>timeout == 0</tt> for {@link PollingConsumer#receiveNoWait()}.
-     * <br/>
-     * Use <tt>timeout > 0</tt> for {@link PollingConsumer#receive(long)}}.
-     * <br/>
-     * The default timeout value is <tt>0</tt>
+     * Sets a timeout to use with {@link PollingConsumer}. <br>
+     * <br>
+     * Use <b>timeout &lt; 0</b> for {@link PollingConsumer#receive()}. <br>
+     * Use <b>timeout == 0</b> for {@link PollingConsumer#receiveNoWait()}.
+     * <br>
+     * Use <b>timeout &gt; 0</b> for {@link PollingConsumer#receive(long)}}.
+     * <br>
+     * The default timeout value is <b>0</b>
      *
      * @param timeout
      *            the timeout value

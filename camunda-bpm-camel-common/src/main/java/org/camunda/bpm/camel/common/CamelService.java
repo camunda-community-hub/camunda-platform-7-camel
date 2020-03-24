@@ -3,7 +3,7 @@ package org.camunda.bpm.camel.common;
 /**
  * Service to integrate with Apache Camel.
  *
- * @author Rafael Cordones <rafael@cordones.me>
+ * @author Rafael Cordones
  */
 public interface CamelService {
 
