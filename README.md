@@ -1,6 +1,6 @@
 ![camunda BPM + Apache Camel][1]
 
-This project focuses on bringing two great Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.apache.org).
+This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.apache.org).
 
 # Supported features
 
