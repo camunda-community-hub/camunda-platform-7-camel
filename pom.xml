@@ -17,7 +17,7 @@
 
   <properties>
     <camunda-bpm.version>7.12.0</camunda-bpm.version>
-    <camel.version>3.0.1</camel.version>
+    <camel.version>3.2.0</camel.version>
     <spring.framework.version>5.2.4.RELEASE</spring.framework.version>
     <fest.assert.version>2.0M10</fest.assert.version>
     <sl4j.version>1.7.30</sl4j.version>
