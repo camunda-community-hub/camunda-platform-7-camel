@@ -45,9 +45,7 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
 
     public CamundaBpmEndpointDefaultImpl(String uri, ParsedUri parsedUri, CamundaBpmComponent component,
             Map<String, Object> parameters) {
-        super();
-        setCamelContext(component.getCamelContext());
-        setEndpointUri(uri);
+        super(uri, component);
         this.uri = parsedUri;
         this.component = component;
         this.parameters = parameters;
