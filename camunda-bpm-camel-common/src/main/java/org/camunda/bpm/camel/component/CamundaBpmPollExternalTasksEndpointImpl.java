@@ -19,7 +19,6 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.DESERIALIZEVAR
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.apache.camel.Consumer;
 import org.apache.camel.PollingConsumer;
@@ -30,10 +29,12 @@ import org.apache.camel.support.DefaultPollingEndpoint;
 import org.camunda.bpm.camel.component.externaltasks.BatchConsumer;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.model.xml.impl.util.StringUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
 
-    private static final Logger LOG = Logger.getLogger(
+    private static final Logger LOG = LoggerFactory.getLogger(
             CamundaBpmPollExternalTasksEndpointImpl.class.getCanonicalName());
 
     private CamundaBpmComponent component;
@@ -126,7 +127,7 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
             this.deserializeVariables = Boolean.parseBoolean(
                     (String) parameters.remove(DESERIALIZEVARIABLES_PARAMETER));
             if (!BatchConsumer.systemKnowsDeserializationOfVariables() && this.deserializeVariables) {
-                LOG.warning("Parameter '" + DESERIALIZEVARIABLES_PARAMETER
+                LOG.warn("Parameter '" + DESERIALIZEVARIABLES_PARAMETER
                         + "' is set to 'true' but this setting will be ignored in this environment since the "
                         + " version of runtime Camunda is below 7.6.0!");
             }

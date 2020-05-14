@@ -14,11 +14,11 @@ package org.camunda.bpm.camel.common;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.camel.Exchange;
 import org.camunda.bpm.camel.component.CamundaBpmConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class contains one method - prepareVariables - that is used to copy
@@ -29,7 +29,7 @@ import org.camunda.bpm.camel.component.CamundaBpmConstants;
  */
 public class ExchangeUtils {
 
-    private static final Logger log = Logger.getLogger(ExchangeUtils.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangeUtils.class);
 
     /**
      * Copies variables from Camel into the process engine.
@@ -75,8 +75,7 @@ public class ExchangeUtils {
             }
 
         } else if (camelBody != null) {
-            log.log(Level.WARNING,
-                    "unkown type of camel body - not handed over to process engine: " + camelBody.getClass());
+            LOG.warn("unkown type of camel body - not handed over to process engine: " + camelBody.getClass());
         }
 
         return processVariables;
