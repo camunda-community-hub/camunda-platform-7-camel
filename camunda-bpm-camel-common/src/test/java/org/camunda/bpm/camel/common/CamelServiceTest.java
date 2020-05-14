@@ -11,10 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
 import org.camunda.bpm.camel.BaseCamelTest;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.context.BpmnExecutionContext;
@@ -50,7 +47,7 @@ public class CamelServiceTest extends BaseCamelTest {
       }
     };
     service.setProcessEngine(processEngine);
-    CamelContext camelContext = mock(CamelContext.class);
+    CamelContext camelContext = mock(ExtendedCamelContext.class);
     service.setCamelContext(camelContext);
 
     producerTemplate = mock(ProducerTemplate.class);

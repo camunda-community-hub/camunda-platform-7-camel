@@ -10,10 +10,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.Processor;
-import org.apache.camel.RuntimeCamelException;
+import org.apache.camel.*;
 import org.apache.camel.spi.Synchronization;
 import org.camunda.bpm.camel.common.CamundaUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
@@ -72,7 +69,7 @@ public class TaskProcessor implements Processor {
             setInHeaders(exchange);
 
             final TaskProcessor taskProcessor = this;
-            exchange.addOnCompletion(new Synchronization() {
+            exchange.adapt(ExtendedExchange.class).addOnCompletion(new Synchronization() {
 
                 @Override
                 public void onFailure(final Exchange exchange) {
