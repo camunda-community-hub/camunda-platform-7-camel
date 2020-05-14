@@ -29,8 +29,11 @@ import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.ExternalTaskQueryTopicBuilder;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BatchConsumer extends ScheduledBatchPollingConsumer {
+    private static final Logger LOG = LoggerFactory.getLogger(BatchConsumer.class);
 
     private final CamundaBpmEndpoint camundaEndpoint;
 
@@ -115,7 +118,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     @Override
     public void close() {
-        log.info("Closing BatchConsumer");
+        LOG.info("Closing BatchConsumer");
         this.stop();
     }
 

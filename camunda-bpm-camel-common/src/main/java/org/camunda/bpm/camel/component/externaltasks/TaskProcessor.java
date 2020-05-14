@@ -23,7 +23,7 @@ import org.camunda.bpm.engine.externaltask.LockedExternalTask;
 
 public class TaskProcessor implements Processor {
 
-    private static final Logger logger = Logger.getLogger(TaskProcessor.class.getCanonicalName());
+    private static final Logger LOG = Logger.getLogger(TaskProcessor.class.getCanonicalName());
 
     private final CamundaBpmEndpoint camundaEndpoint;
 
@@ -138,7 +138,7 @@ public class TaskProcessor implements Processor {
         if (exchange.isFailed()) {
 
             if (task == null) {
-                logger.warning(
+                LOG.warning(
                         "Processing failed but the task seems to be already processed - will do nothing! Camnda external task id: '"
                                 + taskId + "'");
                 return;
@@ -172,7 +172,7 @@ public class TaskProcessor implements Processor {
             final String errorCode = out.getBody(String.class);
 
             if (task == null) {
-                logger.warning("Should complete the external task with BPM error '" + errorCode
+                LOG.warning("Should complete the external task with BPM error '" + errorCode
                         + "' but the task seems to be already processed - will do nothing! Camnda external task id: '"
                         + taskId + "'");
                 return;
@@ -196,7 +196,7 @@ public class TaskProcessor implements Processor {
         {
 
             if (task == null) {
-                logger.warning("Should complete the external task but the task seems to be "
+                LOG.warning("Should complete the external task but the task seems to be "
                         + "already processed - will do nothing! Camnda external task id: '" + taskId + "'");
                 return;
             }

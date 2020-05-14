@@ -22,6 +22,8 @@ import org.apache.camel.support.DefaultEndpoint;
 import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
 import org.camunda.bpm.camel.component.producer.CamundaBpmProducerFactory;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class has been modified to be consistent with the changes to
@@ -34,6 +36,8 @@ import org.camunda.bpm.engine.ProcessEngine;
  * @author Ryan Johnston (@rjfsu), Tijs Rademakers
  */
 public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements CamundaBpmEndpoint {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CamundaBpmEndpointDefaultImpl.class);
 
     private CamundaBpmComponent component;
     private Map<String, Object> parameters;
@@ -67,7 +71,7 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
 
     @Override
     public void close() {
-        log.info("Closing CamundaBpmEndpointDefaultImpl");
+        LOG.info("Closing CamundaBpmEndpointDefaultImpl");
         super.stop();
     }
 

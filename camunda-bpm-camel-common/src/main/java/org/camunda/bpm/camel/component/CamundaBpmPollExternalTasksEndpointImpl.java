@@ -33,7 +33,7 @@ import org.camunda.bpm.model.xml.impl.util.StringUtil;
 
 public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpoint implements CamundaBpmEndpoint {
 
-    private static final Logger logger = Logger.getLogger(
+    private static final Logger LOG = Logger.getLogger(
             CamundaBpmPollExternalTasksEndpointImpl.class.getCanonicalName());
 
     private CamundaBpmComponent component;
@@ -126,7 +126,7 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
             this.deserializeVariables = Boolean.parseBoolean(
                     (String) parameters.remove(DESERIALIZEVARIABLES_PARAMETER));
             if (!BatchConsumer.systemKnowsDeserializationOfVariables() && this.deserializeVariables) {
-                logger.warning("Parameter '" + DESERIALIZEVARIABLES_PARAMETER
+                LOG.warning("Parameter '" + DESERIALIZEVARIABLES_PARAMETER
                         + "' is set to 'true' but this setting will be ignored in this environment since the "
                         + " version of runtime Camunda is below 7.6.0!");
             }
@@ -138,7 +138,7 @@ public class CamundaBpmPollExternalTasksEndpointImpl extends DefaultPollingEndpo
 
     @Override
     public void close() {
-        log.info("Closing CamundaBpmPollExternalTasksEndpointImpl");
+        LOG.info("Closing CamundaBpmPollExternalTasksEndpointImpl");
         super.stop();
     }
 
