@@ -12,7 +12,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.WORKERID_PARAM
 import java.util.Map;
 
 import org.apache.camel.Processor;
-import org.apache.camel.converter.TimePatternConverter;
+import org.apache.camel.catalog.impl.TimePatternConverter;
 import org.apache.camel.support.ProcessorEndpoint;
 import org.camunda.bpm.camel.component.externaltasks.TaskProcessor;
 import org.camunda.bpm.engine.ProcessEngine;

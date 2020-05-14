@@ -25,7 +25,7 @@ import org.apache.camel.Consumer;
 import org.apache.camel.PollingConsumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
-import org.apache.camel.converter.TimePatternConverter;
+import org.apache.camel.catalog.impl.TimePatternConverter;
 import org.apache.camel.support.DefaultPollingEndpoint;
 import org.camunda.bpm.camel.component.externaltasks.BatchConsumer;
 import org.camunda.bpm.engine.ProcessEngine;
