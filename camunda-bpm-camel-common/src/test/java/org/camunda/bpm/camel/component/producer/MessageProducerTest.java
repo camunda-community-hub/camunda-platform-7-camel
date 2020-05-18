@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.ExtendedExchange;
 import org.apache.camel.Message;
 import org.apache.camel.Producer;
 import org.camunda.bpm.camel.BaseCamelTest;
@@ -86,7 +87,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
     @Test
     public void signalTransformBusinesskey() throws Exception {
-        Exchange exchange = mock(Exchange.class);
+        Exchange exchange = mock(ExtendedExchange.class);
         Message message = mock(Message.class);
         ExecutionQuery query = mock(ExecutionQuery.class);
         Execution execution = mock(Execution.class);

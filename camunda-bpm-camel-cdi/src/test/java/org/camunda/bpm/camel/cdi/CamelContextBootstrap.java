@@ -4,6 +4,7 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.cdi.CdiCamelContext;
 import org.camunda.bpm.camel.component.CamundaBpmComponent;
+import org.camunda.bpm.camel.component.CamundaBpmEndpointDefaultImpl;
 import org.camunda.bpm.engine.ProcessEngine;
 
 import javax.annotation.PostConstruct;
@@ -11,7 +12,8 @@ import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Camel context for CDI tests.
@@ -30,7 +32,7 @@ import java.util.logging.Logger;
 @Startup
 public class CamelContextBootstrap {
 
-    Logger log = Logger.getLogger(getClass().getName());
+    private static final Logger LOG = LoggerFactory.getLogger(CamelContextBootstrap.class);
 
     @Inject
     CdiCamelContext camelCtx;
@@ -40,36 +42,36 @@ public class CamelContextBootstrap {
 
     @PostConstruct
     public void init() throws Exception {
-        log.info(">>");
-        log.info(">> Starting Apache Camel's context");
-        log.info(">>");
+        LOG.info(">>");
+        LOG.info(">> Starting Apache Camel's context");
+        LOG.info(">>");
 
-        log.info(">>");
-        log.info(">> Registering camunda BPM component in Camel context");
-        log.info(">>");
+        LOG.info(">>");
+        LOG.info(">> Registering camunda BPM component in Camel context");
+        LOG.info(">>");
         CamundaBpmComponent component = new CamundaBpmComponent(processEngine);
         component.setCamelContext(camelCtx);
         camelCtx.addComponent("camunda-bpm", component);
     }
 
     public void addRoute(RouteBuilder route) throws Exception {
-        log.info(">>");
-        log.info(">> Registering Camel route");
-        log.info(">>");
+        LOG.info(">>");
+        LOG.info(">> Registering Camel route");
+        LOG.info(">>");
         camelCtx.addRoutes(route);
     }
 
     public void start() throws Exception {
         camelCtx.start();
-        log.info(">>");
-        log.info(">> Camel context started");
-        log.info(">>");
+        LOG.info(">>");
+        LOG.info(">> Camel context started");
+        LOG.info(">>");
     }
 
     @PreDestroy
     public void stop() throws Exception {
         camelCtx.stop();
-        log.info(">> Camel context stopped");
+        LOG.info(">> Camel context stopped");
     }
 
     public CamelContext getCamelContext() {

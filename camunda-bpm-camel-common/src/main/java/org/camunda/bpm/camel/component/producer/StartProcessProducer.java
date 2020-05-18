@@ -16,6 +16,8 @@ import org.apache.camel.Exchange;
 import org.camunda.bpm.camel.common.ExchangeUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,8 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
  */
 public class StartProcessProducer extends CamundaBpmProducer {
 
+  private static final Logger LOG = LoggerFactory.getLogger(StartProcessProducer.class);
+
   private final String processDefinitionKey;
 
   public StartProcessProducer(CamundaBpmEndpoint endpoint, Map<String, Object> parameters) {
@@ -49,7 +53,7 @@ public class StartProcessProducer extends CamundaBpmProducer {
 
   @Override
   public void close() {
-    log.info("Closing StartProcessProducer");
+    LOG.info("Closing StartProcessProducer");
     this.stop();
   }
 

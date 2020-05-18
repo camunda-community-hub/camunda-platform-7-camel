@@ -14,14 +14,7 @@ import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.camel.AsyncCallback;
-import org.apache.camel.AsyncProcessor;
-import org.apache.camel.Exchange;
-import org.apache.camel.ExchangePattern;
-import org.apache.camel.Message;
-import org.apache.camel.PollingConsumer;
-import org.apache.camel.Processor;
-import org.apache.camel.RuntimeCamelException;
+import org.apache.camel.*;
 import org.apache.camel.support.ScheduledBatchPollingConsumer;
 import org.apache.camel.util.CastUtils;
 import org.camunda.bpm.camel.common.CamundaUtils;
@@ -29,8 +22,11 @@ import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.ExternalTaskQueryTopicBuilder;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BatchConsumer extends ScheduledBatchPollingConsumer {
+    private static final Logger LOG = LoggerFactory.getLogger(BatchConsumer.class);
 
     private final CamundaBpmEndpoint camundaEndpoint;
 
@@ -115,7 +111,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
 
     @Override
     public void close() {
-        log.info("Closing BatchConsumer");
+        LOG.info("Closing BatchConsumer");
         this.stop();
     }
 
@@ -249,7 +245,7 @@ public class BatchConsumer extends ScheduledBatchPollingConsumer {
             for (final LockedExternalTask task : tasks) {
 
                 final ExchangePattern pattern = completeTask ? ExchangePattern.InOut : ExchangePattern.InOnly;
-                Exchange exchange = getEndpoint().createExchange(pattern);
+                ExtendedExchange exchange = getEndpoint().createExchange(pattern).adapt(ExtendedExchange.class);
 
                 exchange.setFromEndpoint(getEndpoint());
                 exchange.setExchangeId(task.getWorkerId() + "/" + task.getId());
