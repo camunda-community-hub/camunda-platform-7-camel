@@ -207,11 +207,7 @@ The Exception `org.camunda.bpm.camel.component.externaltasks.NoSuchExternalTaskE
 # Examples
 Check the existing integration tests for guidance on how to use the current supported features in your projects: [Spring](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring) or [CDI](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/). To run the CDI integration tests do `mvn -DskipITs=false`.
 
-Further there exist two example projects showing camunda-bpm-camel in Action (on JBoss AS 7 though):
-* [camel use cases](https://github.com/camunda/camunda-consulting/tree/master/showcases/camel-use-cases)
-* [Bank Account Opening Process using Camel](https://github.com/camunda/camunda-consulting/tree/master/showcases/bank-account-opening-camel)
-
-
+Further there exists the [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) 
 
 # Target environments
 
