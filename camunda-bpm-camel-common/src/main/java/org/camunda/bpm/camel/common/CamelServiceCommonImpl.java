@@ -8,19 +8,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
-import org.apache.camel.impl.DefaultExchange;
+import org.apache.camel.support.DefaultExchange;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Required;
 
 public abstract class CamelServiceCommonImpl implements CamelService {
 
@@ -44,9 +45,15 @@ public abstract class CamelServiceCommonImpl implements CamelService {
       String correlationId) {
     Collection<String> vars;
     if (processVariables == null) {
+      vars = new LinkedList<String>();
       ActivityExecution execution = Context.getBpmnExecutionContext()
           .getExecution();
-      vars = execution.getVariableNames();
+      final Set<String> variableNames = execution.getVariableNames();
+      if (variableNames != null) {
+        for (String variableName : variableNames) {
+          vars.add(variableName + "?");
+        }
+      }
     } else if ("".equals(processVariables)) {
       vars = Collections.emptyList();
     } else {
@@ -61,10 +68,15 @@ public abstract class CamelServiceCommonImpl implements CamelService {
         .getBpmnExecutionContext().getExecution();
     Map<String, Object> variablesToSend = new HashMap<String, Object>();
     for (String var : variables) {
-      Object value = execution.getVariable(var);
-      if (value == null) {
-        throw new IllegalArgumentException("Process variable '" + var
-            + "' no found!");
+      Object value;
+      if (var.endsWith("?")) {
+        value = execution.getVariable(var.substring(0, var.length() - 1));
+      } else {
+        value = execution.getVariable(var);
+        if (value == null) {
+          throw new IllegalArgumentException("Process variable '" + var
+              + "' no found!");
+        }
       }
       variablesToSend.put(var, value);
     }
@@ -89,9 +101,7 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     return send.getOut().getBody();
   }
 
-  @Required
   public abstract void setProcessEngine(ProcessEngine processEngine);
 
-  @Required
   public abstract void setCamelContext(CamelContext camelContext);
 }

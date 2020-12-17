@@ -16,6 +16,8 @@ import org.apache.camel.Exchange;
 import org.camunda.bpm.camel.common.ExchangeUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +26,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 /**
  * Starts a process instance given a process definition key.
- * <p/>
+ * <p>
  * Example: camunda-bpm://start?processDefinitionKey=aProcessDefinitionKey
  *
  * @author Ryan Johnston (@rjfsu)
@@ -33,6 +35,8 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
  * @author Bernd Ruecker
  */
 public class StartProcessProducer extends CamundaBpmProducer {
+
+  private static final Logger LOG = LoggerFactory.getLogger(StartProcessProducer.class);
 
   private final String processDefinitionKey;
 
@@ -45,6 +49,12 @@ public class StartProcessProducer extends CamundaBpmProducer {
         processDefinitionKey = null;
       // throw new IllegalArgumentException("You need to pass the '" + PROCESS_DEFINITION_KEY_PARAMETER + "' parameter! Parameters received: " + parameters);
     }
+  }
+
+  @Override
+  public void close() {
+    LOG.info("Closing StartProcessProducer");
+    this.stop();
   }
 
   @Override

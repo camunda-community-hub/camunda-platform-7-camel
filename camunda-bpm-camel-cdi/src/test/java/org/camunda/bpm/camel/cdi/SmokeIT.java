@@ -1,7 +1,7 @@
 package org.camunda.bpm.camel.cdi;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.Mock;
+import org.apache.camel.cdi.Uri;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.engine.task.Task;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -36,7 +36,7 @@ public class SmokeIT extends BaseArquillianIntegrationTest {
   }
 
   @Inject
-  @Mock
+  @Uri("resultEndpoint")
   MockEndpoint resultEndpoint;
 
   @Produces

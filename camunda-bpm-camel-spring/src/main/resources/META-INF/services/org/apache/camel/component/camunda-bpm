@@ -1,1 +1,1 @@
-class=org.camunda.bpm.camel.component.CamundaBpmComponent
+class=org.camunda.bpm.camel.spring.SpringCamundaBpmComponent

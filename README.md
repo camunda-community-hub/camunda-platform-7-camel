@@ -1,15 +1,47 @@
-![camunda BPM + Apache Camel][1]
-
-This project focuses on bringing two great Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.apache.org).
-
-# Supported features
+This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
 
 ![Use Cases supported by camunda BPM Camel Component][2]
 
-See [example project 'camel use cases'](https://github.com/camunda/camunda-consulting/tree/master/showcases/camel-use-cases) for code for all of the use cases shown in the above model.
+See [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) for code for all of the use cases shown in the above model.
 
-[Discuss this process model on camunda share](http://camunda.org/share/#/process/f54a4ff9-4cc1-428c-829b-a4002dcdd81f) if you have questions or feedback.
 
+# How-to use
+
+Environment requirements:
+
+| camunda-bpm-camel Version  | Java Version | Camel Version |
+| ---: | ---: | ---: |
+| >= 0.8  | >= JDK 1.8  | >= 3.2 |
+| 0.6 - 0.7  | >= JDK 1.8  | <= 3.1 |
+| 0.4 - 0.5  | = JDK 1.7  | <= 2.x |
+| <= 0.3  | < JDK 1.7  | <= 2.x |
+
+
+Please also check Camel requirements: http://camel.apache.org/what-are-the-dependencies.html (e.g. Camel 2.14 onwards requires JDK 1.7 or better).
+
+Now [follow the docs on the environment you want to run in](#target-environments). In Spring it will look like:
+
+```
+<dependency>
+    <groupId>org.camunda.bpm.extension.camel</groupId>
+    <artifactId>camunda-bpm-camel-spring</artifactId>
+    <version>0.8</version>
+</dependency>
+```
+
+
+The Spring bean id `camel` can be made available easily then:
+
+```
+  <bean id="camel" class="org.camunda.bpm.camel.spring.impl.CamelServiceImpl">
+    <property name="processEngine" ref="processEngine"/>
+    <property name="camelContext" ref="camelContext"/>
+  </bean>
+```
+
+
+
+# Use Cases
 
 
 ## camunda BPM --> Apache Camel
@@ -21,13 +53,15 @@ Use the following expression in a ServiceTask to send all the process instance v
 ```
 ${camel.sendTo('<camel endpoint>')}
 ```
+Hint: You will also get variables which were set but contain a null value.
 
 Alternatively you can specify which process instance variables you want to send to Camel with:
 
 ```
 ${camel.sendTo('<camel endpoint>', '<comma-separated list of process variables>')}
 ```
-
+Hint: missing or null value variables will cause to throw an IllegalArgumentException. You can append a question mark to each name of a variable which is allowed to be missing or null (e.g. 'mayBeNullVar?,mustNotBeNullVar').
+ 
 Additionally you can specify a correlationKey to send to Camel. It can be used to correlate a response message. The route for the response must contain a parameter correlationKeyName with the name of the process variable which is used for correlation:
 
 ```
@@ -173,42 +207,16 @@ The Exception `org.camunda.bpm.camel.component.externaltasks.NoSuchExternalTaskE
 # Examples
 Check the existing integration tests for guidance on how to use the current supported features in your projects: [Spring](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring) or [CDI](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/). To run the CDI integration tests do `mvn -DskipITs=false`.
 
-Further there exist two example projects showing camunda-bpm-camel in Action (on JBoss AS 7 though):
-* [camel use cases](https://github.com/camunda/camunda-consulting/tree/master/showcases/camel-use-cases)
-* [Bank Account Opening Process using Camel](https://github.com/camunda/camunda-consulting/tree/master/showcases/bank-account-opening-camel)
+Further there exists the [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) 
 
+# Target environments
 
-
-# Using it in your project
-This project is at the moment in incubation phase. This means that changes are bound to happen that will break backwards compatibility. Be warned!
-
-## Environment
-
-From version 0.3 on JDK 1.7 or better is required (by Camel, see http://camel.apache.org/what-are-the-dependencies.html - Camel 2.14 onwards requires JDK 1.7 or better).
-
-
-## Maven coordinates
-
-You might have to add v the camunda BPM repository in your project's `pom.xml`:
-
-```
-<repositories>
-	<repository>
-		<id>camunda-bpm-nexus</id>
-		<name>camunda-bpm-nexus</name>
-		<url>https://app.camunda.com/nexus/content/groups/public</url>
-	</repository>
-</repositories>
-```
-
-Choose a dependency depending on your target environment:
-
-### Spring
+## Spring
 ```
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-spring</artifactId>
-    <version>0.4</version>
+    <version>0.8</version>
 </dependency>
 ```
 In your Spring configuration you need to configure the `CamelService` like this:
@@ -222,13 +230,13 @@ In your Spring configuration you need to configure the `CamelService` like this:
 
 The Spring bean id `camel` will be then available to expressions used in ServiceTasks to send data to Camel.
 
-### CDI
+## CDI
 
 ```
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-cdi</artifactId>
-    <version>0.4</version>
+    <version>0.8</version>
 </dependency>
 ```
 
@@ -267,12 +275,12 @@ public class CamelBootStrap {
 Best read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html) and have a look at the CDI integration tests [here](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/) for guidance.
 
 
-### Blueprint
+## Blueprint
 ```
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-blueprint</artifactId>
-    <version>0.4</version>
+    <version>0.8</version>
 </dependency>
 ```
 The OSGi Framework is used to retrieve the `ProcessEngine` and a `DefaultCamelContext` therefore the bean definition of the `CamelServiceImpl` is obsolete.
@@ -288,17 +296,7 @@ The camunda-bpm-osgi project is used with the blueprint-wrapper `context.xml`. T
 
 # Feedback and further development
 
-This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation). Feedback, pull requests, ... you name it... are very welcome! Meet us on the [camunda BPM dev list](https://groups.google.com/forum/?fromgroups#!forum/camunda-bpm-dev).
-
-Out laundry list of development TODOs (in no special order):
-
-- Create JBoss Distribution with Camel (including Bootstrapping) as a JBoss Module and Routes to be defined within Process Applications [CIS-19](https://app.camunda.com/jira/browse/CIS-19)
-- Exception handling, i.e. Apache Camel exceptions to BPMNErrors mapping
-- Implement asynchronous support
-- Refactor Camel to camunda BPM signaling code to use the [Activity Instance Model](http://camundabpm.blogspot.de/2013/06/introducing-activity-instance-model-to.html) and not process instance IDs or execution IDs
-
-These use cases are considered not interesting - tell us if you think different!
-- Deploy process definition from Camel message
+This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation). Feedback, pull requests, ... you name it... are very welcome! Meet us on the [Camunda BPM Forum](forum.camunda.org/).
 
 
 # Credits
