@@ -2,7 +2,7 @@ package org.camunda.bpm.camel.component.producer;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Producer;
-import org.apache.camel.impl.DefaultExchange;
+import org.apache.camel.support.DefaultExchange;
 import org.camunda.bpm.camel.BaseCamelTest;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;

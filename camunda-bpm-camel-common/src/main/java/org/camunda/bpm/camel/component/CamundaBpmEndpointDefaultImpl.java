@@ -18,10 +18,12 @@ import java.util.Map;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
-import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.support.DefaultEndpoint;
 import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
 import org.camunda.bpm.camel.component.producer.CamundaBpmProducerFactory;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class has been modified to be consistent with the changes to
@@ -35,15 +37,15 @@ import org.camunda.bpm.engine.ProcessEngine;
  */
 public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements CamundaBpmEndpoint {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CamundaBpmEndpointDefaultImpl.class);
+
     private CamundaBpmComponent component;
     private Map<String, Object> parameters;
     private final ParsedUri uri;
 
     public CamundaBpmEndpointDefaultImpl(String uri, ParsedUri parsedUri, CamundaBpmComponent component,
             Map<String, Object> parameters) {
-        super();
-        setCamelContext(component.getCamelContext());
-        setEndpointUri(uri);
+        super(uri, component);
         this.uri = parsedUri;
         this.component = component;
         this.parameters = parameters;
@@ -63,6 +65,12 @@ public class CamundaBpmEndpointDefaultImpl extends DefaultEndpoint implements Ca
 
     public boolean isSingleton() {
         return true;
+    }
+
+    @Override
+    public void close() {
+        LOG.info("Closing CamundaBpmEndpointDefaultImpl");
+        super.stop();
     }
 
     @Override

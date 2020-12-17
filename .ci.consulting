@@ -1,0 +1,4 @@
+@Library(["camunda-ci", "camunda-consulting"]) _
+
+def settings = getDefaultsForMavenAndCentralDeploy()
+buildMavenAndDeploy(settings)

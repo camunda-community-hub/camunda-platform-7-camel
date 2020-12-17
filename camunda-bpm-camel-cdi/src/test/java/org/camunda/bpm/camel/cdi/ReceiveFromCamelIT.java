@@ -2,7 +2,7 @@ package org.camunda.bpm.camel.cdi;
 
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.Mock;
+import org.apache.camel.cdi.Uri;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
@@ -32,7 +32,7 @@ public class ReceiveFromCamelIT extends BaseArquillianIntegrationTest {
   }
 
   @Inject
-  @Mock
+  @Uri("mock:resultEndpoint")
   MockEndpoint resultEndpoint;
 
   @Produces

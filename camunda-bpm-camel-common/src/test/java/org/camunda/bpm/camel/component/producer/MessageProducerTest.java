@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.ExtendedExchange;
 import org.apache.camel.Message;
 import org.apache.camel.Producer;
 import org.camunda.bpm.camel.BaseCamelTest;
@@ -73,6 +74,7 @@ public class MessageProducerTest extends BaseCamelTest {
         when(query.processInstanceId(anyString())).thenReturn(query);
         when(query.activityId(anyString())).thenReturn(query);
         when(query.singleResult()).thenReturn(execution);
+        when(execution.getId()).thenReturn("1234");
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
                 camundaBpmUri("message?" + ACTIVITY_ID_PARAMETER + "=" + "anActivityId"));
@@ -85,7 +87,7 @@ public class MessageProducerTest extends BaseCamelTest {
 
     @Test
     public void signalTransformBusinesskey() throws Exception {
-        Exchange exchange = mock(Exchange.class);
+        Exchange exchange = mock(ExtendedExchange.class);
         Message message = mock(Message.class);
         ExecutionQuery query = mock(ExecutionQuery.class);
         Execution execution = mock(Execution.class);

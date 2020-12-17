@@ -8,22 +8,20 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_RESPO
 
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.logging.Logger;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.Processor;
-import org.apache.camel.RuntimeCamelException;
+import org.apache.camel.*;
 import org.apache.camel.spi.Synchronization;
 import org.camunda.bpm.camel.common.CamundaUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TaskProcessor implements Processor {
 
-    private static final Logger logger = Logger.getLogger(TaskProcessor.class.getCanonicalName());
+    private static final Logger LOG = LoggerFactory.getLogger(TaskProcessor.class.getCanonicalName());
 
     private final CamundaBpmEndpoint camundaEndpoint;
 
@@ -72,7 +70,7 @@ public class TaskProcessor implements Processor {
             setInHeaders(exchange);
 
             final TaskProcessor taskProcessor = this;
-            exchange.addOnCompletion(new Synchronization() {
+            exchange.adapt(ExtendedExchange.class).addOnCompletion(new Synchronization() {
 
                 @Override
                 public void onFailure(final Exchange exchange) {
@@ -138,7 +136,7 @@ public class TaskProcessor implements Processor {
         if (exchange.isFailed()) {
 
             if (task == null) {
-                logger.warning(
+                LOG.warn(
                         "Processing failed but the task seems to be already processed - will do nothing! Camnda external task id: '"
                                 + taskId + "'");
                 return;
@@ -172,7 +170,7 @@ public class TaskProcessor implements Processor {
             final String errorCode = out.getBody(String.class);
 
             if (task == null) {
-                logger.warning("Should complete the external task with BPM error '" + errorCode
+                LOG.warn("Should complete the external task with BPM error '" + errorCode
                         + "' but the task seems to be already processed - will do nothing! Camnda external task id: '"
                         + taskId + "'");
                 return;
@@ -194,9 +192,8 @@ public class TaskProcessor implements Processor {
         } else
         // success
         {
-
             if (task == null) {
-                logger.warning("Should complete the external task but the task seems to be "
+                LOG.warn("Should complete the external task but the task seems to be "
                         + "already processed - will do nothing! Camnda external task id: '" + taskId + "'");
                 return;
             }

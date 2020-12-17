@@ -12,14 +12,14 @@
  */
 package org.camunda.bpm.camel.component;
 
+import java.util.Map;
+
 import org.apache.camel.Endpoint;
-import org.apache.camel.impl.DefaultComponent;
+import org.apache.camel.support.DefaultComponent;
 import org.camunda.bpm.camel.common.UriUtils.ParsedUri;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
 
 /**
  * camunda BPM Apache Camel component
@@ -40,6 +40,12 @@ public class CamundaBpmComponent extends DefaultComponent {
     public CamundaBpmComponent(ProcessEngine processEngine) {
         super();
         this.processEngine = processEngine;
+    }
+
+    @Override
+    public void close() {
+        log.info("Closing CamundaBpmComponent");
+        super.stop();
     }
 
     @Override

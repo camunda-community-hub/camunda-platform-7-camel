@@ -12,3 +12,4 @@ nb-configuration.xml
 *.iml
 *.sublime-project
 *.sublime-workspace
+.java-version
