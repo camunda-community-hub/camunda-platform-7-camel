@@ -1,6 +1,9 @@
-This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [camunda BPM platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
+[![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community)
+[![Lifecycle: Deprecated](https://img.shields.io/badge/Lifecycle-Deprecated-yellowgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#deprecated-)
 
-![Use Cases supported by camunda BPM Camel Component][2]
+This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [Camunda Platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
+
+![Use Cases supported by Camunda Platform Camel Component][2]
 
 See [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) for code for all of the use cases shown in the above model.
 
@@ -44,7 +47,7 @@ The Spring bean id `camel` can be made available easily then:
 # Use Cases
 
 
-## camunda BPM --> Apache Camel
+## camunda Platform --> Apache Camel
 
 ### Calling a Camel Endpoint (Service)
 
@@ -70,8 +73,8 @@ ${camel.sendTo('<camel endpoint>', '<comma-separated list of process variables>'
 
 The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if available) and `CamundaBpmCorrelationKey` (if set) will be available to any downstream processors in the Camel route.
 
-## Apache Camel --> camunda BPM
-The following use cases are supported by the camunda BPM Camel component (see [Camel Components](http://camel.apache.org/components.html)).
+## Apache Camel --> Camunda Platform
+The following use cases are supported by the Camunda Platform Camel component (see [Camel Components](http://camel.apache.org/components.html)).
 
 ### `camunda-bpm://start` Start a process instance
 
@@ -292,12 +295,6 @@ The camunda-bpm-osgi project is used with the blueprint-wrapper `context.xml`. T
 <bean id="blueprintELResolver" class=" org.camunda.bpm.camel.blueprint.CamelBlueprintELResolver" />
 ...
 ```
-
-
-# Feedback and further development
-
-This project is part of the [camunda BPM incubation space](https://github.com/camunda/camunda-bpm-incubation). Feedback, pull requests, ... you name it... are very welcome! Meet us on the [Camunda BPM Forum](forum.camunda.org/).
-
 
 # Credits
 
