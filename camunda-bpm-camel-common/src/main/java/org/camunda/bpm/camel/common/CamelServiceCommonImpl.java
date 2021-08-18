@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
@@ -20,6 +22,7 @@ import org.apache.camel.support.DefaultExchange;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
+import org.camunda.bpm.engine.delegate.BpmnError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,8 +100,25 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     }
     exchange.getIn().setBody(variablesToSend);
     exchange.setPattern(ExchangePattern.InOut);
-    Exchange send = producerTemplate.send(endpointUri, exchange);
-    return send.getIn().getBody();
+    Exchange send = producerTemplate.send(endpointUri, exchange);       
+    
+    // Exception handling (Propogate BpmnError back from camel route)
+    if (null != send.getException()){
+      // Explicit BPMN business error, workflow has a chance to handle on boundry event, throw as is
+      if (send.getException() instanceof BpmnError) throw ((BpmnError)send.getException());
+      
+      // Unchecked, consider technical error causing BPMN workflow to stop
+      if (send.getException() instanceof RuntimeException) {
+        // Technical error (Fails workflow)
+        throw (RuntimeException)send.getException();
+      }
+
+      // Checked exception, map as business error using the exception class name as the code
+      BpmnError be = new BpmnError(send.getException().getClass().getName(), send.getException().getMessage());
+      throw be;  
+    }
+
+    return send.getIn().getBody();    
   }
 
   public abstract void setProcessEngine(ProcessEngine processEngine);
