@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
@@ -20,6 +22,7 @@ import org.apache.camel.support.DefaultExchange;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.pvm.delegate.ActivityExecution;
+import org.camunda.bpm.engine.delegate.BpmnError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,18 +34,18 @@ public abstract class CamelServiceCommonImpl implements CamelService {
   protected CamelContext camelContext;
 
   @Override
-  public Object sendTo(String endpointUri) {
+  public Object sendTo(String endpointUri) throws Exception {
     return sendTo(endpointUri, null, null);
   }
 
   @Override
-  public Object sendTo(String endpointUri, String processVariables) {
+  public Object sendTo(String endpointUri, String processVariables) throws Exception{
     return sendTo(endpointUri, processVariables, null);
   }
 
   @Override
   public Object sendTo(String endpointUri, String processVariables,
-      String correlationId) {
+      String correlationId) throws Exception {
     Collection<String> vars;
     if (processVariables == null) {
       vars = new LinkedList<String>();
@@ -63,7 +66,7 @@ public abstract class CamelServiceCommonImpl implements CamelService {
   }
 
   private Object sendToInternal(String endpointUri,
-      Collection<String> variables, String correlationKey) {
+      Collection<String> variables, String correlationKey) throws Exception {
     ActivityExecution execution = (ActivityExecution) Context
         .getBpmnExecutionContext().getExecution();
     Map<String, Object> variablesToSend = new HashMap<String, Object>();
@@ -97,8 +100,28 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     }
     exchange.getIn().setBody(variablesToSend);
     exchange.setPattern(ExchangePattern.InOut);
-    Exchange send = producerTemplate.send(endpointUri, exchange);
-    return send.getIn().getBody();
+    Exchange send = producerTemplate.send(endpointUri, exchange);       
+    
+    // Exception handling
+    //    Propogate BpmnError back from camel route, 
+    //    all other exceptions will cause workflow to stop as a technical error
+    // https://docs.camunda.org/get-started/rpa/error-handling/
+    // https://docs.camunda.org/manual/7.15/reference/bpmn20/events/error-events/
+    if (null != send.getException()){
+      // Explicit BPMN business error, workflow has a chance to handle on boundry event, throw as is
+      if (send.getException() instanceof BpmnError) throw ((BpmnError)send.getException());
+      
+      // Unchecked, consider technical error causing BPMN workflow to stop
+      if (send.getException() instanceof RuntimeException) {
+        // Technical error (Fails workflow)
+        throw (RuntimeException)send.getException();
+      }
+
+      // Checked, consider technical error causing BPMN workflow to stop
+      throw (Exception)send.getException();  
+    }
+
+    return send.getIn().getBody();    
   }
 
   public abstract void setProcessEngine(ProcessEngine processEngine);
