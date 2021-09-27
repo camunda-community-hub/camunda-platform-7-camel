@@ -28,7 +28,7 @@ Now [follow the docs on the environment you want to run in](#target-environments
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
     <artifactId>camunda-bpm-camel-spring</artifactId>
-    <version>0.8</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 
@@ -41,7 +41,6 @@ The Spring bean id `camel` can be made available easily then:
     <property name="camelContext" ref="camelContext"/>
   </bean>
 ```
-
 
 
 # Use Cases
@@ -72,6 +71,11 @@ ${camel.sendTo('<camel endpoint>', '<comma-separated list of process variables>'
 ```
 
 The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if available) and `CamundaBpmCorrelationKey` (if set) will be available to any downstream processors in the Camel route.
+
+**Error Handling:**
+
+* Throwing a `org.camunda.bpm.engine.delegate.BpmnError` will lead to an error being propagated to Camunda (starting from version >= 0.8.1). Note that this can terminate a process instance if not handled, see https://docs.camunda.org/manual/latest/user-guide/process-engine/delegation-code/#throw-bpmn-errors-from-listeners)
+* Throwing any other exception will lead to a retry/incident created in Camunda
 
 ## Apache Camel --> Camunda Platform
 The following use cases are supported by the Camunda Platform Camel component (see [Camel Components](http://camel.apache.org/components.html)).

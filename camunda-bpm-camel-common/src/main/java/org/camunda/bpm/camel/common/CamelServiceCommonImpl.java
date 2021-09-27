@@ -109,16 +109,11 @@ public abstract class CamelServiceCommonImpl implements CamelService {
     // https://docs.camunda.org/manual/7.15/reference/bpmn20/events/error-events/
     if (null != send.getException()){
       // Explicit BPMN business error, workflow has a chance to handle on boundry event, throw as is
+      // Note that this can terminate a process instance if no handling is defined in the model (https://docs.camunda.org/manual/latest/user-guide/process-engine/delegation-code/#throw-bpmn-errors-from-listeners)
       if (send.getException() instanceof BpmnError) throw ((BpmnError)send.getException());
       
-      // Unchecked, consider technical error causing BPMN workflow to stop
-      if (send.getException() instanceof RuntimeException) {
-        // Technical error (Fails workflow)
-        throw (RuntimeException)send.getException();
-      }
-
-      // Checked, consider technical error causing BPMN workflow to stop
-      throw (Exception)send.getException();  
+      // otherwise simply throw the exception, leads to incident in process instance
+      throw send.getException();  
     }
 
     return send.getIn().getBody();    
