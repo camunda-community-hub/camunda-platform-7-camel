@@ -8,22 +8,20 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_RESPO
 
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.logging.Logger;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Message;
-import org.apache.camel.Processor;
-import org.apache.camel.RuntimeCamelException;
+import org.apache.camel.*;
 import org.apache.camel.spi.Synchronization;
 import org.camunda.bpm.camel.common.CamundaUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.ExternalTaskService;
 import org.camunda.bpm.engine.externaltask.ExternalTask;
 import org.camunda.bpm.engine.externaltask.LockedExternalTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TaskProcessor implements Processor {
 
-    private static final Logger logger = Logger.getLogger(TaskProcessor.class.getCanonicalName());
+    private static final Logger LOG = LoggerFactory.getLogger(TaskProcessor.class.getCanonicalName());
 
     private final CamundaBpmEndpoint camundaEndpoint;
 
@@ -72,7 +70,7 @@ public class TaskProcessor implements Processor {
             setInHeaders(exchange);
 
             final TaskProcessor taskProcessor = this;
-            exchange.addOnCompletion(new Synchronization() {
+            exchange.adapt(ExtendedExchange.class).addOnCompletion(new Synchronization() {
 
                 @Override
                 public void onFailure(final Exchange exchange) {
@@ -109,8 +107,18 @@ public class TaskProcessor implements Processor {
     void internalProcessing(final Exchange exchange) {
 
         final Message in = getInMessage(exchange);
-        final String taskId = getExternalTaskId(in);
-        final ExternalTask task = getExternalTask(taskId);
+
+        String currentTaskId;
+        ExternalTask currentTask;
+        try {
+            currentTaskId = getExternalTaskId(in);
+            currentTask = getExternalTask(currentTaskId);
+        } catch (final NoSuchExternalTaskException e) {
+            currentTask = null;
+            currentTaskId = null;
+        }
+        final ExternalTask task = currentTask;
+        final String taskId = currentTaskId;
 
         final ExternalTaskService externalTaskService = getExternalTaskService();
 
@@ -128,7 +136,7 @@ public class TaskProcessor implements Processor {
         if (exchange.isFailed()) {
 
             if (task == null) {
-                logger.warning(
+                LOG.warn(
                         "Processing failed but the task seems to be already processed - will do nothing! Camnda external task id: '"
                                 + taskId + "'");
                 return;
@@ -152,13 +160,17 @@ public class TaskProcessor implements Processor {
             });
 
         } else
+        // do not complete task in any way?
+        if (!completeTask) {
+            return;
+        } else
         // bpmn error
         if ((out != null) && (out.getBody() != null) && (out.getBody() instanceof String)) {
 
             final String errorCode = out.getBody(String.class);
 
             if (task == null) {
-                logger.warning("Should complete the external task with BPM error '" + errorCode
+                LOG.warn("Should complete the external task with BPM error '" + errorCode
                         + "' but the task seems to be already processed - will do nothing! Camnda external task id: '"
                         + taskId + "'");
                 return;
@@ -179,10 +191,9 @@ public class TaskProcessor implements Processor {
 
         } else
         // success
-        if (completeTask) {
-
+        {
             if (task == null) {
-                logger.warning("Should complete the external task but the task seems to be "
+                LOG.warn("Should complete the external task but the task seems to be "
                         + "already processed - will do nothing! Camnda external task id: '" + taskId + "'");
                 return;
             }
@@ -220,6 +231,10 @@ public class TaskProcessor implements Processor {
 
     private ExternalTask getExternalTask(final String taskId) {
 
+        if (taskId == null) {
+            return null;
+        }
+
         final ExternalTask task = getExternalTaskService().createExternalTaskQuery().externalTaskId(
                 taskId).singleResult();
         if (task != null) {
@@ -255,8 +270,7 @@ public class TaskProcessor implements Processor {
         } else if (lockedTaskId != null) {
             taskId = lockedTaskId;
         } else {
-            throw new RuntimeCamelException("Unexpected exchange: in-header '" + EXCHANGE_HEADER_TASK + "' and '"
-                    + EXCHANGE_HEADER_TASKID + "' is null!");
+            taskId = null;
         }
 
         return taskId;

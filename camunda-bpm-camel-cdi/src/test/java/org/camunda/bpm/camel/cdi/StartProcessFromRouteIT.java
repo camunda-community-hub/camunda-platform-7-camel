@@ -2,9 +2,8 @@ package org.camunda.bpm.camel.cdi;
 
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.cdi.Mock;
+import org.apache.camel.cdi.Uri;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.camunda.bpm.engine.delegate.BpmnError;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -31,11 +30,11 @@ public class StartProcessFromRouteIT extends BaseArquillianIntegrationTest {
   }
 
   @Inject
-  @Mock
+  @Uri("mock:mockEndpoint")
   MockEndpoint mockEndpoint;
   
   @Inject
-  @Mock
+  @Uri("mock:processVariableEndpoint")
   MockEndpoint processVariableEndpoint;
 
   @Produces

@@ -14,11 +14,11 @@ package org.camunda.bpm.camel.common;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.apache.camel.Exchange;
 import org.camunda.bpm.camel.component.CamundaBpmConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class contains one method - prepareVariables - that is used to copy
@@ -29,7 +29,7 @@ import org.camunda.bpm.camel.component.CamundaBpmConstants;
  */
 public class ExchangeUtils {
 
-    private static final Logger log = Logger.getLogger(ExchangeUtils.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(ExchangeUtils.class);
 
     /**
      * Copies variables from Camel into the process engine.
@@ -37,13 +37,14 @@ public class ExchangeUtils {
      * This method will conditionally copy the Camel body to the "camelBody"
      * variable if it is of type java.lang.String, OR it will copy the Camel
      * body to individual variables within the process engine if it is of type
-     * Map<String,Object>. If the copyVariablesFromProperties parameter is set
+     * Map. If the copyVariablesFromProperties parameter is set
      * on the endpoint, the properties are copied instead
      * 
      * @param exchange
      *            The Camel Exchange object
      * @param parameters
-     * @return A Map<String,Object> containing all of the variables to be used
+     *        Parameters as defined in the docs
+     * @return A Map containing all of the variables to be used
      *         in the process engine
      */
     @SuppressWarnings("rawtypes")
@@ -74,8 +75,7 @@ public class ExchangeUtils {
             }
 
         } else if (camelBody != null) {
-            log.log(Level.WARNING,
-                    "unkown type of camel body - not handed over to process engine: " + camelBody.getClass());
+            LOG.warn("unkown type of camel body - not handed over to process engine: " + camelBody.getClass());
         }
 
         return processVariables;

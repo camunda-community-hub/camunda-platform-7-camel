@@ -12,12 +12,15 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.WORKERID_PARAM
 import java.util.Map;
 
 import org.apache.camel.Processor;
-import org.apache.camel.converter.TimePatternConverter;
-import org.apache.camel.impl.ProcessorEndpoint;
+import org.apache.camel.catalog.impl.TimePatternConverter;
+import org.apache.camel.support.ProcessorEndpoint;
 import org.camunda.bpm.camel.component.externaltasks.TaskProcessor;
 import org.camunda.bpm.engine.ProcessEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint implements CamundaBpmEndpoint {
+    private static final Logger LOG = LoggerFactory.getLogger(CamundaBpmProcessExternalTaskEndpointImpl.class);
 
     private CamundaBpmComponent component;
 
@@ -84,6 +87,12 @@ public class CamundaBpmProcessExternalTaskEndpointImpl extends ProcessorEndpoint
 
         return true;
 
+    }
+
+    @Override
+    public void close() {
+        LOG.info("Closing CamundaBpmProcessExternalTaskEndpointImpl");
+        this.stop();
     }
 
     @Override

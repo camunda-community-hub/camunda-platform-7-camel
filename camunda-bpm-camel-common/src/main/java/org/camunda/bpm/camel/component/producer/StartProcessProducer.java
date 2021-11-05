@@ -19,6 +19,8 @@ import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.camunda.bpm.engine.runtime.VariableInstance;
 
 import java.util.HashMap;
@@ -30,7 +32,7 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
 
 /**
  * Starts a process instance given a process definition key.
- * <p/>
+ * <p>
  * Example: camunda-bpm://start?processDefinitionKey=aProcessDefinitionKey
  *
  * @author Ryan Johnston (@rjfsu)
@@ -40,8 +42,10 @@ import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
  */
 public class StartProcessProducer extends CamundaBpmProducer {
 
+  private static final Logger LOG = LoggerFactory.getLogger(StartProcessProducer.class);
+
   private final String processDefinitionKey;
-  
+
   private HistoryService historyService;
 
   public StartProcessProducer(CamundaBpmEndpoint endpoint, Map<String, Object> parameters) {
@@ -52,13 +56,19 @@ public class StartProcessProducer extends CamundaBpmProducer {
     } catch (Exception e) {
       historyService = null; // It may be OK to have no history service
     }
-    
+
     if (parameters.containsKey(PROCESS_DEFINITION_KEY_PARAMETER)) {
       this.processDefinitionKey = (String) parameters.get(PROCESS_DEFINITION_KEY_PARAMETER);
     } else {
         processDefinitionKey = null;
       // throw new IllegalArgumentException("You need to pass the '" + PROCESS_DEFINITION_KEY_PARAMETER + "' parameter! Parameters received: " + parameters);
     }
+  }
+
+  @Override
+  public void close() {
+    LOG.info("Closing StartProcessProducer");
+    this.stop();
   }
 
   @Override
@@ -90,11 +100,11 @@ public class StartProcessProducer extends CamundaBpmProducer {
 
     exchange.setProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID, instance.getProcessDefinitionId());
     exchange.setProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID, instance.getProcessInstanceId());
-    
+
     setOutBody(exchange, instance);
-    
+
   }
-  
+
   private void setOutBody(final Exchange exchange, final ProcessInstance instance) {
     if (parameters.containsKey(COPY_PROCESS_VARIABLES_TO_OUT_BODY_PARAMETER)) {
       if (historyService == null) {
@@ -102,9 +112,9 @@ public class StartProcessProducer extends CamundaBpmProducer {
                                           + "for processes returning in a wait state because the "
                                           + "Camunda history service is needed but not available!");
       }
-      
+
       final String variableName = parameters.get(COPY_PROCESS_VARIABLES_TO_OUT_BODY_PARAMETER).toString();
-      
+
       if (variableName.equals("*")) {
         if (historyService != null) {
           final List<HistoricVariableInstance> variables = historyService.createHistoricVariableInstanceQuery()
@@ -168,7 +178,7 @@ public class StartProcessProducer extends CamundaBpmProducer {
       exchange.getOut().setBody(instance.getProcessInstanceId());
     }
   }
-  
+
   private HashMap<String, Object> convertHistoricVariablesToMap(final List<HistoricVariableInstance> variables) {
     final HashMap<String,Object> result = new HashMap<String, Object>();
     final Iterator<HistoricVariableInstance> iterator = variables.iterator();
@@ -188,5 +198,5 @@ public class StartProcessProducer extends CamundaBpmProducer {
     }
     return result;
   }
-  
+
 }

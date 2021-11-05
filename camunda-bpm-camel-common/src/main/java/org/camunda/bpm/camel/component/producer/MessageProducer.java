@@ -31,6 +31,8 @@ import org.camunda.bpm.engine.runtime.Execution;
 import org.camunda.bpm.engine.runtime.ExecutionQuery;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sends a message (or signals a ReceiveTask) to a waiting process instance or
@@ -44,6 +46,8 @@ import org.camunda.bpm.engine.runtime.ProcessInstanceQuery;
  * @author Bernd Ruecker
  */
 public class MessageProducer extends CamundaBpmProducer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MessageProducer.class);
 
     private final String messageName;
     private final String activityId;
@@ -75,6 +79,12 @@ public class MessageProducer extends CamundaBpmProducer {
         } else {
             this.correlationKeyName = null;
         }
+    }
+
+    @Override
+    public void close() {
+        LOG.info("Closing MessageProducer");
+        this.stop();
     }
 
     @Override
