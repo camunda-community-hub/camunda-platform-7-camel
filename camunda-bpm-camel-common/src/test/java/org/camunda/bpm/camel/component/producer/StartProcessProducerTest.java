@@ -5,7 +5,8 @@ import org.apache.camel.Producer;
 import org.apache.camel.support.DefaultExchange;
 import org.camunda.bpm.camel.BaseCamelTest;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
+import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.junit.Test;
 
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
@@ -33,12 +34,15 @@ public class StartProcessProducerTest extends BaseCamelTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void startProcessInstanceByKeyShouldBeCalled() throws Exception {
-        ProcessInstance processInstance = mock(ProcessInstance.class);
+    public void createProcessInstanceByKeyShouldBeCalled() throws Exception {
+        ProcessInstanceWithVariables processInstance = mock(ProcessInstanceWithVariables.class);
+        ProcessInstantiationBuilder processInstantiationBuilder = mock(ProcessInstantiationBuilder.class);
         when(processInstance.getProcessInstanceId()).thenReturn("theProcessInstanceId");
         when(processInstance.getProcessDefinitionId()).thenReturn("theProcessDefinitionId");
-        when(runtimeService.startProcessInstanceByKey(eq("aProcessDefinitionKey"), anyMap())).thenReturn(
-                processInstance);
+        when(runtimeService.createProcessInstanceByKey(eq("aProcessDefinitionKey"))).thenReturn(
+                processInstantiationBuilder);
+        when(processInstantiationBuilder.setVariables(anyMap())).thenReturn(processInstantiationBuilder);
+        when(processInstantiationBuilder.executeWithVariablesInReturn()).thenReturn(processInstance);
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
                 camundaBpmUri("start?" + PROCESS_DEFINITION_KEY_PARAMETER + "=" + "aProcessDefinitionKey"));
@@ -46,21 +50,24 @@ public class StartProcessProducerTest extends BaseCamelTest {
         Exchange exchange = new DefaultExchange(camelContext);
         producer.process(exchange);
 
-        verify(runtimeService, times(1)).startProcessInstanceByKey(eq("aProcessDefinitionKey"), anyMap());
+        verify(runtimeService, times(1)).createProcessInstanceByKey(eq("aProcessDefinitionKey"));
         assertThat(exchange.getProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID)).isEqualTo("theProcessDefinitionId");
         assertThat(exchange.getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo("theProcessInstanceId");
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void startProcessInstanceByKeyWithBusinessKeyShouldBeCalled() throws Exception {
-        ProcessInstance processInstance = mock(ProcessInstance.class);
+    public void createProcessInstanceByKeyWithBusinessKeyShouldBeCalled() throws Exception {
+        ProcessInstanceWithVariables processInstance = mock(ProcessInstanceWithVariables.class);
+        ProcessInstantiationBuilder processInstantiationBuilder = mock(ProcessInstantiationBuilder.class);
         when(processInstance.getProcessInstanceId()).thenReturn("theProcessInstanceId");
         when(processInstance.getProcessDefinitionId()).thenReturn("theProcessDefinitionId");
         when(processInstance.getBusinessKey()).thenReturn("aBusinessKey");
-        when(runtimeService.startProcessInstanceByKey(eq("aProcessDefinitionKey"),
-                eq("aBusinessKey"),
-                anyMap())).thenReturn(processInstance);
+        when(runtimeService.createProcessInstanceByKey(eq("aProcessDefinitionKey")))
+                .thenReturn(processInstantiationBuilder);
+        when(processInstantiationBuilder.setVariables(anyMap())).thenReturn(processInstantiationBuilder);
+        when(processInstantiationBuilder.businessKey(anyString())).thenReturn(processInstantiationBuilder);
+        when(processInstantiationBuilder.executeWithVariablesInReturn()).thenReturn(processInstance);
 
         CamundaBpmEndpoint endpoint = (CamundaBpmEndpoint) camelContext.getEndpoint(
                 camundaBpmUri("start?" + PROCESS_DEFINITION_KEY_PARAMETER + "=" + "aProcessDefinitionKey"));
@@ -69,9 +76,8 @@ public class StartProcessProducerTest extends BaseCamelTest {
         exchange.setProperty(EXCHANGE_HEADER_BUSINESS_KEY, "aBusinessKey");
         producer.process(exchange);
 
-        verify(runtimeService, times(1)).startProcessInstanceByKey(eq("aProcessDefinitionKey"),
-                eq("aBusinessKey"),
-                anyMap());
+        verify(runtimeService, times(1)).createProcessInstanceByKey(eq("aProcessDefinitionKey"));
+        verify(processInstantiationBuilder, times(1)).businessKey(eq("aBusinessKey"));
         assertThat(exchange.getProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID)).isEqualTo("theProcessDefinitionId");
         assertThat(exchange.getProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID)).isEqualTo("theProcessInstanceId");
         assertThat(exchange.getProperty(EXCHANGE_HEADER_BUSINESS_KEY)).isEqualTo("aBusinessKey");
