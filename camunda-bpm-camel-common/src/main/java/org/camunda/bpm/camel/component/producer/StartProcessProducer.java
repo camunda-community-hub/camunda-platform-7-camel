@@ -15,7 +15,8 @@ package org.camunda.bpm.camel.component.producer;
 import org.apache.camel.Exchange;
 import org.camunda.bpm.camel.common.ExchangeUtils;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
+import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,19 +75,44 @@ public class StartProcessProducer extends CamundaBpmProducer {
      */
     String processDefinitionKey = this.processDefinitionKey != null ? this.processDefinitionKey : exchange.getIn().getHeader(EXCHANGE_HEADER_PROCESS_DEFINITION_KEY, String.class);
 
-    ProcessInstance instance = null;
+    ProcessInstantiationBuilder procInstBuilder = runtimeService.createProcessInstanceByKey(processDefinitionKey);
     if (exchange.getProperties().containsKey(EXCHANGE_HEADER_BUSINESS_KEY)) {
-      instance = runtimeService.startProcessInstanceByKey(processDefinitionKey,
-                                                          exchange.getProperty(EXCHANGE_HEADER_BUSINESS_KEY, String.class),
-                                                          processVariables);
-      exchange.setProperty(EXCHANGE_HEADER_BUSINESS_KEY, instance.getBusinessKey());
-    } else {
-      instance = runtimeService.startProcessInstanceByKey(processDefinitionKey, processVariables);
+      procInstBuilder.businessKey(exchange.getProperty(EXCHANGE_HEADER_BUSINESS_KEY, String.class));
     }
+    ProcessInstanceWithVariables instance = procInstBuilder.setVariables(processVariables)
+            .executeWithVariablesInReturn();
+
+    exchange.setProperty(EXCHANGE_HEADER_BUSINESS_KEY, instance.getBusinessKey());
 
     exchange.setProperty(EXCHANGE_HEADER_PROCESS_DEFINITION_ID, instance.getProcessDefinitionId());
     exchange.setProperty(EXCHANGE_HEADER_PROCESS_INSTANCE_ID, instance.getProcessInstanceId());
-    exchange.getOut().setBody(instance.getProcessInstanceId());
+
+    setOutBody(exchange, instance);
+  }
+
+  private void setOutBody(final Exchange exchange, final ProcessInstanceWithVariables instance) {
+    if (parameters.containsKey(COPY_PROCESS_VARIABLES_TO_OUT_BODY_PARAMETER)) {
+      final String variableName = parameters.get(COPY_PROCESS_VARIABLES_TO_OUT_BODY_PARAMETER).toString();
+
+      if (variableName.equals("*")) {
+        exchange.getOut().setBody(instance.getVariables());
+      } else if (variableName.contains(",")) {
+        final HashMap<String, Object> variables = new HashMap<String, Object>();
+        for (final String variableNameItem : variableName.split(",")) {
+          Object val = instance.getVariables().get(variableNameItem);
+          if (val != null) {
+            variables.put(variableNameItem, val);
+          }
+        }
+        exchange.getOut().setBody(variables);
+      } else if (!variableName.trim().isEmpty()) {
+        exchange.getOut().setBody(instance.getVariables().get(variableName));
+      } else {
+        exchange.getOut().setBody(instance.getProcessInstanceId());
+      }
+    } else {
+      exchange.getOut().setBody(instance.getProcessInstanceId());
+    }
   }
 
 }
