@@ -1,14 +1,19 @@
+<img align="right" width="150" src=".github/readme/apache-camel-logo.png">
+
+# Camunda Camel
+
 [![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel)
 [![Lifecycle: Deprecated](https://img.shields.io/badge/Lifecycle-Deprecated-yellowgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#deprecated-)
 
 This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [Camunda Platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
 
-![Use Cases supported by Camunda Platform Camel Component][2]
+![Use Cases supported by Camunda Platform Camel Component](./.github/readme/use-cases.png)
 
 See [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) for code for all of the use cases shown in the above model.
 
 
-# How-to use
+## How-to use
 
 Environment requirements:
 
@@ -42,13 +47,11 @@ The Spring bean id `camel` can be made available easily then:
   </bean>
 ```
 
+## Use Cases
 
-# Use Cases
+### camunda Platform --> Apache Camel
 
-
-## camunda Platform --> Apache Camel
-
-### Calling a Camel Endpoint (Service)
+#### Calling a Camel Endpoint (Service)
 
 Use the following expression in a ServiceTask to send all the process instance variables as a map to Camel endpoint:
 
@@ -77,7 +80,7 @@ The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if availa
 * Throwing a `org.camunda.bpm.engine.delegate.BpmnError` will lead to an error being propagated to Camunda (starting from version >= 0.8.1). Note that this can terminate a process instance if not handled, see https://docs.camunda.org/manual/latest/user-guide/process-engine/delegation-code/#throw-bpmn-errors-from-listeners)
 * Throwing any other exception will lead to a retry/incident created in Camunda
 
-## Apache Camel --> Camunda Platform
+### Apache Camel --> Camunda Platform
 The following use cases are supported by the Camunda Platform Camel component (see [Camel Components](http://camel.apache.org/components.html)).
 
 ### `camunda-bpm://start` Start a process instance
@@ -106,7 +109,7 @@ Starts a process instance of the process definition `startProcessFromRoute` with
 
 
 
-### `camunda-bpm://message` Send a message to the process engine
+#### `camunda-bpm://message` Send a message to the process engine
 
 A direct consumer to send a message to the process engine. This can either:
 * trigger the start of a new process instance, see [Start Message Event](http://docs.camunda.org/latest/api-references/bpmn20/#events-message-events)
@@ -124,7 +127,7 @@ Parameter | Description
 
 Note that either one of the properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` or `CamundaBpmCorrelationKey` need to be present in the message if it is correlated to a waiting process instance. Usage of `CamundaBpmCorrelationKey` and / or `CamundaBpmBusinessKey` is preferred.
 
-### `camunda-bpm://poll-externalTasks` Consuming external tasks
+#### `camunda-bpm://poll-externalTasks` Consuming external tasks
 
 With version 7.4.0 Camunda [introduced external tasks](https://blog.camunda.org/post/2015/11/camunda-bpm-740-released/). With version 7.5.0 [further improvements](https://blog.camunda.org/post/2016/05/camunda-bpm-750-released/) were added.
 
@@ -184,7 +187,7 @@ public ScheduledPollConsumerScheduler produceTopic1Scheduler() {
 }
 ```
 
-### `camunda-bpm://async-externalTask` Processing outstanding external tasks
+#### `camunda-bpm://async-externalTask` Processing outstanding external tasks
 
 By using `camunda-bpm://poll-externalTasks`' parameter `async` at value `true` it is up to your responsibility to complete the task once your processing is done. A typical situation is when you want to process the response of asynchronous communication. In this situation you may use this processor endpoint (see [Camel docs](http://camel.apache.org/processor.html#Processor-TurningyourprocessorintoafullComponent))
 to complete the external task. The endpoint also supports throwing an incident or raising an BPM error as described for `camunda-bpm://poll-externalTasks`.
@@ -212,14 +215,15 @@ These in-headers are set to be used subsequent endpoints:
 
 The Exception `org.camunda.bpm.camel.component.externaltasks.NoSuchExternalTaskException` (derived from RuntimeCamelException) might be thrown on processing an external task. The reason for this circumstance might be a situation in a BPM process in which the task implemented by the external task (e.g. ServiceTask) was cancelled. Tasks are cancelled due to interrupting events (e.g. timer event).
 
-# Examples
+## Examples
 Check the existing integration tests for guidance on how to use the current supported features in your projects: [Spring](https://github.com/rafacm/camunda-bpm-camel/blob/master/camunda-bpm-camel-spring/src/test/java/org/camunda/bpm/camel/spring) or [CDI](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/). To run the CDI integration tests do `mvn -DskipITs=false`.
 
 Further there exists the [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) 
 
-# Target environments
+## Target environments
 
-## Spring
+### Spring
+
 ```
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
@@ -227,6 +231,7 @@ Further there exists the [example project 'camel use cases'](https://github.com/
     <version>0.8</version>
 </dependency>
 ```
+
 In your Spring configuration you need to configure the `CamelService` like this:
 
 ```
@@ -238,7 +243,7 @@ In your Spring configuration you need to configure the `CamelService` like this:
 
 The Spring bean id `camel` will be then available to expressions used in ServiceTasks to send data to Camel.
 
-## CDI
+### CDI
 
 ```
 <dependency>
@@ -283,7 +288,7 @@ public class CamelBootStrap {
 Best read [Apache Camel's CDI documentation](http://camel.apache.org/cdi.html) and have a look at the CDI integration tests [here](https://github.com/camunda/camunda-bpm-camel/blob/master/camunda-bpm-camel-cdi/src/test/java/org/camunda/bpm/camel/cdi/) for guidance.
 
 
-## Blueprint
+### Blueprint
 ```
 <dependency>
     <groupId>org.camunda.bpm.extension.camel</groupId>
@@ -301,13 +306,11 @@ The camunda-bpm-osgi project is used with the blueprint-wrapper `context.xml`. T
 ...
 ```
 
-# Credits
+## Credits
 
 This library started as a fork of [Activiti's Apache Camel module](https://github.com/Activiti/Activiti/tree/master/modules/activiti-camel) and the following people have contributed to its further development in the context of camunda BPM: [contributors](https://github.com/camunda/camunda-bpm-camel/graphs/contributors).
 
-# License
+## License
 
 This software is licensed under the terms you  find in the file named `LICENSE.txt` in the root directory.
 
-[1]: http://rafael.cordones.me/assets/camunda-bpm-camel.png
-[2]: https://raw.github.com/camunda/camunda-bpm-camel/master/use-cases.png
