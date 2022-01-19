@@ -27,7 +27,7 @@
     <h2.version>1.4.197</h2.version>
     <maven.compiler.release>8</maven.compiler.release>
      <!-- overwrite value from parent to allow Java 11-->
-    <plugin.version.javadoc>3.2.0</plugin.version.javadoc>
+    <plugin.version.javadoc>3.3.1</plugin.version.javadoc>
   </properties>
 
   <modules>
