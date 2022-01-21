@@ -19,7 +19,7 @@
     <java.version>11</java.version>
     <version.java>${java.version}</version.java>
 
-    <camunda-bpm.version>7.12.0</camunda-bpm.version>
+    <camunda-bpm.version>7.16.0</camunda-bpm.version>
     <camel.version>3.2.0</camel.version>
     <spring.framework.version>5.2.4.RELEASE</spring.framework.version>
     <fest.assert.version>2.0M10</fest.assert.version>
@@ -28,7 +28,7 @@
     <mockito.version>2.28.2</mockito.version>
     <powermock.version>2.0.5</powermock.version>
     <h2.version>1.4.197</h2.version>
-    <maven.compiler.release>8</maven.compiler.release>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
      <!-- overwrite value from parent to allow Java 11-->
     <plugin.version.javadoc>3.3.1</plugin.version.javadoc>
   </properties>
@@ -43,6 +43,22 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.camunda.bpm</groupId>
+        <artifactId>camunda-bom</artifactId>
+        <version>${camunda-bpm.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-bom</artifactId>
+        <version>${camel.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <dependency>
         <groupId>org.camunda.bpm.extension.camel</groupId>
         <artifactId>camunda-bpm-camel-common</artifactId>
@@ -63,6 +79,7 @@
   </dependencyManagement>
 
   <build>
+    <defaultGoal>clean package</defaultGoal>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
