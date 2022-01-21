@@ -1,3 +1,13 @@
+<img align="right" width="150" src=".github/readme/apache-camel-logo.png">
+
+# Camunda Camel
+
+[![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel)
+[![Lifecycle: Deprecated](https://img.shields.io/badge/Lifecycle-Deprecated-yellowgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#deprecated-)
+
+This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [Camunda Platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
@@ -22,15 +32,6 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-<img align="right" width="150" src=".github/readme/apache-camel-logo.png">
-
-# Camunda Camel
-
-[![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel)
-[![Lifecycle: Deprecated](https://img.shields.io/badge/Lifecycle-Deprecated-yellowgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#deprecated-)
-
-This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [Camunda Platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
 
 ![Use Cases supported by Camunda Platform Camel Component](./.github/readme/use-cases.png)
 
