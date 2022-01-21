@@ -1,10 +1,27 @@
+#########
+# MAVEN
+#
+target/
+# https://github.com/takari/maven-wrapper#usage-without-binary-jar
+.mvn/wrapper/maven-wrapper.jar
+
+#########
+# IDEA
+#
 .idea
-target
+
+#########
+# ECLIPSE
+#
 .classpath
 .project
 .settings
+
+#########
+# OTHER
+#
 build.properties
-bin
+bin/
 .metadata
 transaction.log
 nbactions*.xml
