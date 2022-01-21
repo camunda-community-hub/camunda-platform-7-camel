@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.camunda</groupId>
-    <artifactId>camunda-release-parent</artifactId>
-    <version>3.7</version>
+    <groupId>org.camunda.community</groupId>
+    <artifactId>community-hub-release-parent</artifactId>
+    <version>1.2.2</version>
     <relativePath />
   </parent>
 
@@ -37,8 +37,6 @@
     <module>camunda-bpm-camel-common</module>
     <module>camunda-bpm-camel-common-tests</module>
     <module>camunda-bpm-camel-spring</module>
-    <module>camunda-bpm-camel-cdi</module>
-    <module>camunda-bpm-camel-blueprint</module>
   </modules>
 
   <dependencyManagement>
@@ -136,6 +134,30 @@
     	</plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <!-- CDI: manually activate profile to use this -->
+    <profile>
+      <id>camunda-camel-cdi</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>camunda-bpm-camel-cdi</module>
+      </modules>
+    </profile>
+
+    <!-- OSGI: manually activate profile to use this -->
+    <profile>
+      <id>camunda-camel-osgi</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>camunda-bpm-camel-blueprint</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <repositories>
     <repository>

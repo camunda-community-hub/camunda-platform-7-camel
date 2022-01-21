@@ -1,3 +1,27 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
+
+- [Camunda Camel](#camunda-camel)
+  - [How-to use](#how-to-use)
+  - [Use Cases](#use-cases)
+    - [camunda Platform --> Apache Camel](#camunda-platform----apache-camel)
+      - [Calling a Camel Endpoint (Service)](#calling-a-camel-endpoint-service)
+    - [Apache Camel --> Camunda Platform](#apache-camel----camunda-platform)
+    - [`camunda-bpm://start` Start a process instance](#camunda-bpmstart-start-a-process-instance)
+      - [`camunda-bpm://message` Send a message to the process engine](#camunda-bpmmessage-send-a-message-to-the-process-engine)
+      - [`camunda-bpm://poll-externalTasks` Consuming external tasks](#camunda-bpmpoll-externaltasks-consuming-external-tasks)
+      - [`camunda-bpm://async-externalTask` Processing outstanding external tasks](#camunda-bpmasync-externaltask-processing-outstanding-external-tasks)
+  - [Examples](#examples)
+  - [Target environments](#target-environments)
+    - [Spring](#spring)
+    - [CDI](#cdi)
+    - [Blueprint](#blueprint)
+  - [Credits](#credits)
+  - [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 <img align="right" width="150" src=".github/readme/apache-camel-logo.png">
 
 # Camunda Camel
