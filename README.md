@@ -8,6 +8,11 @@
 
 This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [Camunda Platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
 
+
+![Use Cases supported by Camunda Platform Camel Component](./.github/readme/use-cases.png)
+
+See [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) for code for all of the use cases shown in the above model.
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**
@@ -33,21 +38,19 @@ This [community extension](https://docs.camunda.org/manual/latest/introduction/e
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
-![Use Cases supported by Camunda Platform Camel Component](./.github/readme/use-cases.png)
-
-See [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) for code for all of the use cases shown in the above model.
 
 
 ## How-to use
 
 Environment requirements:
 
-| camunda-bpm-camel Version  | Java Version | Camel Version |
-| ---: | ---: | ---: |
-| >= 0.8  | >= JDK 1.8  | >= 3.2 |
-| 0.6 - 0.7  | >= JDK 1.8  | <= 3.1 |
-| 0.4 - 0.5  | = JDK 1.7  | <= 2.x |
-| <= 0.3  | < JDK 1.7  | <= 2.x |
+| camunda-bpm-camel Version | Java Version | Camel Version |
+|--------------------------:|-------------:|--------------:|
+|                    >= 0.9 |  >= JDK 11.0 |       >= 3.14 |
+|                    >= 0.8 |   >= JDK 1.8 |        >= 3.2 |
+|                 0.6 - 0.7 |   >= JDK 1.8 |        <= 3.1 |
+|                 0.4 - 0.5 |    = JDK 1.7 |        <= 2.x |
+|                    <= 0.3 |    < JDK 1.7 |        <= 2.x |
 
 
 Please also check Camel requirements: http://camel.apache.org/what-are-the-dependencies.html (e.g. Camel 2.14 onwards requires JDK 1.7 or better).
@@ -108,7 +111,7 @@ The properties `CamundaBpmProcessInstanceId`, `CamundaBpmBusinessKey` (if availa
 ### Apache Camel --> Camunda Platform
 The following use cases are supported by the Camunda Platform Camel component (see [Camel Components](http://camel.apache.org/components.html)).
 
-### `camunda-bpm://start` Start a process instance
+#### `camunda-bpm://start` Start a process instance
 
 A direct consumer to start process instances.
 
