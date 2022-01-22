@@ -34,9 +34,9 @@
   </properties>
 
   <modules>
-    <module>camunda-bpm-camel-common</module>
-    <module>camunda-bpm-camel-common-tests</module>
-    <module>camunda-bpm-camel-spring</module>
+    <module>extension/common</module>
+    <module>extension/common-tests</module>
+    <module>extension/spring/core</module>
   </modules>
 
   <dependencyManagement>
@@ -143,7 +143,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
-        <module>camunda-bpm-camel-cdi</module>
+        <module>extension/_archived/camunda-bpm-camel-cdi</module>
       </modules>
     </profile>
 
@@ -154,7 +154,7 @@
         <activeByDefault>false</activeByDefault>
       </activation>
       <modules>
-        <module>camunda-bpm-camel-blueprint</module>
+        <module>extension/_archived/camunda-bpm-camel-blueprint</module>
       </modules>
     </profile>
   </profiles>
