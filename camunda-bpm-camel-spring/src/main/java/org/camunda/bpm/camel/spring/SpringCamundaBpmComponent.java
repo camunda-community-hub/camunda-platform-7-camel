@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class SpringCamundaBpmComponent extends CamundaBpmComponent {
 
-	@Autowired
-    public void setProcessEngine(ProcessEngine processEngine) {
-        super.setProcessEngine(processEngine);
-    }
+  @Autowired
+  public void setProcessEngine(ProcessEngine processEngine) {
+    super.setProcessEngine(processEngine);
+  }
 }
