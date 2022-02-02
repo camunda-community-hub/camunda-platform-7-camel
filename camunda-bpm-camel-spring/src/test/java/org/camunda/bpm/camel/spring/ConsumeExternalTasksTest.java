@@ -1,20 +1,22 @@
-package org.camunda.bpm.camel.spring;/* Licensed under the Apache License, Version 2.0 (the "License");
-                                     * you may not use this file except in compliance with the License.
-                                     * You may obtain a copy of the License at
-                                     *
-                                     *      http://www.apache.org/licenses/LICENSE-2.0
-                                     *
-                                     * Unless required by applicable law or agreed to in writing, software
-                                     * distributed under the License is distributed on an "AS IS" BASIS,
-                                     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-                                     * See the License for the specific language governing permissions and
-                                     * limitations under the License.
-                                     */
+package org.camunda.bpm.camel.spring;
 
+/* Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_ATTEMPTSSTARTED;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_PROCESS_INSTANCE_ID;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.EXCHANGE_HEADER_RETRIESLEFT;
-import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ import org.apache.camel.Expression;
 import org.apache.camel.Processor;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.assertj.core.api.Assertions;
 import org.camunda.bpm.camel.component.CamundaBpmConstants;
 import org.camunda.bpm.camel.component.externaltasks.SetExternalTaskRetries;
 import org.camunda.bpm.engine.ExternalTaskService;
@@ -153,13 +156,14 @@ public class ConsumeExternalTasksTest {
 
         // all process instance variables are loaded since no "variablesToFetch"
         // parameter was given
-        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody()).isNotNull();
-        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody()).isInstanceOf(Map.class);
-        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(Map.class).size()).isEqualTo(2);
-        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(Map.class)).containsKey("var1");
-        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(Map.class)).containsKey("var2");
-        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(Map.class)).containsValue("foo");
-        assertThat(mockEndpoint.assertExchangeReceived(0).getIn().getBody(Map.class)).containsValue("bar");
+        var exchangeIn = mockEndpoint.assertExchangeReceived(0).getIn();
+        assertThat(exchangeIn.getBody()).isNotNull();
+        assertThat(exchangeIn.getBody()).isInstanceOf(Map.class);
+        assertThat(exchangeIn.getBody(Map.class)).hasSize(2);
+        assertThat(exchangeIn.getBody(Map.class)).containsKey("var1");
+        assertThat(exchangeIn.getBody(Map.class)).containsKey("var2");
+        assertThat(exchangeIn.getBody(Map.class)).containsValue("foo");
+        assertThat(exchangeIn.getBody(Map.class)).containsValue("bar");
 
         // assert that the variables sent in the response-message has been set
         // into the process

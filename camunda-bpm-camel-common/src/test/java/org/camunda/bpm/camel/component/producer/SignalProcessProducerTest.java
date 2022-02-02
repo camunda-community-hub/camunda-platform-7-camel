@@ -1,18 +1,20 @@
 package org.camunda.bpm.camel.component.producer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.ACTIVITY_ID_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.PROCESS_DEFINITION_KEY_PARAMETER;
+import static org.camunda.bpm.camel.component.CamundaBpmConstants.camundaBpmUri;
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import org.apache.camel.Endpoint;
 import org.apache.camel.Producer;
 import org.camunda.bpm.camel.BaseCamelTest;
 import org.camunda.bpm.camel.component.CamundaBpmEndpoint;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.junit.Test;
-
-import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class SignalProcessProducerTest extends BaseCamelTest {
 
