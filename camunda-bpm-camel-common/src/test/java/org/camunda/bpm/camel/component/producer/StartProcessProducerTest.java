@@ -9,8 +9,8 @@ import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
 import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.junit.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.camunda.bpm.camel.component.CamundaBpmConstants.*;
-import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class StartProcessProducerTest extends BaseCamelTest {
