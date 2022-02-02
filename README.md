@@ -4,7 +4,7 @@
 
 [![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel)
-[![Lifecycle: Deprecated](https://img.shields.io/badge/Lifecycle-Deprecated-yellowgreen)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#deprecated-)
+[![Lifecycle: Incubating](https://img.shields.io/badge/Lifecycle-Incubating-blue)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#incubating-)
 
 This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [Camunda Platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
 
