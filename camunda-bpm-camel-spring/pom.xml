@@ -1,4 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -16,36 +18,36 @@
       <groupId>org.camunda.bpm.extension.camel</groupId>
       <artifactId>camunda-bpm-camel-common</artifactId>
       <exclusions>
-      	<exclusion>
-      		<artifactId>spring-beans</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
+        <exclusion>
+          <artifactId>spring-beans</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
       <groupId>org.camunda.bpm</groupId>
       <artifactId>camunda-engine-spring</artifactId>
       <exclusions>
-      	<exclusion>
-      		<artifactId>spring-beans</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>spring-jdbc</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>spring-tx</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>spring-orm</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>spring-context</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
+        <exclusion>
+          <artifactId>spring-beans</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-jdbc</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-tx</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-orm</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-context</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -53,32 +55,37 @@
       <artifactId>camel-spring</artifactId>
       <version>${camel.version}</version>
       <exclusions>
-      	<exclusion>
-      		<artifactId>spring-beans</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>spring-tx</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
-      	<exclusion>
-      		<artifactId>spring-context</artifactId>
-      		<groupId>org.springframework</groupId>
-      	</exclusion>
+        <exclusion>
+          <artifactId>spring-beans</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-tx</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-context</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-spring-xml</artifactId>
+      <version>${camel.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
       <version>${spring.framework.version}</version>
       <scope>compile</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>${spring.framework.version}</version>
       <scope>compile</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-tx</artifactId>
@@ -96,7 +103,7 @@
       <artifactId>spring-orm</artifactId>
       <version>${spring.framework.version}</version>
       <scope>compile</scope>
-    </dependency>  
+    </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
@@ -155,18 +162,18 @@
       <version>${sl4j.version}</version>
       <scope>test</scope>
     </dependency>
-    
+
     <!--  -->
-	<dependency>
-	    <groupId>jakarta.xml.bind</groupId>
-	    <artifactId>jakarta.xml.bind-api</artifactId>
-	    <version>2.3.2</version>
-	</dependency>
-	<dependency>
-	    <groupId>org.glassfish.jaxb</groupId>
-	    <artifactId>jaxb-runtime</artifactId>
-	    <version>2.3.2</version>
-	</dependency>    
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>2.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>2.3.2</version>
+    </dependency>
   </dependencies>
 
   <build>
