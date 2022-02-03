@@ -17,7 +17,7 @@ import org.camunda.bpm.camel.common.CamelServiceCommonImpl;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.springframework.beans.factory.annotation.Required;
 
-public class CamelServiceImpl extends CamelServiceCommonImpl {
+public class CamelServiceBean extends CamelServiceCommonImpl {
 
   @Required
   public void setProcessEngine(ProcessEngine processEngine) {
