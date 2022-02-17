@@ -133,7 +133,7 @@
       -->
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
-        <version>2.14.1</version>
+        <version>2.22.2</version>
         <configuration>
           <!-- See https://community.jboss.org/thread/198980 -->
           <argLine>-Djava.util.logging.config.file=${basedir}/src/test/resources/logging.properties</argLine>
