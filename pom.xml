@@ -29,7 +29,7 @@
     <assertj.version>3.22.0</assertj.version>
     <mockito.version>2.28.2</mockito.version>
     <powermock.version>2.0.9</powermock.version>
-    <h2.version>1.4.197</h2.version>
+    <h2.version>2.1.212</h2.version>
 
      <!-- overwrite value from parent to allow Java 11-->
     <plugin.version.javadoc>3.3.2</plugin.version.javadoc>
