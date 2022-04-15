@@ -20,7 +20,7 @@
     <version.java>${java.version}</version.java>
     <maven.compiler.release>${java.version}</maven.compiler.release>
 
-    <camunda-bpm.version>7.16.0</camunda-bpm.version>
+    <camunda-bpm.version>7.17.0</camunda-bpm.version>
     <camel.version>3.16.0</camel.version>
     <spring.framework.version>5.2.4.RELEASE</spring.framework.version>
     <sl4j.version>1.7.36</sl4j.version>
