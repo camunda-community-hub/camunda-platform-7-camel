@@ -2,14 +2,15 @@
 
 # Camunda Camel
 
+[![Camunda Platform 7](https://img.shields.io/badge/Compatible%20with-Camunda%20Platform%207-26d07c)](https://img.shields.io/badge/Compatible%20with-Camunda%20Platform%207-26d07c)
 [![Community Extension](https://img.shields.io/badge/Community%20Extension-An%20open%20source%20community%20maintained%20project-FF4700)](https://github.com/camunda-community-hub/community)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.camunda.bpm.extension.camel/camunda-bpm-camel)
 [![Lifecycle: Incubating](https://img.shields.io/badge/Lifecycle-Incubating-blue)](https://github.com/Camunda-Community-Hub/community/blob/main/extension-lifecycle.md#incubating-)
 
-This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [Camunda Platform](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
+This [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) focuses on bringing two great Open Source frameworks closer together, the [Camunda Platform 7](http://camunda.org) and [Apache Camel](http://camel.apache.org). Note, that a [community extension](https://docs.camunda.org/manual/latest/introduction/extensions/) is not part of the supported product of Camunda.
 
 
-![Use Cases supported by Camunda Platform Camel Component](./.github/readme/use-cases.png)
+![Use Cases supported by Camunda Platform 7 Camel Component](./.github/readme/use-cases.png)
 
 See [example project 'camel use cases'](https://github.com/camunda-consulting/code/tree/master/one-time-examples/camel-use-cases) for code for all of the use cases shown in the above model.
 
@@ -43,13 +44,13 @@ See [example project 'camel use cases'](https://github.com/camunda-consulting/co
 
 Environment requirements:
 
-| camunda-bpm-camel Version | Java Version | Camel Version |
-|--------------------------:|-------------:|--------------:|
-|                    >= 0.9 |  >= JDK 11.0 |       >= 3.14 |
-|                    >= 0.8 |   >= JDK 1.8 |        >= 3.2 |
-|                 0.6 - 0.7 |   >= JDK 1.8 |        <= 3.1 |
-|                 0.4 - 0.5 |    = JDK 1.7 |        <= 2.x |
-|                    <= 0.3 |    < JDK 1.7 |        <= 2.x |
+| camunda-bpm-camel Version | Java Version | Camel Version | Camunda Version |
+|--------------------------:|-------------:|--------------:| ---:|
+|                    >= 0.9 |  >= JDK 11.0 |       >= 3.14 | 7.x |
+|                    >= 0.8 |   >= JDK 1.8 |        >= 3.2 | 7.x |
+|                 0.6 - 0.7 |   >= JDK 1.8 |        <= 3.1 | 7.x |
+|                 0.4 - 0.5 |    = JDK 1.7 |        <= 2.x | 7.x |
+|                    <= 0.3 |    < JDK 1.7 |        <= 2.x | 7.x |
 
 
 Please also check Camel requirements: http://camel.apache.org/what-are-the-dependencies.html (e.g. Camel 2.14 onwards requires JDK 1.7 or better).
