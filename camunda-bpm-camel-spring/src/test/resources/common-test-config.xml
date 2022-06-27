@@ -8,7 +8,7 @@
 
   <bean id="log" class="org.camunda.bpm.camel.spring.util.LogServiceImpl"/>
 
-  <bean id="camel" class="org.camunda.bpm.camel.spring.CamelServiceImpl">
+  <bean id="camel" class="org.camunda.bpm.camel.spring.CamelServiceBean">
     <property name="processEngine" ref="processEngine"/>
     <property name="camelContext" ref="camelContext"/>
   </bean>
