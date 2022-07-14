@@ -22,7 +22,7 @@
 
     <camunda-bpm.version>7.16.0</camunda-bpm.version>
     <camel.version>3.16.0</camel.version>
-    <spring.framework.version>5.3.19</spring.framework.version>
+    <spring.framework.version>5.3.22</spring.framework.version>
     <sl4j.version>1.7.36</sl4j.version>
 
     <junit.version>4.13.2</junit.version>
